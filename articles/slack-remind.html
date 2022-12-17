@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【Slack】リマインダーの設定・確認方法（明日・日時指定・定期） - てっくらぶ</title>
+    <meta name="description" content="Slack でリマインダーを設定する方法をご紹介します．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Slack</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Slack】リマインダーの設定・確認方法（明日・日時指定・定期）
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/slack.html">Slack</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/slack.html">Slack</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2021-10-03
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-08-03
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>Slack でリマインダーを設定する方法をご紹介します．<br>
+＜使用イメージ＞
+<ul style="margin: -5px 0px 0px 15px;">
+  <li>明日の9:00に通知をして欲しい．</li>
+  <li>会議のURLをXX日の13:00に知らせて欲しい．</li>
+  <li>毎週火曜日にXXを知らせて欲しい．</li>
+</ul></p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">リマインドのコマンド</a></li>
+<li><a href="#_2">コマンドの具体例</a><ul>
+<li><a href="#900">明日の9:00に通知をして欲しい</a></li>
+<li><a href="#_3">日時指定でリマインドして欲しい</a></li>
+<li><a href="#1000">毎週火曜日の10:00にリマインドして欲しい</a></li>
+</ul>
+</li>
+<li><a href="#_4">リマインドのリストの確認</a></li>
+<li><a href="#_5">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">リマインドのコマンド</h2>
+<p>基本のコマンドは以下のとおりです．<br>
+入力枠に<code>/</code>を入力すると新たな検索窓が出るので続けて<code>remind</code><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>と打てばOKです．</p>
+<ul>
+<li><code>/remind me &lt;リマインド内容&gt; &lt;日時&gt;</code></li>
+</ul>
+<p>コマンドを入力した後に送信すればSlackbotが受け付けた内容を返してくれます．</p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p><code>/</code>を打つと様々なコマンド候補が表示されます．</p>
+</div>
+<h2 id="_2">コマンドの具体例</h2>
+<p>コマンドの具体的な例を見ていきましょう．</p>
+<h3 id="900">明日の9:00に通知をして欲しい</h3>
+<p>明日知らせて欲しいと思い立ったときに・・・</p>
+<pre>
+<code class="language-bash">
+/remind me 会議案内を送る at 9:00
+</code>
+</pre>
+
+<p><img src="/images/slack-remind/slack-remind_01.png" width="600" height="97"></p>
+<h3 id="_3">日時指定でリマインドして欲しい</h3>
+<p>日時を指定するには以下のような書き方です．</p>
+<pre>
+<code class="language-bash">
+/remind me レビュー対応 10/5 at 9:00
+</code>
+</pre>
+
+<p><img src="/images/slack-remind/slack-remind_02.png" width="600" height="88"></p>
+<h3 id="1000">毎週火曜日の10:00にリマインドして欲しい</h3>
+<p><code>every 曜日の略記</code>を指定すればOKです．</p>
+<pre>
+<code class="language-bash">
+/remind me https://www.google.com every tue at 10:00
+</code>
+</pre>
+
+<p><img src="/images/slack-remind/slack-remind_03.png" width="600" height="79"></p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>リマインド内容にURLを指定することもできます．<br>
+なお<code>every tuesday</code>としても結果は同じです．</p>
+</div>
+<h2 id="_4">リマインドのリストの確認</h2>
+<p>現在登録されているリマインドのリストを確認することができます．</p>
+<pre>
+<code class="language-bash">
+/remind list
+</code>
+</pre>
+
+<p><img src="/images/slack-remind/slack-remind_04.png" width="350" height="145"></p>
+<h2 id="_5">ひとこと</h2>
+<p>よく使っているリマインダーの設定を列挙してみました．<br>
+今後も気がついたら追加していきたいと思います．</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p><code>remind</code>の後には半角スペースがあります．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/slack.html"><div class="fa fa-lg fa-folder-open"></div> Slack</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/slack.html"><div class="fa fa-lg fa-tag"></div> Slack</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - ブログ運営</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/blog-ope.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-10-30T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>サイトをWordPressからPelicanに切り替えました</title><link href="https://www.tecrab.com/articles/site-renewal.html" rel="alternate"></link><published>2022-10-30T00:00:00+09:00</published><updated>2022-10-30T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-10-30:/articles/site-renewal.html</id><summary type="html">&lt;p&gt;ブログリニューアルのお知らせです．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;サイトをリニューアルしました．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;概要&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#pelican"&gt;pelicanに関して&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;ブログ移行の振り返り&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#pelican_1"&gt;pelicanの環境構築&amp;amp;動作確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;テーマ選定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;既存記事の書き直し&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;デプロイ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;概要&lt;/h2&gt;
+&lt;p&gt;これまではWordPressでブログを運営していましたが，pelicanに切り替えました．&lt;br&gt;
+WordPressでも大きな不満はなかったのですが，余計な機能が多くもっとシンプルに管理・運営がしたいと考えて移行を行なった次第です．&lt;/p&gt;
+&lt;p&gt;装飾などについては&lt;a href="http://revalab.net/pages/about.html" rel="noopener noreferrer" target="_blank"&gt;こちら&lt;/a&gt;を参照．&lt;/p&gt;
+&lt;h2 id="pelican"&gt;pelicanに関して&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://getpelican.com/" rel="noopener noreferrer" target="_blank"&gt;pelican&lt;/a&gt;はPython謹製の静的サイトジェネレーターで，とても簡単にブログを作成することができます．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;（個人的）メリット&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;記事がローカル&amp;amp;Markdown形式で書ける&lt;/li&gt;
+&lt;li&gt;サイトプレビュー・更新が１コマンド&lt;/li&gt;
+&lt;li&gt;ディレクトリ構成もシンプルで管理が容易&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="_2"&gt;ブログ移行の振り返り&lt;/h2&gt;
+&lt;p&gt;ざっくりと以下の流れで実施しました．&lt;br&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;pelicanの環境構築&amp;amp;動作確認&lt;/li&gt;
+&lt;li&gt;テーマ選定&lt;/li&gt;
+&lt;li&gt;既存記事の書き直し&lt;/li&gt;
+&lt;li&gt;デプロイ&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="pelican_1"&gt;pelicanの環境構築&amp;amp;動作確認&lt;/h3&gt;
+&lt;p&gt;環境構築などはそれほど大きな問題なく進めることができました．&lt;/p&gt;
+&lt;div style="margin-bottom: 90px;"&gt;&lt;/div&gt;
+
+&lt;h3 id="_3"&gt;テーマ選定&lt;/h3&gt;
+&lt;p&gt;pelicanには様々なテーマがありますので，気に入ったものがあれば簡単に取り込むことが可能です．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/getpelican/pelican-themes" rel="noopener noreferrer" target="_blank"&gt;pelican-themes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Flexというテーマがよく使われているみたいでしたが，当ブログはシンプルさを確保するために自作しました．&lt;/p&gt;
+&lt;p&gt;自作テーマを作るのは面白い作業でしたが，管理人の知識不足で時間がかかりました・・・&lt;br&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 90px;"&gt;&lt;/div&gt;
+
+&lt;h3 id="_4"&gt;既存記事の書き直し&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;一番大変&lt;/strong&gt;&lt;br&gt;
+頑張って書き直しました.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 90px;"&gt;&lt;/div&gt;
+
+&lt;h3 id="_5"&gt;デプロイ&lt;/h3&gt;
+&lt;p&gt;GitHub PagesというGitHubのサービスを使ってブログを公開しました．&lt;br&gt;
+無料でブログを公開できるとはすごいサービスです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;GitHub Pagesへのデプロイ（記事公開）&lt;/li&gt;
+&lt;li&gt;独自ドメインの引き継ぎ&lt;/li&gt;
+&lt;li&gt;Google Analyticsなどの対応&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;すでに独自ドメインで運用していたブログがあったので少々面倒でした・・・&lt;/p&gt;
+&lt;div style="margin-bottom: 90px;"&gt;&lt;/div&gt;
+
+&lt;h2 id="_6"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;結構大変&amp;amp;面倒でしたが，これで記事をスムーズに書ける環境が整いました．&lt;br&gt;
+早く慣れて有用な記事を作成していきたいです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;WordPressからMarkdownへの出力もできるようですが見直しも兼ねて・・・&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="ブログ運営"></category><category term="雑記"></category><category term="pelican"></category></entry></feed>

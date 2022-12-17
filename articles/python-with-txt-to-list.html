@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【Python】テキストファイル（.txt）をリストで読み込む/書き込む方法 - てっくらぶ</title>
+    <meta name="description" content="Pythonでテキストファイルを読み込み，リストとして利用する方法について解説しています．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Python</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Python】テキストファイル（.txt）をリストで読み込む/書き込む方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/nlp.html">自然言語処理</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2021-11-30
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-01-04
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事では以下の内容を解説しています．
+<ul style="margin: -5px 0px 0px 15px;">
+    <li>テキストファイルをPythonで読み込みリスト化する</li>
+    <li>余分なスペースや改行，重複を削除して読み込む</li>
+    <li>リスト型のデータをテキストファイルに追記する</li>
+</ul></p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#python">テキストファイルをPythonで読み込みリスト化する</a><ul>
+<li><a href="#_1">文字列をリストで取得</a></li>
+<li><a href="#_2">重複を削除したリストを取得</a></li>
+<li><a href="#_3">重複削除＋順序を保持したリストを取得</a></li>
+</ul>
+</li>
+<li><a href="#_4">リスト型のデータをテキストファイルに追記する</a></li>
+<li><a href="#_5">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="python">テキストファイルをPythonで読み込みリスト化する</h2>
+<p>使用するテキストファイルは<code>sample.txt</code>です．<br>
+このファイルを読み込んでリスト化していきます．<br>
+（説明のために本来は不要な改行やスペース，重複を入れています）</p>
+<p><code>sample.txt</code>の内容</p>
+<pre style="margin: -15px 0px 90px 0px;">
+えび
+かに
+　うに
+文鳥　
+
+かに
+</pre>
+
+<h3 id="_1">文字列をリストで取得</h3>
+<p><code>with</code>文とリスト内包表記を使用して以下のように書くと，リストで文字列を取得できます．</p>
+<pre><code class="language-python">
+with open('./sample.txt', mode='r', encoding='utf-8') as f:
+    txt = [word.strip() for word in f if word != '\n']
+txt
+</code></pre>
+<pre style="margin-bottom: 30px;">
+['えび', 'かに', 'うに', '文鳥', 'かに']
+</pre>
+
+<div class="admonition explanation">
+<p class="admonition-title">解説</p>
+<p><code>open()</code>の第一引数でテキストファイルのパス<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>，第二引数で読み込み専用モード<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>, 第三引数でencodingを指定しています．</p>
+<p>２行目：<code>for</code>文でテキストファイルの内容を順に取得します．<br>
+この際に<code>if word != '\n'</code>で改行だけの行を除くようにしています．</p>
+<p>取り出した<code>word</code>をリストに追加する際に<code>strip()</code>メソッドで文字列の前後の余計な空白・改行コードを除去しています．</p>
+</div>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p><code>strip()</code>メソッドを使用しないと以下のような結果になります．<br>
+全角スペースコードの<code>\u3000</code>や改行コード<code>\n</code>が入り込んでいます．
+<pre style="margin: 0.8em 1em 0.8em 1em;">
+['えび\n', 'かに\n', '\u3000うに\n', '文鳥\u3000\n', 'かに']
+</pre></p>
+</div>
+<h3 id="_2">重複を削除したリストを取得</h3>
+<p>上記で取得したテキストは「かに」が重複しています．<br>
+重複を落としたい場合は<code>set()</code>を使用して以下のようにします．</p>
+<pre><code class="language-python">
+with open('./sample.txt', encoding='utf-8') as f:
+    txt = set([word.strip() for word in f if word != '\n'])
+txt = list(txt)
+txt
+</code></pre>
+<pre style="margin-bottom: 50px;">
+['えび', '文鳥', 'かに', 'うに']
+</pre>
+
+<div class="admonition warning-box">
+<p class="admonition-title">注意</p>
+<p>set型は順序が保証されないので，リストの順番は一定ではありません．<br>
+リストの順番を保持したい場合は次項を参照．</p>
+</div>
+<h3 id="_3">重複削除＋順序を保持したリストを取得</h3>
+<p><code>sorted()</code>メソッドでリストのindexをキーとして並び替えると順番が保持されます．</p>
+<pre><code class="language-python">
+# 順序を保持したい場合
+with open('./sample.txt', encoding='utf-8') as f:
+    txt_key = [word.strip() for word in f if word != '\n']
+txt = sorted(set(txt_key), key=txt_key.index)
+txt
+</code></pre>
+<pre style="margin-bottom: 90px;">
+['えび', 'かに', 'うに', '文鳥']
+</pre>
+
+<h2 id="_4">リスト型のデータをテキストファイルに追記する</h2>
+<p>ここではすでにリスト型で存在するデータを<code>sample.txt</code>に追記する方法を見てみましょう．<br>
+変数<code>add_list</code>のデータが今回追加するデータです．</p>
+<pre style="margin-bottom: 40px;"><code class="language-python">
+add_list = ['カラス', 'スズメ']
+first_loop = True
+
+# mode='a'は既存ファイルへの追記を指定
+with open('./sample.txt', mode='a', encoding='utf-8') as f:
+    for i in add_list:
+        if first_loop:
+            f.write('\n' + i + '\n')  # １回目だけ改行を前に入れる
+            first_loop = False
+        else:
+            f.write(i + '\n')  # ２回目以降
+</code></pre>
+
+<p><code>sample.txt</code>の内容</p>
+<pre style="margin: -15px 0px 40px 0px;">
+えび
+かに
+　うに
+文鳥　
+
+かに
+カラス
+スズメ
+</pre>
+
+<div class="admonition explanation">
+<p class="admonition-title">解説</p>
+<p><code>with</code>文を使用し<code>mode = 'a'</code>としてファイルを開きます．<br>
+これによって既存ファイルへの追記ができます．</p>
+<p>追加したいリストの文字列を<code>for</code>文で取り出し，１回目のループ時だけ前後に改行を入れた状態でファイルへ書き込みます（<code>f.write('\n' + i + '\n')</code>部分） ２回目以降は文字列の後ろ側に改行を入れます．</p>
+<p>上記の処理によって「かに」の下に「カラス，スズメ」が追加されます．</p>
+</div>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>単純に書き込むとテキストの一番後ろから追記されるので以下のような結果となります．</p>
+<pre style="margin: 10px 15px 15px 15px;">
+えび
+かに
+　うに
+文鳥　
+
+かにカラススズメ
+</pre>
+</div>
+
+<h2 id="_5">ひとこと</h2>
+<p>テキストを様々な形で利用できると幅が広がりますね．<br>
+リストや<code>set</code>はよく使うのでしっかりと押さえておきたいです．</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>今回は<code>sample.txt</code>のパスをカレントディレクトリからの相対パスで指定しています．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><code>'r'</code>で読み込み専用モードを指定できます．なお，デフォルトも<code>mode='r'</code>なので，省略しても結果は同じです．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/nlp.html"><div class="fa fa-lg fa-tag"></div> 自然言語処理</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

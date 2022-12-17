@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【Python】pandas, SciPyで疎行列を扱う方法とメモリ使用量比較 - てっくらぶ</title>
+    <meta name="description" content="pandas, SciPyで疎行列を生成・変換する方法とメモリ使用量を確認している記事です．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Python</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Python】pandas, SciPyで疎行列を扱う方法とメモリ使用量比較
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/pandas.html">pandas</a> <a href="https://www.tecrab.com/tag/scipy.html">SciPy</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2021-10-18
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-08-07
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事では以下の内容を扱っています．
+<ul style="margin: -5px 0px 0px 15px;">
+ <li>sparse matrix（疎行列）と dense matrix（密行列）の概要</li>
+ <li>sparse matrix をpandasとSciPyで生成・変換する方法</li>
+ <li>sparse matrix のメモリ使用量比較</li>
+</ul></p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">バージョン情報</a></li>
+<li><a href="#sparse-matrixdense-matrix">sparse matrixとdense matrixの概要</a><ul>
+<li><a href="#import">ライブラリのimport</a></li>
+<li><a href="#sparse-matrix">疎行列(sparse matrix)</a></li>
+<li><a href="#dense-matrix">密行列(dense matrix)</a></li>
+<li><a href="#_2">疎行列を効率的に扱う</a></li>
+</ul>
+</li>
+<li><a href="#sparse-matrixpandasscipy">sparse matrixをpandasとSciPyで生成・変換する方法</a><ul>
+<li><a href="#scipy">SciPy</a></li>
+<li><a href="#pandas">pandas</a></li>
+<li><a href="#scipysparsepandassparse">scipy.sparseをpandasのsparse型に変換する</a></li>
+</ul>
+</li>
+<li><a href="#sparse-matrix_1">sparse matrix のメモリ使用量</a></li>
+<li><a href="#_3">まとめ</a></li>
+</ul>
+</div>
+<h2 id="_1">バージョン情報</h2>
+<p>バージョンの情報は以下のとおりです．</p>
+<ul>
+<li>Python 3.10.5</li>
+<li>NumPy 1.23.1</li>
+<li>pandas 1.4.3 </li>
+<li>SciPy 1.8.1</li>
+</ul>
+<h2 id="sparse-matrixdense-matrix">sparse matrixとdense matrixの概要</h2>
+<p>sparse matrixは行列の成分がほとんど<code>0</code>である行列のことをいいます．<br>
+sparse matrixを日本語で言うと「疎行列」です．<br>
+反対に成分の多くが<code>0</code>でない行列はdense matrixといい，日本語は「密行列」です．</p>
+<p>以下で疎行列と密行列を見てみましょう．</p>
+<h3 id="import">ライブラリのimport</h3>
+<p>はじめに本記事で使用するライブラリをimportしておきます．</p>
+<pre style="margin-bottom: 90px;">
+<code class="language-python">
+# 本記事中で使用するライブラリ
+import numpy as np
+import pandas as pd
+from scipy import sparse as sp
+</code>
+</pre>
+
+<h3 id="sparse-matrix">疎行列(sparse matrix)</h3>
+<p>以下のコードでDataFrameを作ります．<br>
+3×1000の行列のうち，ほとんどが<code>0</code>で稀に<code>1</code>（＝データ）がある疎行列です．</p>
+<pre><code class="language-python">
+np.random.seed(42) # 乱数シードの固定
+
+# 乱数を生成して3×1000のdfを作成
+sparse = np.random.binomial(n=1, p=0.1, size=3*1000)
+sdf = pd.DataFrame(sparse.reshape(3, 1000))
+sdf
+</code></pre>
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>990</th>
+      <th>991</th>
+      <th>992</th>
+      <th>993</th>
+      <th>994</th>
+      <th>995</th>
+      <th>996</th>
+      <th>997</th>
+      <th>998</th>
+      <th>999</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<div class="under-df-info"><p>3 rows × 1000 columns</p></div>
+
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>今回は例示のために小さい行列で見ていますが，sparse matrixの列数は非常に多いことが普通です．</p>
+</div>
+<h3 id="dense-matrix">密行列(dense matrix)</h3>
+<p>続いて密行列を作成します．<br>
+3×1000の行列のうち，ほとんどが<code>1</code>で稀に<code>0</code>があるデータです．<br>
+ちなみに密行列の数値に決まりはありません.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<pre><code class="language-python">
+np.random.seed(42) # 乱数シードの固定
+
+# 乱数を生成して3×1000のdfを作成
+dense = np.random.binomial(n=1, p=0.9, size=3*1000)
+ddf = pd.DataFrame(dense.reshape(3, 1000))
+ddf
+</code></pre>
+
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>990</th>
+      <th>991</th>
+      <th>992</th>
+      <th>993</th>
+      <th>994</th>
+      <th>995</th>
+      <th>996</th>
+      <th>997</th>
+      <th>998</th>
+      <th>999</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<div class="under-df-info"><p>3 rows × 1000 columns</p></div>
+
+<h3 id="_2">疎行列を効率的に扱う</h3>
+<p>疎行列は成分のほとんどが<code>0</code>です．<br>
+そのため<code>1</code>の場所だけを記憶しておくとメモリ効率がよくなります．</p>
+<p>上記のような方法でデータの保持するには<code>scipy.sparse</code>やpandasのsparse型を使用します．</p>
+<h2 id="sparse-matrixpandasscipy">sparse matrixをpandasとSciPyで生成・変換する方法</h2>
+<h3 id="scipy">SciPy</h3>
+<p>先ほど作成した各DataFrameについて，SciPyの<code>coo_matrix()</code>メソッドを使用して<code>scipy.sparse</code>に変換してみます．</p>
+<pre><code class="language-python">
+# sparse(sdf_sp) と dense(ddf_sp) を作成
+sdf_sp = sp.coo_matrix(sdf.values)
+ddf_sp = sp.coo_matrix(ddf.values)
+
+# 例としてsdf_spを確認
+sdf_sp
+</code></pre>
+<pre style="margin-bottom: 50px; font-size: 0.89em;">
+&lt;3x1000 sparse matrix of type '&lt;class 'numpy.int64'&gt;'
+    with 298 stored elements in COOrdinate format&gt;
+</pre>
+
+<p>文字列が出力されていますが，これは<code>scipy.sparse</code>の情報です．<br>
+オブジェクトのデータ型は<code>scipy.sparse.coo.coo_matrix</code>です．</p>
+<details class="accordion-block">
+<summary>出力された情報の見方が知りたい方はこちらをクリック</summary>
+<div class="accordion-summary">
+<p>出力結果の見方は以下のとおりです． 
+  </p>
+<ol style="margin-top: 20px;">
+      <li><code>3x1000 sparse matrix of type '&lt;class 'numpy.int64'&gt;'</code></li>
+      行列の大きさとデータ型を表しています．今回指定したDataFrameは3×1000でしたので一致していますね．なお，データ型は<code>numpy.int64</code>です．
+      <li style="margin-top: 20px;"><code>with 298 stored elements in COOrdinate format</code></li>
+      298 stored elements部分は保持している<code>1</code>の数です．今回のDataFrameには<code>1</code>が298個あるということです．その後の<code>COOrdinate format</code>はsparse matrixの種類です.（sparse matrixにおけるデータの持ち方には色々な種類がありますが，今回はCOOという種類を使っています）
+  </ol>
+</div>
+</details>
+<h3 id="pandas">pandas</h3>
+<p>次にpandasのメソッドを使用してsparse matrixを生成します．<br>
+以下の２パターンを見てみましょう．</p>
+<ul>
+<li>DataFrameから<code>astype</code>メソッドでsparse型に変換する</li>
+<li><code>scipy.sparse</code>をpandasのsparse型に変換する</li>
+</ul>
+<h5 id="dataframeastypesparse">DataFrameからastypeメソッドでsparse型に変換する</h5>
+<p>DataFrameに対して<code>astype</code>メソッドを使用し<code>pandas.SparseDtype</code>を指定すればOKです．</p>
+<pre><code class="language-python">
+# sparse(pd_sdf) と dense(pd_ddf) を作成
+pd_sdf = sdf.astype(pd.SparseDtype("int64", 0))
+pd_ddf = ddf.astype(pd.SparseDtype("int64", 0))
+
+# 例としてpd_sdfを確認
+pd_sdf
+
+</code></pre>
+
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>990</th>
+      <th>991</th>
+      <th>992</th>
+      <th>993</th>
+      <th>994</th>
+      <th>995</th>
+      <th>996</th>
+      <th>997</th>
+      <th>998</th>
+      <th>999</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<div class="under-df-info"><p>3 rows × 1000 columns</p></div>
+
+<p>オブジェクトのデータ型は<code>pandas.core.frame.DataFrame</code>型です.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><br>
+<code>dtypes</code>メソッドで各カラムのデータ型を見ると，<code>Sparse[int64, 0]</code> となっており，データがSparse型で保持されていることがわかります．</p>
+<pre><code class="language-python">
+print(type(pd_sdf), '\n')
+print(pd_sdf.dtypes)
+</code></pre>
+<pre style="margin-bottom: 90px; font-size: 0.89em;">
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+
+0      Sparse[int64, 0]
+1      Sparse[int64, 0]
+2      Sparse[int64, 0]
+3      Sparse[int64, 0]
+4      Sparse[int64, 0]
+             ...       
+995    Sparse[int64, 0]
+996    Sparse[int64, 0]
+997    Sparse[int64, 0]
+998    Sparse[int64, 0]
+999    Sparse[int64, 0]
+Length: 1000, dtype: object
+</pre>
+
+<h3 id="scipysparsepandassparse">scipy.sparseをpandasのsparse型に変換する</h3>
+<p><code>scipy.sparse</code>をpandasのsparse型に変換します．<br>
+<code>pd.DataFrame.sparse.from_spmatrix</code>というメソッドで変換することができます．</p>
+<pre><code class="language-python">
+pd_sdf2 = pd.DataFrame.sparse.from_spmatrix(sdf_sp)
+pd_sdf2
+</code></pre>
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>990</th>
+      <th>991</th>
+      <th>992</th>
+      <th>993</th>
+      <th>994</th>
+      <th>995</th>
+      <th>996</th>
+      <th>997</th>
+      <th>998</th>
+      <th>999</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<div class="under-df-info"><p>3 rows × 1000 columns</p></div>
+
+<p>各カラムのデータ型は<code>scipy.sparse</code>の型に依存します．<br>
+今回は<code>scipy.sparse</code>の型が<code>numpy.int64</code>だったため<code>Sparse[int64, 0]</code>になっています．</p>
+<pre><code class="language-python">
+print(type(pd_sdf2), '\n')
+print(pd_sdf2.dtypes)
+</code></pre>
+<pre style="margin-bottom: 90px; font-size: 0.89em;">
+&lt;class 'pandas.core.frame.DataFrame'&gt; 
+
+0      Sparse[int64, 0]
+1      Sparse[int64, 0]
+2      Sparse[int64, 0]
+3      Sparse[int64, 0]
+4      Sparse[int64, 0]
+             ...       
+995    Sparse[int64, 0]
+996    Sparse[int64, 0]
+997    Sparse[int64, 0]
+998    Sparse[int64, 0]
+999    Sparse[int64, 0]
+Length: 1000, dtype: object
+</pre>
+
+<h2 id="sparse-matrix_1">sparse matrix のメモリ使用量</h2>
+<p>DataFrameと<code>scipy.sparse</code>の各行列について，メモリ使用量を確認してみましょう．<br>
+以下の関数を使用してDataFrameとsparse matrixのメモリ使用量を見ることができます．</p>
+<pre style="margin-bottom: 90px;"><code class="language-python">
+# DataFrame
+def get_size_of_df(df):
+    return df.memory_usage().sum()
+
+# COO matrix
+def get_size_of_coo(coo):
+    return coo.data.nbytes + coo.row.nbytes + coo.col.nbytes
+</code></pre>
+
+<h5 id="dataframe">DataFrameの疎行列・密行列</h5>
+<p>DataFrameで作成した疎行列と密行列のメモリ使用量を比較すると，両者のメモリ使用量は同じです．<br>
+通常のDataFrameで扱うとどちらもメモリ使用量が同じになるので非効率です．</p>
+<pre><code class="language-python">
+print(f'DataFrame 疎行列：{get_size_of_df(sdf)}')
+print(f'DataFrame 密行列：{get_size_of_df(ddf)}')
+</code></pre>
+<pre style="margin-bottom: 90px;">
+DataFrame 疎行列：24128
+DataFrame 密行列：24128
+</pre>
+
+<h5 id="scipysparse">scipy.sparseの疎行列・密行列</h5>
+<p>続いて<code>scipy.sparse</code>に変換した疎行列と密行列のメモリ使用量を比較します．</p>
+<pre><code class="language-python">
+print(f'scipy.sparse 疎行列：{get_size_of_coo(sdf_sp)}')
+print(f'scipy.sparse 密行列：{get_size_of_coo(ddf_sp)}')
+</code></pre>
+<pre style="margin-bottom: 50px;">
+scipy.sparse 疎行列：4768
+scipy.sparse 密行列：43232
+</pre>
+
+<p>疎行列についてはメモリ使用量が非常に少なくなっています．<br>
+必要なデータだけを持っておくことでうまくメモリ使用量を節約できていますね．</p>
+<p>一方で密行列を<code>scipy.sparse</code>に変換すると逆にメモリの使用量が増加してしまいました．<br>
+密行列を<code>scipy.sparse</code>に変換するメリットはないようです．</p>
+<h5 id="pandas_1">pandasの疎行列・密行列</h5>
+<p>最後にpandasのsparse型を見ていきましょう．</p>
+<pre><code class="language-python">
+print(f'pandas sparse 疎行列：{get_size_of_df(pd_sdf)}')
+print(f'pandas sparse 密行列：{get_size_of_df(pd_ddf)}')
+</code></pre>
+<pre style="margin-bottom: 50px;">
+pandas sparse 疎行列：3704
+pandas sparse 密行列：32552
+</pre>
+
+<p>pandasのsparse型も<code>scipy.sparse</code>と同じ傾向<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>になりました．</p>
+<p>また<code>scipy.sparse</code>とpandasのsparse型を見るとメモリ使用量に関してはpandas sparseの方がより少ないことがわかります．</p>
+<h2 id="_3">まとめ</h2>
+<p>疎行列と密行列を合わせて扱う際にはデータ型やsparse matrix化の方法を検討するとメモリ効率をよくすることができますね．</p>
+<ul>
+<li>疎行列はSciPyやpandasなどで効率的に扱うことができる．</li>
+<li>密行列をsparse型に変換するとメモリ使用量が増加する．</li>
+</ul>
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
+<p>SciPyとpandasの疎行列・密行列の演算速度について検討した記事は以下です．
+<ul style="margin: -5px 0px 0px 15px;">
+    <li>
+    <a href="https://www.revalab.net/scipy-pdsparse-cal-memory/" rel="noopener noreferrer" target="_blank">Python, pandas, SciPyで疎行列の演算速度・メモリ使用量を比較</a>
+    </li>
+</ul></p>
+</div>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>密行列は<code>0</code>と<code>1</code>だけで構成されるものではないと言う意味です．なお，疎行列は通常<code>0</code>か<code>1</code>のみです．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>以下コード<code>print(type(pd_sdf), '\n')</code>の<code>'\n'</code>は見栄えのために改行を入れているだけです．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>疎行列をsparse型に変換するとメモリ使用量が非常に少なくなり，密行列をsparse型に変換すると逆にメモリ使用量が増加しています．&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/pandas.html"><div class="fa fa-lg fa-tag"></div> pandas</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/scipy.html"><div class="fa fa-lg fa-tag"></div> SciPy</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

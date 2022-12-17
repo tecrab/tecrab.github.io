@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【Mac/Linux】zsh dateコマンドで日付操作・フォーマットをする方法 - てっくらぶ</title>
+    <meta name="description" content="zshにおけるdateコマンドの使い方です．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Mac-Linux</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Mac/Linux】zsh dateコマンドで日付操作・フォーマットをする方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/mac-linux.html">Mac-Linux</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/zsh.html">zsh</a> <a href="https://www.tecrab.com/tag/shellscript.html">shellscript</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2022-07-18
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-08-07
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>zshにおける<code>date</code>コマンドについて，簡単にまとめています．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">日付の取得</a><ul>
+<li><a href="#_2">現在時刻</a></li>
+<li><a href="#_3">出力されるフォーマットを変更</a></li>
+<li><a href="#_4">月・日・曜日・時刻の取得</a></li>
+</ul>
+</li>
+<li><a href="#_10">任意の日時を指定してフォーマット</a></li>
+<li><a href="#_11">過去の日時を指定</a><ul>
+<li><a href="#_12">指定できる期間の種類</a></li>
+<li><a href="#xxx">X日・Xヶ月・X年前</a></li>
+<li><a href="#xx">X年X日前の指定</a></li>
+</ul>
+</li>
+<li><a href="#_13">未来の日時を指定</a></li>
+<li><a href="#_14">未来の任意の日時を指定</a></li>
+<li><a href="#_15">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">日付の取得</h2>
+<h3 id="_2">現在時刻</h3>
+<p><code>date</code>コマンドをそのまま使うと現在時刻が出力されます．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+2022年 7月19日 火曜日 19時25分11秒 JST
+</pre>
+
+<h3 id="_3">出力されるフォーマットを変更</h3>
+<p><code>date</code>コマンドに以下のようなオプションをつけると出力フォーマットを変更できます．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%Y-%m-%d
+</code>
+</pre>
+<pre style="margin-bottom: 40px;">
+2022-07-19
+</pre>
+
+<p><code>+</code>以降の部分を変更すれば様々なフォーマットで出力することができます．<br>
+最後のコマンドは秒単位まで表示しています．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%Y/%m/%d
+date +%y%m%d
+date +%Y%m%d%H%M%S
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+2022/07/19
+220719
+20220719193756
+</pre>
+
+<h3 id="_4">月・日・曜日・時刻の取得</h3>
+<h5 id="_5">月だけを取得</h5>
+<p>月だけを取得するには以下のようなコマンドです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%b
+date +%B
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+7
+7月
+</pre>
+
+<h5 id="_6">日付だけを取得</h5>
+<p>日付だけを取得するには以下のようなコマンドです．<br>
+なお，<code>+%d</code>を<code>+%-d</code>に変更すると，日付が一桁の場合に前に<code>0</code>がつかなくなります.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%d
+date +%d日
+</code>
+</pre>
+<pre style="margin-bottom: 50px;">
+21
+21日
+</pre>
+
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p><code>21日</code>のように出力するには<code>+%d</code>に「日」をくっつける方法しかなさそうです．<br>
+もしコマンドで指定できる方法をご存知の方がいればお知らせください...</p>
+</div>
+<h5 id="_7">曜日だけを取得</h5>
+<p>曜日名だけを取得するには以下のようなコマンドです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%a
+date +%A
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+水
+水曜日
+</pre>
+<h5 id="_8">曜日を数値で取得</h5>
+<ul>
+<li><code>+%u</code>: 曜日を１〜７で表し，１が月曜日です．</li>
+<li><code>+%w</code>: 曜日を０〜６で表し，０が日曜日です．</li>
+</ul>
+<p>以下の例はコマンドの実行日が水曜日なので両方３になっています．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%u
+date +%w
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+3
+3
+</pre>
+
+<h5 id="_9">時刻だけを取得</h5>
+<p>時刻だけを取得するには以下のようなコマンドです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date +%H:%M:%S
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+14:42:54
+</pre>
+
+<h2 id="_10">任意の日時を指定してフォーマット</h2>
+<p>現在時刻ではなく任意の日時を指定するには以下のコマンドです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date -j -f %Y-%m-%d 2022-01-01 +%Y%m%d
+</code>
+</pre>
+<pre style="margin-bottom: 40px;">
+20220101
+</pre>
+
+<p><code>-j</code>オプションで任意の日時を受け取るようにし，<code>-f</code>オプションで日時のフォーマットを指定しています．
+<code>%Y-%m-%d</code>は入力日時のフォーマット<code>2022-01-01</code>は入力日時<code>+%Y%m%d</code>は出力フォーマットです．</p>
+<p>シェルスクリプトで日時引数をフォーマット化，変数に代入する際などに使えます．</p>
+<details class="accordion-block">
+<summary>具体例はこちらをクリックしてください</summary>
+<div class="accordion-summary">
+<p>内容が以下のような<code>date_sample.sh</code>を作成します．</p>
+<pre style="margin: 20px 0px;"><code class="language-bash">
+#!/bin/zsh
+
+f_date=`date -j -f %Y-%m-%d "$1" +%Y%m%d`
+echo フォーマット前：$1
+echo フォーマット後：$f_date
+</code></pre>
+<p>上記のシェルスクリプトについて，日時引数をつけて実行すると以下のようになります．</p>
+<pre class="command-line" data-prompt="%" style="margin-top: 20px;">
+<code class="language-bash">
+./date_sample.sh 2022-01-01
+</code></pre>
+<pre style="margin-bottom: 20px;">
+フォーマット前：2022-01-01
+フォーマット後：20220101
+</pre>
+<p>引数に取った日時をシェルスクリプト内の<code>date</code>コマンドに渡してフォーマットを変換，変数に代入しています．</p>
+</div>
+</details>
+<h2 id="_11">過去の日時を指定</h2>
+<p>日付の指定をする際は<code>-v</code>オプションを使用して操作します．<br>
+<code>bash</code>のコマンドとはかなり異なるため，注意が必要です．</p>
+<h3 id="_12">指定できる期間の種類</h3>
+<p>指定可能な種類は以下のとおりです．<br>
+現在日時から「２週間前」「５時間前」などの指定ができます．</p>
+<ul>
+<li>y 年</li>
+<li>m 月</li>
+<li>w 週</li>
+<li>d 日</li>
+<li>H 時間</li>
+<li>M 分</li>
+<li>S 秒</li>
+</ul>
+<h3 id="xxx">X日・Xヶ月・X年前</h3>
+<p><code>-v</code>オプションのあとに期間を指定します．<br>
+以下のようにすれば（現在日時から）<code>-7days</code>となります.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date -v -7d
+date -v -7d +%Y-%m-%d
+</code>
+</pre>
+<pre style="margin-bottom: 40px;">
+2022年 7月13日 水曜日 23時06分53秒 JST
+2022-07-13
+</pre>
+
+<p>「Xヶ月・X年前」を指定するには以下のとおりです．<br>
+それぞれ上から「６ヶ月前・３年前」となっています．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date -v -6m
+date -v -3y
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+2022年 1月20日 木曜日 23時11分47秒 JST
+2019年 7月20日 土曜日 23時11分59秒 JST
+</pre>
+
+<h3 id="xx">X年X日前の指定</h3>
+<p>上記で確認した期間指定は組み合わせることも可能です．<br>
+以下は「１年と３日前」という指定です．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date -v -1y -v -3d
+</code>
+</pre>
+<pre style="margin-bottom: 50px;">
+2021年 7月19日 月曜日 23時16分28秒 JST
+</pre>
+
+<div class="admonition warning-box">
+<p class="admonition-title">注意</p>
+<p>複数の単位で期間を指定する場合はそれぞれに<code>-v</code>オプションが必要です．</p>
+</div>
+<h2 id="_13">未来の日時を指定</h2>
+<p>過去の日時を指定する場合と同様に<code>-v</code>オプションのあとに期間を指定します．<br>
+以下のようにすれば（現在日時から）<code>+5days</code>となります.</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date -v +5d
+</code>
+</pre>
+<pre style="margin-bottom: 50px;">
+2022年 7月25日 月曜日 23時24分18秒 JST
+</pre>
+
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>その他の日時操作も過去の日時指定で使用した<code>-</code>を<code>+</code>に変えれば未来の日時指定になります．</p>
+</div>
+<h2 id="_14">未来の任意の日時を指定</h2>
+<p>あまり使い道がわかりません<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>が，以下のような指定もできます．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+date -v 2045y -v 7m -v 20d
+</code>
+</pre>
+<pre style="margin-bottom: 40px;">
+2045年 7月20日 木曜日 23時40分04秒 JST
+</pre>
+<p>未来の日時を<code>-v</code>オプションを使って指定しています．<br>
+なお，<code>date -v 2045y -v julm -v 20d</code>でも同様の結果が得られます.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></p>
+<h2 id="_15">ひとこと</h2>
+<p>シェルスクリプトで日付の操作をすることが多いので，他にも気になった使い方などがあれば追記したいと思います．</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>例えば現在日時が2022/07/01の場合，<code>date +%d</code>を実行すると<code>01</code>と出力されます．一方で<code>date +%-d</code>を実行すると<code>1</code>となります．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>以下のコマンドを実行した日が2022/7/20なので，7日前の2022/7/13が出力されています．
+なお，２つ目のコマンドは出力フォーマット指定を組み合わせたものです．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>未来の日付の曜日を知りたい(<code>date -v 2045y -v 7m -v 20d +%a</code>)，未来の基準日を指定するなど...？&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>月の指定をJulyの略記に置き換えています(<u>Jul</u>y + <u>m</u>onth)．通常は数値で指定する方がわかりやすいと思いますが...&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/mac-linux.html"><div class="fa fa-lg fa-folder-open"></div> Mac-Linux</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/zsh.html"><div class="fa fa-lg fa-tag"></div> zsh</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/shellscript.html"><div class="fa fa-lg fa-tag"></div> shellscript</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

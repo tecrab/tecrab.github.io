@@ -1,0 +1,4239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Python</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/python.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-11-29T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>DataFrameで行・列（インデックス・カラム）をまとめて作成する方法</title><link href="https://www.tecrab.com/articles/dataframe-create-empty-col.html" rel="alternate"></link><published>2022-11-29T00:00:00+09:00</published><updated>2022-11-29T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-11-29:/articles/dataframe-create-empty-col.html</id><summary type="html">&lt;p&gt;pandas DataFrameで空の行・列を複数一気に追加する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではDataFrameの操作として，以下の内容を解説しています．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;既存のDataFrameに空の行・列をまとめて追加する&lt;/li&gt;
+&lt;li&gt;行・列の順番を入れ替える&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.reindex.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.reindex&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;空の行（インデックス）を追加&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;行（インデックス）を並び替える&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;空の列（カラム）を追加&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;列（カラム）を並び替える&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;新しく追加する行・列のデフォルト要素を変更したい&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_7"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+df = pd.DataFrame(range(3), columns=['col_1'])
+df
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe end" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="_2"&gt;空の行（インデックス）を追加&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;pandas.DataFrame&lt;/code&gt;のメソッド&lt;code&gt;reindex&lt;/code&gt;を使用して以下のように作成できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+new_index = [0, 1, 2, 3]
+df1 = df.reindex(index=new_index)
+df1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;reindex&lt;/code&gt;のパラメータ&lt;code&gt;index&lt;/code&gt;を利用しています．&lt;br&gt;
+「既存のDataFrameのインデックス」＋「追加したいインデックス」をリストで指定することで既存のデータはそのまま，追加したインデックスには&lt;code&gt;np.nan&lt;/code&gt;が入ります．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;col_1&lt;/code&gt;列のデータ型が&lt;code&gt;int64&lt;/code&gt;から&lt;code&gt;float64&lt;/code&gt;に変わっていることに注意してください.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;
+これは新しく追加したインデックスの要素が&lt;code&gt;np.nan&lt;/code&gt;のため生じています．&lt;br&gt;
+（追加インデックスの要素を指定する方法は&lt;a href="#_5"&gt;後述&lt;/a&gt;）&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin: -50px 0px;"&gt;&lt;/div&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;reindex&lt;/code&gt;ではパラメータ&lt;code&gt;index&lt;/code&gt;に指定したカラムのみが戻ってきます．&lt;br&gt;
+そのため既存のDataFrameにあるインデックスを指定しなかった場合は以下のようになります．
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df.reindex(index=[0, 3])
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe in-box" border="1"&gt;
+&lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+    &lt;th&gt;&lt;/th&gt;
+    &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+    &lt;tr&gt;
+    &lt;th&gt;0&lt;/th&gt;
+    &lt;td&gt;0.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;th&gt;3&lt;/th&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;&lt;/p&gt;
+&lt;p&gt;既存のインデックス名を間違えるとインデックスが丸ごと消えるので注意しましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_3"&gt;行（インデックス）を並び替える&lt;/h3&gt;
+&lt;p&gt;インデックスを並び替えるには以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+new_index2 = [3, 2, 1, 0]
+df1_r = df.reindex(index=new_index2)
+df1_r
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;パラメータ&lt;code&gt;index&lt;/code&gt;で指定するリストを任意の並びに変更すればその順序でインデックスが並び替えられます．&lt;/p&gt;
+&lt;h3 id="_4"&gt;空の列（カラム）を追加&lt;/h3&gt;
+&lt;p&gt;カラムを新しく追加する際もインデックス追加の場合と同様に&lt;code&gt;pandas.DataFrame&lt;/code&gt;のメソッド&lt;code&gt;reindex&lt;/code&gt;を使用して以下のように作成できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+col = ['col_1', 'col_2', 'col_3']
+df2 = df.reindex(columns=col)
+df2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+      &lt;th&gt;col_3&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;reindex&lt;/code&gt;のパラメータ&lt;code&gt;columns&lt;/code&gt;を利用しています．&lt;br&gt;
+「既存のDataFrameのカラム」＋「追加したいカラム」をリストで指定することで既存のデータはそのまま，追加したカラムには&lt;code&gt;np.nan&lt;/code&gt;が入ります．&lt;/p&gt;
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;パラメータ&lt;code&gt;columns&lt;/code&gt;に関しても指定したカラムのみが戻ってきます．&lt;br&gt;
+そのため既存のDataFrameにあるカラムを指定しなかった場合は以下のようになります．
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df.reindex(columns=['col_2', 'col_3'])
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe in-box" border="1"&gt;
+&lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+    &lt;th&gt;&lt;/th&gt;
+    &lt;th&gt;col_2&lt;/th&gt;
+    &lt;th&gt;col_3&lt;/th&gt;
+    &lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+    &lt;tr&gt;
+    &lt;th&gt;0&lt;/th&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;th&gt;1&lt;/th&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;th&gt;2&lt;/th&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;&lt;/p&gt;
+&lt;p&gt;カラム名の指定を間違えるとカラムが丸ごと消えるので注意しましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_5"&gt;列（カラム）を並び替える&lt;/h3&gt;
+&lt;p&gt;カラムの並び替えもインデックスの場合と同様に以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+col2 = ['col_3', 'col_1', 'col_2']
+df2_r = df.reindex(columns=col2)
+df2_r
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_3&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;パラメータ&lt;code&gt;columns&lt;/code&gt;で指定するリストを任意の並びに変更すればその順序でカラムが並び替えられます．&lt;/p&gt;
+&lt;h3 id="_6"&gt;新しく追加する行・列のデフォルト要素を変更したい&lt;/h3&gt;
+&lt;p&gt;新しくインデックス・カラムを追加する場合，その要素は&lt;code&gt;np.nan&lt;/code&gt;がデフォルトです．&lt;br&gt;
+これを変更するにはパラメータ&lt;code&gt;fill_value&lt;/code&gt;を指定します.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;
+以下の例では文字列「欠損値」を入れています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df3 = df.reindex(columns=col, fill_value='欠損値')
+df3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe end" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+      &lt;th&gt;col_3&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;欠損値&lt;/td&gt;
+      &lt;td&gt;欠損値&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;欠損値&lt;/td&gt;
+      &lt;td&gt;欠損値&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;欠損値&lt;/td&gt;
+      &lt;td&gt;欠損値&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id="_7"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;必要に駆られてDataFrameにまとめて行・列を追加する際に役立つかと思います．&lt;br&gt;
+1列だけ追加などであれば&lt;code&gt;df['列名'] = 100&lt;/code&gt;の方がいいですね．&lt;br&gt;
+なお，DataFrameでの操作は基本的に遅いので，先にNumPyで行列を作成して一気にDataFrameへ変換することが普通です．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;print(f'{df.dtypes[0]} -&amp;gt; {df1.dtypes[0]}')&lt;/code&gt; &amp;gt;&amp;gt;&amp;gt; &lt;code&gt;int64 -&amp;gt; float64&lt;/code&gt;&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;インデックス・カラムともに同じです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【M2 Mac】Pyenv/PoetryによるPython環境構築</title><link href="https://www.tecrab.com/articles/python-pyenv-poetry.html" rel="alternate"></link><published>2022-07-31T00:00:00+09:00</published><updated>2022-07-31T00:00:00+09:00</updated><author><name>kani</name></author><id>tag:www.tecrab.com,2022-07-31:/articles/python-pyenv-poetry.html</id><summary type="html">&lt;p&gt;M2 MacにPoetryでPythonの環境構築する手順です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;新しく購入したまっさらなM2 MacにPython環境を構築した際の手順です．&lt;br&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;PyenvとPoetryのインストール&lt;/li&gt;
+&lt;li&gt;PoetryでのPython環境構築&lt;/li&gt;
+&lt;li&gt;VSCode連携&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;仮想環境を使ってシンプルに環境を作ることができます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#pyenv"&gt;Pyenvのインストール&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;前提条件&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#poetry"&gt;Poetryのインストール&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;仮想環境の作成&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#python"&gt;仮想環境内におけるPythonの使い方&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#python_1"&gt;一時的に仮想環境を使ってPythonを動かす&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;持続的に仮想環境を動かす&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#vscode"&gt;VSCodeとの連携&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#jupyter"&gt;Jupyterを使用する場合&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="pyenv"&gt;Pyenvのインストール&lt;/h2&gt;
+&lt;p&gt;まずはPyenvのインストールを行います．&lt;/p&gt;
+&lt;h4 id="_1"&gt;前提条件&lt;/h4&gt;
+&lt;p&gt;Macのパッケージマネジャーである&lt;code&gt;Homebrew&lt;/code&gt;を使うため，インストールしていない場合は先に&lt;code&gt;Homebrew&lt;/code&gt;をインストールしましょう．&lt;/p&gt;
+&lt;p&gt;以下のサイトが大変わかりやすいです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://original-game.com/how-to-install-homebrew/" rel="noopener noreferrer" target="_blank"&gt;Homebrewのインストール方法を分かりやすく解説（M1 Macも対応）&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;h5 id="1-pyenv"&gt;① Pyenvのインストール&lt;/h5&gt;
+&lt;p&gt;以下のコマンドをターミナルに入力してPyenvをインストールします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+brew install pyenv
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h5 id="2-path"&gt;② pathの設定&lt;/h5&gt;
+&lt;p&gt;Pyenvにpathを通すため，以下のコマンドを実行します．&lt;br&gt;
+なお，最近のMacであればシェルが&lt;code&gt;zsh&lt;/code&gt;なので&lt;code&gt;zsh&lt;/code&gt;用のコマンドを記載しています.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+echo 'export PYENV_ROOT="$HOME/.pyenv"' &gt;&gt; ~/.zshrc
+echo 'command -v pyenv &gt;/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' &gt;&gt; ~/.zshrc
+echo 'eval "$(pyenv init -)"' &gt;&gt; ~/.zshrc
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;上記で設定した内容を反映させるために以下のコマンドを実行します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+source ~/.zshrc
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Pyenvのインストールを確認します．&lt;br&gt;
+以下のようにPyenvのバージョンが表示されればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+pyenv --version
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+pyenv 2.3.2
+&lt;/pre&gt;
+
+&lt;h5 id="3-python"&gt;③ Pythonを任意のバージョンでインストール&lt;/h5&gt;
+&lt;p&gt;続いてPyenvを使用してPythonをインストールしていきます．&lt;br&gt;
+今回は例としてPythonのバージョン&lt;code&gt;3.10.5&lt;/code&gt;をインストールします．&lt;br&gt;
+インストールするコマンドは以下のとおりです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+pyenv install 3.10.5
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;インストール可能なPythonのバージョンは以下のコマンドで確認できます．
+&lt;pre class="command-line" data-prompt="%"&gt;&lt;code class="language-bash"&gt;
+pyenv install -l
+&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="4-python"&gt;④ 使用するPythonの指定&lt;/h5&gt;
+&lt;p&gt;先ほどインストールしたPythonのバージョンをグローバルで使用するために以下のコマンドを実行します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+pyenv global 3.10.5
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Pythonのpathを以下のコマンドで確認します．&lt;br&gt;
+pathが&lt;code&gt;.pyenv&lt;/code&gt;以下のPythonになっていればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+which python
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+/Users/xxx/.pyenv/shims/python
+&lt;/pre&gt;
+
+&lt;h2 id="poetry"&gt;Poetryのインストール&lt;/h2&gt;
+&lt;p&gt;ここからは&lt;a href="https://python-poetry.org/" rel="noopener noreferrer" target="_blank"&gt;Poetry&lt;/a&gt;をインストールしていきましょう．
+&lt;br&gt;&lt;/p&gt;
+&lt;h5 id="1-poetry"&gt;① Poetryのインストール&lt;/h5&gt;
+&lt;p&gt;Poetryを以下コマンドでインストール．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Poetryのインストールを確認します．&lt;br&gt;
+Poetryのバージョンが表示されればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+poetry --version
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+Poetry version 1.1.14
+&lt;/pre&gt;
+
+&lt;h2 id="_2"&gt;仮想環境の作成&lt;/h2&gt;
+&lt;p&gt;本記事ではMac全体で動かす&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;ための仮想環境を作成していきます．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;Poetryでは仮想環境のことをプロジェクトと呼んでいますが，本記事では仮想環境で統一しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="1"&gt;① 仮想環境を作成する場所を決める&lt;/h5&gt;
+&lt;p&gt;場所に決まりはないので，管理しやすい場所に作成します．&lt;br&gt;
+本記事ではホームディレクトリに仮想環境用のディレクトリを作成します．
+以下のコマンドでホームディレクトリに&lt;code&gt;global_env&lt;/code&gt;というディレクトリを作成し，そのディレクトリに移動できます.&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 30px;"&gt;
+&lt;code class="language-bash"&gt;
+cd &amp;&amp; mkdir global_env &amp;&amp; cd global_env
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;コマンドの内容が知りたい方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;上記のコマンドは以下の一連の操作を行なっています．
+ &lt;/p&gt;
+&lt;ol style="margin-top: 20px;"&gt;
+     &lt;li&gt;&lt;code&gt;cd&lt;/code&gt;コマンドでホームディレクトリに移動&lt;/li&gt;
+     &lt;li&gt;&lt;code&gt;mkdir global_env&lt;/code&gt;で「global_env」という名前のディレクトリ作成&lt;/li&gt;
+     &lt;li&gt;&lt;code&gt;cd global_env&lt;/code&gt;でglobal_envディレクトリ内に移動&lt;/li&gt;
+ &lt;/ol&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;p&gt;上記で作成したディレクトリの下に仮想環境の実体となるディレクトリ&lt;sup id="fnref:4"&gt;&lt;a class="footnote-ref" href="#fn:4"&gt;4&lt;/a&gt;&lt;/sup&gt;を配置するため，以下のコマンドで設定を変更します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+poetry config virtualenvs.in-project true 
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;設定の反映を確認します．&lt;br&gt;
+出力結果の下から２番目&lt;code&gt;virtualenvs.in-project&lt;/code&gt;が&lt;code&gt;true&lt;/code&gt;になっていればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+poetry config --list
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+cache-dir = "/Users/xxx/Library/Caches/pypoetry"
+experimental.new-installer = true
+installer.parallel = true
+virtualenvs.create = true
+&lt;span style="color:red"&gt;virtualenvs.in-project = true&lt;/span&gt;
+virtualenvs.path = "{cache-dir}/virtualenvs"  # /Users/xxx/Library/Caches/pypoetry/virtualenvs
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;この設定は一度すればOKです．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="2"&gt;② 仮想環境の作成&lt;/h5&gt;
+&lt;p&gt;Poetryを使って仮想環境を作成していきましょう．&lt;br&gt;
+まずは以下のコマンドで&lt;code&gt;global_env_pj&lt;/code&gt;という名前の仮想環境を作る準備を行います．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+poetry new global_env_pj
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+Created package global_env_pj in global_env_pj
+&lt;/pre&gt;
+
+&lt;p&gt;上記のコマンドで&lt;code&gt;global_env_pj&lt;/code&gt;というディレクトリが作成され，その配下にファイルなどが作成されます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+.
+└── global_env_pj
+    ├── README.rst
+    ├── global_env_pj
+    ├── pyproject.toml
+    └── tests
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;cd&lt;/code&gt;コマンドで新しく作成された&lt;code&gt;global_env_pj&lt;/code&gt;ディレクトリに移動しておきます．&lt;br&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+cd global_env_pj
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;続いて，以下のコマンドを実行して仮想環境を使用できるようにします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+poetry install
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;上記のコマンドで&lt;code&gt;.venv&lt;/code&gt;と&lt;code&gt;poetry.lock&lt;/code&gt;が追加で作成されます．&lt;br&gt;
+これで仮想環境を構築することができました．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+.
+└── global_env_pj
+    ├── .venv
+    ├── README.rst
+    ├── global_env_pj
+    ├── poetry.lock
+    ├── pyproject.toml
+    └── tests
+&lt;/pre&gt;
+
+&lt;h5 id="3"&gt;③ 仮想環境内へのライブラリインストール&lt;/h5&gt;
+&lt;p&gt;上記の手順で仮想環境を構築した後は仮想環境内に必要なPythonのライブラリをインストールしていきます．&lt;br&gt;
+&lt;code&gt;poetry.lock&lt;/code&gt;や&lt;code&gt;pyproject.toml&lt;/code&gt;がある階層&lt;sup id="fnref:5"&gt;&lt;a class="footnote-ref" href="#fn:5"&gt;5&lt;/a&gt;&lt;/sup&gt;で以下のようなコマンドを実行します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;poetry add [ライブラリの名称]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Pythonのライブラリであるpandasをインストールする場合は以下のコマンドです．
+実行すると関連するライブラリなども合わせてインストールされます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+poetry add pandas
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;インストールされたライブラリを確認したい場合は以下のコマンドです．
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+poetry show
+&lt;/code&gt;
+&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="python"&gt;仮想環境内におけるPythonの使い方&lt;/h2&gt;
+&lt;p&gt;仮想環境内で構築したPythonを使うには，一時的か持続的かの２パターンがあります．&lt;br&gt;
+それぞれ確認していきましょう．&lt;/p&gt;
+&lt;h3 id="python_1"&gt;一時的に仮想環境を使ってPythonを動かす&lt;/h3&gt;
+&lt;p&gt;一時的に仮想環境内のPythonを使ってPythonスクリプトを動かす際などに使用します．&lt;br&gt;
+&lt;code&gt;poetry.lock&lt;/code&gt;や&lt;code&gt;pyproject.toml&lt;/code&gt;がある階層で以下のようなコマンドを実行します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;poetry run python [pythonスクリプトのpath]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以下はカレントディレクトリにある&lt;code&gt;hoge.py&lt;/code&gt;を仮装環境内のPythonで動かすコマンドです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+poetry run python hoge.py
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+      単価   数量     総額
+いか   100  300  30000
+えび   300   50  15000
+かに  1000   20  20000
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;hoge.py&lt;/code&gt;の中身は以下のとおりです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+df = pd.DataFrame([[100, 300, 30000], [300, 50, 15000], [1000, 20, 20000]],
+                  index = ['いか', 'えび', 'かに'], 
+                  columns = ['単価', '数量', '総額'])
+print(df)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="admonition danger-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;上記のコマンドを動かすには&lt;code&gt;poetry run python&lt;/code&gt;を実行する仮想環境にpandasがインストールされていることが必要です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;仮想環境内のPythonを使ってスクリプトを動かしたい場合は毎回&lt;code&gt;poetry run python&lt;/code&gt;コマンドを使う必要があります．&lt;br&gt;
+仮想環境を持続的に動かしてPythonを実行したい場合は次項を参照してください．&lt;/p&gt;
+&lt;h3 id="_3"&gt;持続的に仮想環境を動かす&lt;/h3&gt;
+&lt;h5 id="on"&gt;仮想環境の持続化ON&lt;/h5&gt;
+&lt;p&gt;仮想環境を持続的に使う&lt;sup id="fnref:6"&gt;&lt;a class="footnote-ref" href="#fn:6"&gt;6&lt;/a&gt;&lt;/sup&gt;には&lt;code&gt;poetry.lock&lt;/code&gt;や&lt;code&gt;pyproject.toml&lt;/code&gt;がある階層で以下のようなコマンドを実行します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+poetry shell
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;上記のコマンドを実行すると，プロンプトの行頭に&lt;code&gt;(.venv)&lt;/code&gt;という文字が追加されます．&lt;br&gt;
+この状態は仮想環境を稼働させた状態であるため，常に仮想環境を使ってスクリプト等を実行できます．&lt;br&gt;
+そのため，先ほどは&lt;code&gt;poetry run python&lt;/code&gt;で仮想環境内のPythonを実行をしましたが，&lt;code&gt;(.venv)&lt;/code&gt;となっていれば以下のコマンドで仮想環境内でのPython実行が可能です．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="(.venv) %" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+python hoge.py
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;なお，ディレクトリを移動してもこの状態は持続し，Python以外のコマンドも通常どおり使うことができます．
+&lt;br&gt;&lt;/p&gt;
+&lt;h5 id="off"&gt;仮想環境の持続化OFF&lt;/h5&gt;
+&lt;p&gt;仮想環境の持続化を終了する場合は以下のコマンドです．&lt;br&gt;
+コマンドを実行すると行頭についていた&lt;code&gt;(.venv)&lt;/code&gt;がなくなります．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="(.venv) %" style="margin-bottom: 50px;"&gt;
+&lt;code class="language-bash"&gt;
+exit
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;再度仮想環境を持続化させるには&lt;/p&gt;
+&lt;p&gt;使いたい仮想環境のディレクトリ（&lt;code&gt;poetry.lock&lt;/code&gt;や&lt;code&gt;pyproject.toml&lt;/code&gt;がある階層）に戻って&lt;code&gt;poetry shell&lt;/code&gt;を実行しましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="vscode"&gt;VSCodeとの連携&lt;/h2&gt;
+&lt;p&gt;仮想環境を使ってPythonを動かす設定をVSCodeに適用します．&lt;br&gt;
+この設定を一度行えば，今後は仮想環境内のPythonをVSCodeで実行することができます．&lt;/p&gt;
+&lt;h5 id="vscode_1"&gt;VSCodeのウィンドウの右下にあるインタープリタ枠をクリック&lt;/h5&gt;
+&lt;p&gt;適当なPythonファイル&lt;sup id="fnref:7"&gt;&lt;a class="footnote-ref" href="#fn:7"&gt;7&lt;/a&gt;&lt;/sup&gt;をVSCodeで開き，VSCodeのウィンドウの右下にあるインタープリタ枠をクリックします．&lt;br&gt;
+画像にある文字と実際の表記が多少異なっていてもOKです．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="01" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_01.png"&gt;&lt;/p&gt;
+&lt;h5 id="pythonpath"&gt;Pythonを動かす際に使いたい環境のpathを選択&lt;/h5&gt;
+&lt;p&gt;ウィンドウ上部にインタープリタを選択できるポップアップが出てくるので，使いたいPoetry環境をクリック．&lt;br&gt;
+&lt;img alt="02" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_02.png"&gt;&lt;/p&gt;
+&lt;p&gt;選択後，ウィンドウ右下のインタープリタ枠の表示が&lt;code&gt;('.venv': poetry)&lt;/code&gt;のようになっていればOKです．&lt;br&gt;
+&lt;img alt="03" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_03.png"&gt;&lt;/p&gt;
+&lt;h5 id="_4"&gt;動作確認&lt;/h5&gt;
+&lt;p&gt;ウィンドウ右上の実行ボタンを押して確認しましょう．&lt;br&gt;
+&lt;img alt="04" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_04.png"&gt;&lt;/p&gt;
+&lt;p&gt;自動でターミナルが起動して仮想環境内でPythonを実行してくれます．&lt;br&gt;
+意図した実行結果であればOKです．&lt;/p&gt;
+&lt;h3 id="jupyter"&gt;Jupyterを使用する場合&lt;/h3&gt;
+&lt;p&gt;PythonをJupyterで動かしたい場合は以下の条件を満たせば可能です．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;VSCodeのJupyter拡張機能をインストール&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;poetry add jupyter&lt;/code&gt; で仮想環境にJupyterをインストール&lt;/li&gt;
+&lt;li&gt;Jupyterがインストールされている仮想環境をVScode側で指定&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;Pythonの環境構築は色々ありますが，仮想環境を使うとクリーンかつシンプルなのでおすすめです．&lt;/p&gt;
+&lt;p&gt;余談ですが，久しぶりにMacを新調しました．&lt;br&gt;
+M2 Macは円安の影響もあって高値ですが，動作がすごく軽快で素晴らしいです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;ターミナルで&lt;code&gt;echo $SHELL&lt;/code&gt;というコマンドを実行するとシェルが確認できます(&lt;code&gt;/bin/zsh&lt;/code&gt;が表示されたら&lt;code&gt;zsh&lt;/code&gt;です).&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;本来は開発/プロジェクト単位で仮想環境を作ったりしますが，今回は私用のMacで動作するようなPython環境を作ります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;ディレクトリの名前を変更するには&lt;code&gt;mkdir global_env&lt;/code&gt;と&lt;code&gt;cd global_env&lt;/code&gt;の「global_env」部分を好きな名称に変更してください．なお&lt;code&gt;mkdir&lt;/code&gt;や&lt;code&gt;cd&lt;/code&gt;の後には半角スペースがあるので，誤って消さないようにご注意ください．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:4"&gt;
+&lt;p&gt;仮想環境の実体は&lt;code&gt;.venv&lt;/code&gt;というディレクトリです．デフォルトでは&lt;code&gt;~/Library/Caches/pypoetry/virtualenvs/&lt;/code&gt;に作成されますが，仮想環境のディレクトリ直下にある方が管理しやすいので設定を変更しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:5"&gt;
+&lt;p&gt;本ブログの手順に合わせて仮想環境を作成している場合，&lt;code&gt;pwd&lt;/code&gt;コマンドを実行して表示される階層が&lt;code&gt;/Users/xxx/global_env/global_env_pj&lt;/code&gt;となっている場所です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:6"&gt;
+&lt;p&gt;持続的に使うとは，明示的に止めるまで仮想環境下のPythonを利用することを指しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:7"&gt;
+&lt;p&gt;拡張子が&lt;code&gt;.py&lt;/code&gt;のファイルです．なお，可能であればPoetryでインストールしたライブラリを使うようなコードを書いておきましょう（この後の動作確認でエラーなく動くことが確認できればPoetryを使ってPythonを動かしていることがわかるためです）&amp;#160;&lt;a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="環境構築"></category></entry><entry><title>【Python】文字列を「〜で始まる/終わる/〜が含まれる」で抽出する方法</title><link href="https://www.tecrab.com/articles/python-starts-ends-with-in.html" rel="alternate"></link><published>2022-05-20T00:00:00+09:00</published><updated>2022-10-08T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-05-20:/articles/python-starts-ends-with-in.html</id><summary type="html">&lt;p&gt;文字列を条件別に抽出する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では文字列の取得方法に関して以下の種類を見ていきます．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+ &lt;li&gt;〜で始まる文字列&lt;/li&gt;
+ &lt;li&gt;〜で終わる文字列&lt;/li&gt;
+ &lt;li&gt;〜という文字が含まれる文字列&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;〜で始まる文字列&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;〜で終わる文字列&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;〜という文字が含まれる文字列&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#in"&gt;in演算子の判定に関して&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;〜で始まる文字列&lt;/h2&gt;
+&lt;p&gt;特定のパターンから始まる文字列を取得したい場合，&lt;br&gt;
+Pythonの組み込みメソッド&lt;code&gt;startswith()&lt;/code&gt;を使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+l = ['p_match_file', 'o_file', 'p_file2']
+
+# 文字列の最初が「p_」の文字列を取得
+for i in l:
+    if i.startswith('p_'):
+        print(i)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+p_match_file
+p_file2
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;'任意の文字列'.startswith('始まりの文字列')&lt;/code&gt;とすることで，任意の文字列が「始まりの文字列」で始まっていれば真となります．&lt;br&gt;
+上記のコード例ではリストに含まれる各文字列について&lt;code&gt;p_&lt;/code&gt;で始まっているかをチェックして&lt;code&gt;p_&lt;/code&gt;で始まっている文字列のみを出力しています．&lt;/p&gt;
+&lt;h2 id="_2"&gt;〜で終わる文字列&lt;/h2&gt;
+&lt;p&gt;特定のパターンで終わる文字列を取得したい場合，&lt;br&gt;
+Pythonの組み込みメソッド&lt;code&gt;endswith()&lt;/code&gt;を使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+l = ['p_match_file', 'o_file', 'p_file2']
+
+# 文字列の最後が「file」の文字列を取得
+for i in l:
+    if i.endswith('file'):
+        print(i)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+p_match_file
+o_file
+&lt;/pre&gt;
+
+&lt;p&gt;指定の方法は&lt;code&gt;startswith()&lt;/code&gt;と同じです．&lt;/p&gt;
+&lt;p&gt;リストに含まれる各文字列について&lt;code&gt;file&lt;/code&gt;で終わっているかをチェックしています．&lt;br&gt;
+ちゃんと&lt;code&gt;p_file2&lt;/code&gt;が除外されていますね．&lt;/p&gt;
+&lt;h2 id="_3"&gt;〜という文字が含まれる文字列&lt;/h2&gt;
+&lt;p&gt;特定の文字が含まれる文字列を取得したい場合，Pythonの&lt;code&gt;in&lt;/code&gt;演算子を使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+l = ['p_match_file', 'o_file', 'p_file2']
+
+# 文字列中に「match」が含まれる文字列を取得
+for i in l:
+    if 'match' in i:
+        print(i)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+p_match_file
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;'任意の文字' in '対象文字列'&lt;/code&gt;とすることで，対象文字列の中に任意の文字列（＝リストの各文字列の中に&lt;code&gt;match&lt;/code&gt;という文字）が含まれているかを確認しています．&lt;br&gt;
+その結果&lt;code&gt;match&lt;/code&gt;という文字が含まれる&lt;code&gt;p_match_file&lt;/code&gt;だけが出力されています．&lt;/p&gt;
+&lt;h3 id="in"&gt;&lt;code&gt;in&lt;/code&gt;演算子の判定に関して&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;in&lt;/code&gt;演算子を使った判定では指定した文字列が含まれていれば真になるので，確認したい文字のパターンをよく確認しておくことが大切です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# in演算子は一致すれば取れてしまう
+for i in l:
+    if 'file' in i:
+        print(i)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+p_match_file
+o_file
+p_file2
+&lt;/pre&gt;
+
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;文字列のパターンがシンプルであれば正規表現を使わずにサクッと判定できますね．&lt;br&gt;
+結局正規表現になることも多いですが・・・&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="自然言語処理"></category></entry><entry><title>【Python】入れ子になったタプルの型ヒントの書き方</title><link href="https://www.tecrab.com/articles/python-type-hint-tuple.html" rel="alternate"></link><published>2022-03-05T00:00:00+09:00</published><updated>2022-10-05T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-03-05:/articles/python-type-hint-tuple.html</id><summary type="html">&lt;p&gt;Pythonの型ヒントに関して，入れ子の構造になっているタプルの型ヒントの書き方を紹介します．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事はPythonの型ヒントの書き方に関する記事です．&lt;br&gt;
+入れ子の構造になっているタプルの型ヒントの書き方についてまとめています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;タプルの型ヒント&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;省略形&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;タプルの型ヒント&lt;/h2&gt;
+&lt;p&gt;タプルを定義し，定義したタプルを引数に取る関数を作成しています．&lt;br&gt;
+（関数の機能としては&lt;code&gt;for&lt;/code&gt;文でタプルから値を取得して出力するだけです）&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+from typing import Tuple
+
+t1 = ('えび', 'かに', 'ほたて')
+
+def t1_func(t1: Tuple[str, str, str]) -&gt; None:
+    for t in t1:
+        print(t)
+
+t1_func(t1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+えび
+かに
+ほたて
+&lt;/pre&gt;
+
+&lt;p&gt;型ヒントは&lt;code&gt;Tuple[str, str, str]&lt;/code&gt;です．&lt;br&gt;
+引数として与えられるタプル（今回は変数&lt;code&gt;t1&lt;/code&gt;）の構造を書いています．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;この関数に戻り値はないので，戻り値の表記は&lt;code&gt;None&lt;/code&gt;（戻り値なし）を指定しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_2"&gt;省略形&lt;/h3&gt;
+&lt;p&gt;タプルの値が同じデータ型の場合は省略した表記をすることも可能です．&lt;br&gt;
+省略した型ヒントの例は以下の関数です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+t2 = (('哺乳類', ('馬', '牛')), ('魚類', ('マグロ', 'イトウ')))
+
+def t2_func(t2: Tuple[Tuple[str, Tuple[str, str]], ...]) -&gt; None:
+    for category, animals in t2:
+        for animal in animals:
+            print(category, animal)
+t2_func(t2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+哺乳類 馬
+哺乳類 牛
+魚類 マグロ
+魚類 イトウ
+&lt;/pre&gt;
+
+&lt;p&gt;いきなり複雑になりましたが，タプルの入れ子構造を表現しているだけです，&lt;br&gt;
+&lt;code&gt;()&lt;/code&gt;の範囲を確認するとよくわかります．&lt;/p&gt;
+&lt;p&gt;なお&lt;code&gt;Tuple[Tuple[str, Tuple[str, str]], ...]&lt;/code&gt;の&lt;code&gt;, ...&lt;/code&gt;部分は同じ構造が複数並ぶためその略記です．&lt;/p&gt;
+&lt;p&gt;型ヒントは慣れるとわかりやすいのですが，上記のように複雑な場合であれば微妙ですよね．&lt;/p&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;複雑な関数には型ヒントをつけておくと読みやすいです．&lt;br&gt;
+&lt;code&gt;mypy&lt;/code&gt;&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;を使いながら適宜チェックすると尚良ですね．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mypy&lt;/code&gt;や型ヒントに関連する記事はこちらです．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;
+    &lt;a href="https://www.revalab.net/python-type-hint-multi-return/" rel="noopener noreferrer" target="_blank"&gt;【Python】関数の戻り値が複数ある場合の型ヒントの書き方&lt;/a&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;型ヒントの記法をチェックする外部ライブラリ&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="型ヒント"></category></entry><entry><title>【Python】関数の戻り値が複数ある場合の型ヒントの書き方</title><link href="https://www.tecrab.com/articles/python-type-hint-multi-return.html" rel="alternate"></link><published>2022-02-26T00:00:00+09:00</published><updated>2022-10-05T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-02-26:/articles/python-type-hint-multi-return.html</id><summary type="html">&lt;p&gt;Pythonの型ヒントに関して，関数の戻り値が複数ある場合の書き方を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事はPythonの型ヒントの書き方に関する記事です．&lt;br&gt;
+以下の２パターンについて確認します．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;関数の戻り値が複数ある場合&lt;/li&gt;
+    &lt;li&gt;引数によって戻り値が変わる場合&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;関数の戻り値が複数ある場合&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;型ヒントのチェック&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;引数によって戻り値が変わる場合&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;関数の戻り値が複数ある場合&lt;/h2&gt;
+&lt;p&gt;戻り値が２つある場合の関数を見てみましょう．&lt;br&gt;
+何らかの文字列を引数として与えると，引数の文字と引数の文字数が返ってくる関数です．&lt;/p&gt;
+&lt;pre style="margin-bottom: 50px"&gt;&lt;code class="language-python"&gt;
+# 型ヒントがない関数
+def return_2values(moji):
+    return moji, len(moji)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;この関数を実行して戻ってくる値を見てみます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+result = return_2values('管理人')
+print(result) # 戻り値
+print(type(result)) # 戻り値のデータ型
+print([type(i) for i in result]) # tuple内のデータ型
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+('管理人', 3)
+&amp;lt;class 'tuple'&amp;gt;
+[&amp;lt;class 'str'&amp;gt;, &amp;lt;class 'int'&amp;gt;]
+&lt;/pre&gt;
+
+&lt;p&gt;それぞれの結果は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;戻り値：&lt;code&gt;return moji, len(moji)&lt;/code&gt;の結果です．&lt;/li&gt;
+&lt;li&gt;戻り値のデータ型：&lt;code&gt;tuple&lt;/code&gt;となっています．&lt;/li&gt;
+&lt;li&gt;tuple内のデータ型：それぞれ&lt;code&gt;str&lt;/code&gt;型, &lt;code&gt;int&lt;/code&gt;型（=&lt;code&gt;'管理人', 3&lt;/code&gt;）です．&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上記を踏まえて，型ヒントをつけてみましょう．&lt;br&gt;
+型ヒントをつけるにはPython組み込みの&lt;code&gt;typing&lt;/code&gt;モジュールを使用します．&lt;/p&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;&lt;code class="language-python"&gt;
+from typing import Tuple
+
+# 型ヒントをつけた関数
+def return_2values(moji: str) -&gt; Tuple[str, int]:
+    return moji, len(moji)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;型ヒントをつけることで以下のような内容を表現しています．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;引数に取るデータは&lt;code&gt;str&lt;/code&gt;型&lt;/li&gt;
+&lt;li&gt;この関数を実行した結果の戻り値は&lt;code&gt;tuple&lt;/code&gt;で要素は&lt;code&gt;str&lt;/code&gt;型と&lt;code&gt;int&lt;/code&gt;型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;この程度の関数であれば型ヒントがなくてもわかりますが，複雑な関数などは型ヒントがあると理解の助けになります．&lt;/p&gt;
+&lt;h3 id="_2"&gt;型ヒントのチェック&lt;/h3&gt;
+&lt;p&gt;型ヒントの記法を判定する外部ライブラリ&lt;code&gt;mypy&lt;/code&gt;を使って関数をチェックしてみましょう．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mypy&lt;/code&gt;をインストールしていない場合は以下のコマンドでインストール可能です．
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+pip install mypy
+&lt;/code&gt;
+&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 30px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;確認したい関数を&lt;code&gt;.py&lt;/code&gt;ファイルに保存して以下の&lt;code&gt;mypy&lt;/code&gt;コマンドでチェックを行います．&lt;br&gt;
+（以下の例では&lt;code&gt;hoge.py&lt;/code&gt;に型ヒント付きの関数が記載されている想定です&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;）&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+mypy hoge.py
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+Success: no issues found in 1 source file
+&lt;/pre&gt;
+
+&lt;p&gt;記法上，問題ないことが確認できました！&lt;br&gt;
+（もし何らかの誤りがあると&lt;code&gt;error&lt;/code&gt;が発生します）&lt;/p&gt;
+&lt;h2 id="_3"&gt;引数によって戻り値が変わる場合&lt;/h2&gt;
+&lt;p&gt;条件分岐などで関数の戻り値が変わるパターンです．&lt;br&gt;
+以下の関数は引数の文字数に応じて文字列（&lt;code&gt;str&lt;/code&gt;型）か文字数（&lt;code&gt;int&lt;/code&gt;型）を返す関数です．&lt;/p&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;&lt;code class="language-python"&gt;
+from typing import Tuple, Union
+
+def return_diff_values(moji: str) -&gt; Union[str, int]:
+    if len(moji) &gt; 5:
+        return moji
+    else:
+        return len(moji)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;このように条件に応じて戻り値のデータ型が変わる場合，戻り値の型ヒントは以下のようにします．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Union[戻り値のパターン①, パターン②, ...]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上記の関数の場合は&lt;code&gt;str&lt;/code&gt;型か&lt;code&gt;int&lt;/code&gt;型を返すので&lt;code&gt;Union[str, int]&lt;/code&gt;としています．&lt;br&gt;
+（関数の実行によって戻ってくる値は&lt;code&gt;str&lt;/code&gt;か&lt;code&gt;int&lt;/code&gt;という表現です）&lt;/p&gt;
+&lt;h3 id="_4"&gt;参考&lt;/h3&gt;
+&lt;p&gt;以下は上記の関数の実行例です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 「管理人」は3文字なので文字数が返ってくる
+print(return_diff_values('管理人'))
+print(type(return_diff_values('管理人')))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+3
+&amp;lt;class 'int'&amp;gt;
+&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 「管理人のかに」は6文字なので文字が返ってくる
+print(return_diff_values('管理人のかに'))
+print(type(return_diff_values('管理人のかに')))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+管理人のかに
+&amp;lt;class 'str'&amp;gt;
+&lt;/pre&gt;
+
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;複雑な関数には型ヒントをつけよう・・・&lt;br&gt;
+でも記法に従っていると逆にごちゃごちゃすることもあるので，どこまでやるかは考えものですね・・・&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;以下のコマンドは&lt;code&gt;mypy&lt;/code&gt;コマンドを実行する場所が&lt;code&gt;hoge.py&lt;/code&gt;と同じ階層であることが前提です．&lt;code&gt;hoge.py&lt;/code&gt;が別の場所にある場合はそのpathを指定してください（例：&lt;code&gt;mypy ./xxx/hoge.py&lt;/code&gt;）&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="型ヒント"></category></entry><entry><title>【Python】辞書のキー有無で条件分岐：get メソッド</title><link href="https://www.tecrab.com/articles/python-dict-get.html" rel="alternate"></link><published>2022-02-06T00:00:00+09:00</published><updated>2022-09-04T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-02-06:/articles/python-dict-get.html</id><summary type="html">&lt;p&gt;辞書のキーを使って条件分岐をする方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では辞書のキーを使って条件分岐をする方法をご紹介します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#2"&gt;辞書のキーで値を取得する方法（２つ）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#2_1"&gt;２つの方法の違い&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;辞書のキー有無で条件分岐&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルとなる辞書を作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+d = {'ほたて': 1000, 'えび': 200, 'かに': 30}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="2"&gt;辞書のキーで値を取得する方法（２つ）&lt;/h3&gt;
+&lt;p&gt;辞書のキーを指定してその値を取得する方法は以下の２種類があります．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;辞書['キー名']&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;辞書.get('キー名')&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;それぞれの方法を使って「ほたて」キーの値を取得してみます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# []を使用してキーの値を取得
+print(d['ほたて'])
+
+# getメソッドでキーの値を取得
+print(d.get('ほたて'))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+1000
+1000
+&lt;/pre&gt;
+
+&lt;p&gt;それぞれ「ほたて」キーの値である&lt;code&gt;1000&lt;/code&gt;が取得できていますね．&lt;br&gt;
+なお&lt;code&gt;get&lt;/code&gt;メソッドはPython組み込みのメソッドです．&lt;/p&gt;
+&lt;h3 id="2_1"&gt;２つの方法の違い&lt;/h3&gt;
+&lt;p&gt;両者の違いは指定したキーが存在しなかった際の挙動です．&lt;br&gt;
+&lt;code&gt;辞書['キー名']&lt;/code&gt;では指定したキーが存在しなかった場合&lt;code&gt;KeyError&lt;/code&gt;となってしまいます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# []を使用する場合，存在しないキーを指定するとKeyError
+print(d['まぐろ'])
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+KeyError: 'まぐろ'
+&lt;/pre&gt;
+
+&lt;p&gt;一方で&lt;code&gt;get&lt;/code&gt;メソッドを使用した方法では指定したキーが存在しない場合&lt;code&gt;None&lt;/code&gt;を返します．&lt;br&gt;
+（&lt;code&gt;KeyError&lt;/code&gt;は発生しません）&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# getメソッドの場合はKeyErrorとはならず，Noneを返す
+print(d.get('まぐろ'))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+None
+&lt;/pre&gt;
+
+&lt;p&gt;また&lt;code&gt;get&lt;/code&gt;メソッドでは指定したキーが存在しない場合に返す値を指定することができます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;&lt;code class="language-python"&gt;
+# getメソッドの第二引数にはキーが存在しない際の返り値を指定できる
+print(d.get('まぐろ', '「まぐろ」キーがありません...'))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+「まぐろ」キーがありません...
+&lt;/pre&gt;
+
+&lt;h3 id="_2"&gt;辞書のキー有無で条件分岐&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;get&lt;/code&gt;メソッドを使用し，キーが存在しない場合は&lt;code&gt;False&lt;/code&gt;を返すようなコードを作成します．&lt;br&gt;
+そのコードを&lt;code&gt;if&lt;/code&gt;文の条件式に入れて「キーが存在すれば・・・」という処理が可能です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 辞書の定義
+d = {'まぐろ': 1000, 'えび': 200, 'かに': 30}
+
+# if文と組み合わせてキーの有無に応じた条件分岐
+if d.get('まぐろ', False):
+    d['まぐろ'] = 1200
+
+print(d)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 60px;"&gt;
+{'まぐろ': 1200, 'えび': 200, 'かに': 30}
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if&lt;/code&gt;文の条件式で「まぐろキーが存在すれば」としています．&lt;br&gt;
+もしまぐろキーがない場合は&lt;code&gt;get&lt;/code&gt;メソッドによって&lt;code&gt;False&lt;/code&gt;が返されるので&lt;code&gt;if&lt;/code&gt;文内の処理は実行されません．&lt;/p&gt;
+&lt;p&gt;今回の辞書には「まぐろキー」が存在するため&lt;code&gt;if&lt;/code&gt;文内の処理が実行されています.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;get&lt;/code&gt;メソッドは便利ですね．&lt;br&gt;
+色々な情報を辞書に詰め込んで処理することが多く，条件によってはキーがあったりなかったりするのでこの方法を使っています．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;デフォルトでは&lt;code&gt;None&lt;/code&gt;を返します．上記のコードではキーが存在しない場合に返す値を指定していないので&lt;code&gt;None&lt;/code&gt;が返ってきています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;「まぐろキー」の値が&lt;code&gt;1000&lt;/code&gt;→&lt;code&gt;1200&lt;/code&gt;になりました．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category></entry><entry><title>【Python】リスト内の文字数でソートする方法</title><link href="https://www.tecrab.com/articles/python-sorted-str-len.html" rel="alternate"></link><published>2022-01-24T00:00:00+09:00</published><updated>2022-09-04T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-01-24:/articles/python-sorted-str-len.html</id><summary type="html">&lt;p&gt;リストの文字数に応じてソートする方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではリストの文字数に応じてソートする方法を解説します．&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;ソート前：&lt;code&gt;['ほたて', 'くるまえび', 'かに']&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;ソート後：&lt;code&gt;['かに', 'ほたて', 'くるまえび']&lt;/code&gt;&lt;/li&gt;&lt;/p&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;文字数でソート（文字数が少ない順）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;文字数でソート（文字数が多い順）&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルとなるリストを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sample = ['ほたて', 'くるまえび', 'かに']
+print(sample)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+['ほたて', 'くるまえび', 'かに']
+&lt;/pre&gt;
+
+&lt;h3 id="_2"&gt;文字数でソート（文字数が少ない順）&lt;/h3&gt;
+&lt;p&gt;リストの中の要素を文字数でソートするにはPythonの組み込み関数&lt;code&gt;sorted()&lt;/code&gt;を使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sample_s = sorted(sample, key=len)
+print(sample_s)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+['かに', 'ほたて', 'くるまえび']
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sorted()&lt;/code&gt;の引数は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一引数：ソートしたいリストを指定します．&lt;/li&gt;
+&lt;li&gt;第二引数：&lt;code&gt;key&lt;/code&gt;にはソートで使用する関数を指定することができます．&lt;br&gt;
+&lt;code&gt;key=len&lt;/code&gt;&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;を指定することでリスト要素の文字数を基準にソートすることができます．&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h3 id="_3"&gt;文字数でソート（文字数が多い順）&lt;/h3&gt;
+&lt;p&gt;文字数が多い順にソートするには&lt;code&gt;sorted()&lt;/code&gt;の引数に&lt;code&gt;reverse=True&lt;/code&gt;を指定します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sample_s2 = sorted(sample, key=len, reverse=True)
+print(sample_s2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+['くるまえび', 'ほたて', 'かに']
+&lt;/pre&gt;
+
+&lt;p&gt;文字数が多い順にソートされましたね．&lt;br&gt;
+なお，引数&lt;code&gt;reverse&lt;/code&gt;のデフォルトは&lt;code&gt;False&lt;/code&gt;なので，指定しない場合は文字数が少ない順になります．&lt;/p&gt;
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;組み込み関数の&lt;code&gt;sorted()&lt;/code&gt;は引数の&lt;code&gt;key&lt;/code&gt;に関数を指定することができるので，他にも色々と応用ができそうです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;len&lt;/code&gt;とはPythonの組み込み関数&lt;code&gt;len()&lt;/code&gt;のことです．&lt;code&gt;len()&lt;/code&gt;はリストの要素数や文字数などをカウントできる関数です．なお &lt;code&gt;key&lt;/code&gt;を使って指定する際はカッコなしで&lt;code&gt;key=len&lt;/code&gt;とします．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="自然言語処理"></category></entry><entry><title>【pandas】DataFrameの要素を正規表現で置換する方法</title><link href="https://www.tecrab.com/articles/pandas-df-regex-substitution.html" rel="alternate"></link><published>2022-01-18T00:00:00+09:00</published><updated>2022-09-09T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-01-18:/articles/pandas-df-regex-substitution.html</id><summary type="html">&lt;p&gt;DataFrameの要素を正規表現を使って置換する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を解説しています．
+&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;DataFrameの要素をチェックし，正規表現を使って置換&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;[]&lt;/code&gt;で囲まれた部分を&lt;code&gt;[]&lt;/code&gt;ごと除去（正規表現）&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.replace.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.replace&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dataframe"&gt;DataFrameの要素を置換&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;正規表現で「[]で囲まれた」を指定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dataframe_1"&gt;DataFrameの要素全体を置換&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dataframe_2"&gt;DataFrameの特定の列だけを置換&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+l = [['[注]かに', 'タラバガニ'], ['くるまえび', '[!]えび']]
+
+df = pd.DataFrame(l, columns=['col_1', 'col_2'])
+df
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 90px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;[注]かに&lt;/td&gt;
+      &lt;td&gt;タラバガニ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;くるまえび&lt;/td&gt;
+      &lt;td&gt;[!]えび&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id="dataframe"&gt;DataFrameの要素を置換&lt;/h2&gt;
+&lt;h3 id="_2"&gt;正規表現で「&lt;code&gt;[]&lt;/code&gt;で囲まれた」を指定&lt;/h3&gt;
+&lt;p&gt;今回は正規表現を用いて置換を行うため，正規表現の準備をします．&lt;/p&gt;
+&lt;p&gt;正規表現を扱うPython標準ライブラリの&lt;code&gt;re&lt;/code&gt;を使用し「&lt;code&gt;[]&lt;/code&gt;で囲まれた」という正規表現をコンパイルします．これによりコンパイルしたパターンでマッチの有無（&lt;code&gt;[]&lt;/code&gt;で囲まれた部分の有無）を確認できます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;&lt;code class="language-python"&gt;
+# 正規表現を扱うPython標準ライブラリ
+import re
+
+# 「[]で囲まれた」を表す正規表現をcompile
+pattern = r'\[.+?\]'
+compiled_pattern = re.compile(pattern)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="dataframe_1"&gt;DataFrameの要素全体を置換&lt;/h3&gt;
+&lt;p&gt;pandasの&lt;code&gt;replace&lt;/code&gt;メソッドでDataFrameの要素を置換します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 元のdfをコピー
+df_all = df.copy()
+
+df_all.replace(compiled_pattern, '', regex=True, inplace=True)
+df_all
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;かに&lt;/td&gt;
+      &lt;td&gt;タラバガニ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;くるまえび&lt;/td&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;replace&lt;/code&gt;メソッドはDataFrame（Series）の要素を置換できるメソッドです．&lt;br&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一引数：正規表現パターンを指定&lt;/li&gt;
+&lt;li&gt;第二引数：置換する文字列&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;を指定&lt;/li&gt;
+&lt;li&gt;正規表現を使用して置換するため&lt;code&gt;regex=True&lt;/code&gt;を指定&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上記の処理が実行されることで「&lt;code&gt;[]&lt;/code&gt; で囲まれた部分」があれば取り除かれます．&lt;br&gt;
+なお，引数&lt;code&gt;inplace=True&lt;/code&gt;で元の&lt;code&gt;df_all&lt;/code&gt;が更新されるようになります.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="dataframe_2"&gt;DataFrameの特定の列だけを置換&lt;/h3&gt;
+&lt;p&gt;特定の列だけを置換するには以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 元のdfをコピー
+df_p = df.copy()
+
+df_p['col_1'].replace(compiled_pattern, '', regex=True, inplace=True)
+df_p
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;かに&lt;/td&gt;
+      &lt;td&gt;タラバガニ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;くるまえび&lt;/td&gt;
+      &lt;td&gt;[!]えび&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;指定した&lt;code&gt;col_1&lt;/code&gt;列だけで&lt;code&gt;[]&lt;/code&gt;が除去されていますね．&lt;/p&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;DataFrameでさっと文字を綺麗にする際に使えますね．&lt;br&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;今回の例では&lt;code&gt;''&lt;/code&gt;（空白）を指定しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;df&lt;/code&gt;をコピーしているのはこれが理由です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【Python】辞書の値（values）の合計を確認する方法</title><link href="https://www.tecrab.com/articles/python-dict-values-sum.html" rel="alternate"></link><published>2022-01-12T00:00:00+09:00</published><updated>2022-09-04T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-01-12:/articles/python-dict-values-sum.html</id><summary type="html">&lt;p&gt;Pythonの辞書の値を合計する方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を解説しています．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;辞書の値を単純に合計する&lt;/li&gt;
+  &lt;li&gt;特定のキーの値だけを合計する&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;辞書の値を単純に合計する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;特定のキーの値だけを合計する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;辞書の値を単純に合計する&lt;/h2&gt;
+&lt;p&gt;まずはサンプルの辞書を作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+d = {'ズワイガニ': 10, 'タラバガニ': 23, 'ホタテ': 17, 'えび': 50}
+d
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+{'ズワイガニ': 10, 'タラバガニ': 23, 'ホタテ': 17, 'えび': 50}
+&lt;/pre&gt;
+
+&lt;p&gt;辞書のvalues&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;を合計したい場合は以下のようにします．&lt;br&gt;
+辞書のvaluesを&lt;code&gt;values()&lt;/code&gt;メソッドで取得し，それを&lt;code&gt;sum()&lt;/code&gt;で合計しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sum(d.values())
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+100
+&lt;/pre&gt;
+
+&lt;h2 id="_2"&gt;特定のキーの値だけを合計する&lt;/h2&gt;
+&lt;p&gt;前項の例では全てのvaluesを合計しました．&lt;br&gt;
+ここではサンプル辞書のうち「ガニ」を含むキーのvaluesのみを合計します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sum([d[k] for k in d if 'ガニ' in k])
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+33
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;以下のような流れで処理しています．&lt;br&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;for&lt;/code&gt;文で辞書からキーを順に取り出す.&lt;/li&gt;
+&lt;li&gt;取り出したキーに「ガニ」が含まれるか確認.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;li&gt;キーに「ガニ」が含まれていたらそのvaluesを&lt;code&gt;d[k]&lt;/code&gt;で取り出す.&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最終的に「ガニ」が含まれるキーのvaluesのみのリストができるため，それを&lt;code&gt;sum()&lt;/code&gt;で合計しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;データを辞書で集計し，その全体の個数を知りたいときなどに使えそうです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;辞書は&lt;code&gt;{key: values}&lt;/code&gt;という構成になっています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;if 'ガニ' in k&lt;/code&gt;部分です．&lt;code&gt;in&lt;/code&gt;演算子を使って「ガニ」という文字列がキー（&lt;code&gt;k&lt;/code&gt;）に含まれるかを確認することができます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;&lt;code&gt;dict[key]&lt;/code&gt;という記法で&lt;code&gt;dict&lt;/code&gt;という辞書のkeyを指定し，そのvaluesを取り出すことができます．&lt;br&gt;例えば&lt;code&gt;d['ホタテ']&lt;/code&gt;とするとホタテ（key）のvaluesである&lt;code&gt;17&lt;/code&gt;が取り出せます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category></entry><entry><title>【pandas】DataFrameから一部/任意の列を抽出する方法</title><link href="https://www.tecrab.com/articles/dataframe-columns-extraction.html" rel="alternate"></link><published>2021-12-08T00:00:00+09:00</published><updated>2022-09-04T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-12-08:/articles/dataframe-columns-extraction.html</id><summary type="html">&lt;p&gt;DataFrameから特定の列を抽出する方法について解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を解説しています．&lt;/p&gt;
+&lt;p&gt;DateFrameから
+&lt;ul style="margin: -10px 0px 0px 15px;"&gt;
+  &lt;li&gt;一部の列を抽出（特定の列だけ or 特定の列以外）&lt;/li&gt;
+  &lt;li&gt;列名に任意の文字列が含まれている列&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#or"&gt;一部の列を抽出（特定の列だけ or 特定の列以外）&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;特定の列だけ抽出&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;特定の列以外を抽出&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;指定した複数の列以外を抽出&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;列名に任意の文字列が含まれている列&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#flag"&gt;列名に「flag」が含まれる列を抽出&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+df = pd.DataFrame({
+    'col1': [1, 2, 3],
+    'col2': [10, 20, 30],
+    'col3': [10, 40, 90],
+    'col4_flag': [1, 0, 0]
+})
+df
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 90px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col1&lt;/th&gt;
+      &lt;th&gt;col2&lt;/th&gt;
+      &lt;th&gt;col3&lt;/th&gt;
+      &lt;th&gt;col4_flag&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;40&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;30&lt;/td&gt;
+      &lt;td&gt;90&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id="or"&gt;一部の列を抽出（特定の列だけ or 特定の列以外）&lt;/h2&gt;
+&lt;h3 id="_2"&gt;特定の列だけ抽出&lt;/h3&gt;
+&lt;p&gt;サンプルのDaraFrameのうち，&lt;code&gt;col3&lt;/code&gt;列のみを抽出します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df[[col for col in df.columns if col == 'col3']]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col3&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;40&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;90&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;DataFrame から列をひとつずつ取り出してリストに加えています．&lt;br&gt;
+ただし&lt;code&gt;if&lt;/code&gt;文で「&lt;code&gt;for&lt;/code&gt;文で取り出した&lt;code&gt;col&lt;/code&gt;が&lt;code&gt;col3&lt;/code&gt;であれば」という条件をつけているので，結果としてリストに加えられるのは&lt;code&gt;col3&lt;/code&gt;列だけになります.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;なお，１つの列だけを取得したい場合&lt;code&gt;df[['col3']]&lt;/code&gt;で同じことができます．&lt;br&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df[['col3']]
+&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;p&gt;&lt;table class="dataframe" border="1" style="margin: 10px 0px 20px 20px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col3&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;40&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;90&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;&lt;/p&gt;
+&lt;p&gt;単独の列を抽出するだけなら&lt;code&gt;df[['col3']]&lt;/code&gt;を使うことが普通ですし，好ましいですが，今回は次項の「特定の列以外を抽出」と比較するためにあえて使っています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_3"&gt;特定の列以外を抽出&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;col3&lt;/code&gt;列以外を抽出したい場合は以下のようにします．&lt;br&gt;
+（前項のコードにおける&lt;code&gt;if&lt;/code&gt;文の条件式を&lt;code&gt;==&lt;/code&gt; → &lt;code&gt;!=&lt;/code&gt;としただけです）&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# DataFrameの列のうち，col3列以外を取り出す
+df[[col for col in df.columns if col != 'col3']]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 90px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col1&lt;/th&gt;
+      &lt;th&gt;col2&lt;/th&gt;
+      &lt;th&gt;col4_flag&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;30&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="_4"&gt;指定した複数の列以外を抽出&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;col1&lt;/code&gt;, &lt;code&gt;col3&lt;/code&gt;以外の列を抽出したい場合はリストを使って以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# DataFrameの列のうち，リストで定義された列以外を取り出す．
+selected_col = ['col1', 'col3']
+df[[col for col in df.columns if col not in selected_col]]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col2&lt;/th&gt;
+      &lt;th&gt;col4_flag&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;30&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;if col not in selected_col&lt;/code&gt;部分で&lt;code&gt;selected_col&lt;/code&gt;にある列はリストに含めないようにしています．&lt;/p&gt;
+&lt;h2 id="_5"&gt;列名に任意の文字列が含まれている列&lt;/h2&gt;
+&lt;h3 id="flag"&gt;列名に「flag」が含まれる列を抽出&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;for&lt;/code&gt;文で取り出したDataFrameの列名について&lt;code&gt;in&lt;/code&gt;演算子で文字列の有無を確認します．&lt;br&gt;
+今回は&lt;code&gt;flag&lt;/code&gt;という文字列を含む列を抽出しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 列名にflagが含まれている列だけを抽出
+df[[col for col in df.columns if 'flag' in col]]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 90px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col4_flag&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id="_6"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;DataFrameから目的変数と説明変数を分ける場合や，列のデータ型を揃える場合などによく使いますね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;DataFrameにおける特定の列は&lt;code&gt;df[['列名']]&lt;/code&gt;という記法で抽出できます．今回の例では&lt;code&gt;['列名']&lt;/code&gt;部分にリスト内包表記を入れ込んでいます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【Python】テキストファイル（.txt）をリストで読み込む/書き込む方法</title><link href="https://www.tecrab.com/articles/python-with-txt-to-list.html" rel="alternate"></link><published>2021-11-30T00:00:00+09:00</published><updated>2022-01-04T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-11-30:/articles/python-with-txt-to-list.html</id><summary type="html">&lt;p&gt;Pythonでテキストファイルを読み込み，リストとして利用する方法について解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を解説しています．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;テキストファイルをPythonで読み込みリスト化する&lt;/li&gt;
+    &lt;li&gt;余分なスペースや改行，重複を削除して読み込む&lt;/li&gt;
+    &lt;li&gt;リスト型のデータをテキストファイルに追記する&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#python"&gt;テキストファイルをPythonで読み込みリスト化する&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;文字列をリストで取得&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;重複を削除したリストを取得&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;重複削除＋順序を保持したリストを取得&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;リスト型のデータをテキストファイルに追記する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="python"&gt;テキストファイルをPythonで読み込みリスト化する&lt;/h2&gt;
+&lt;p&gt;使用するテキストファイルは&lt;code&gt;sample.txt&lt;/code&gt;です．&lt;br&gt;
+このファイルを読み込んでリスト化していきます．&lt;br&gt;
+（説明のために本来は不要な改行やスペース，重複を入れています）&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sample.txt&lt;/code&gt;の内容&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 90px 0px;"&gt;
+えび
+かに
+　うに
+文鳥　
+
+かに
+&lt;/pre&gt;
+
+&lt;h3 id="_1"&gt;文字列をリストで取得&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;with&lt;/code&gt;文とリスト内包表記を使用して以下のように書くと，リストで文字列を取得できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+with open('./sample.txt', mode='r', encoding='utf-8') as f:
+    txt = [word.strip() for word in f if word != '\n']
+txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+['えび', 'かに', 'うに', '文鳥', 'かに']
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;open()&lt;/code&gt;の第一引数でテキストファイルのパス&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;，第二引数で読み込み専用モード&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;, 第三引数でencodingを指定しています．&lt;/p&gt;
+&lt;p&gt;２行目：&lt;code&gt;for&lt;/code&gt;文でテキストファイルの内容を順に取得します．&lt;br&gt;
+この際に&lt;code&gt;if word != '\n'&lt;/code&gt;で改行だけの行を除くようにしています．&lt;/p&gt;
+&lt;p&gt;取り出した&lt;code&gt;word&lt;/code&gt;をリストに追加する際に&lt;code&gt;strip()&lt;/code&gt;メソッドで文字列の前後の余計な空白・改行コードを除去しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;strip()&lt;/code&gt;メソッドを使用しないと以下のような結果になります．&lt;br&gt;
+全角スペースコードの&lt;code&gt;\u3000&lt;/code&gt;や改行コード&lt;code&gt;\n&lt;/code&gt;が入り込んでいます．
+&lt;pre style="margin: 0.8em 1em 0.8em 1em;"&gt;
+['えび\n', 'かに\n', '\u3000うに\n', '文鳥\u3000\n', 'かに']
+&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_2"&gt;重複を削除したリストを取得&lt;/h3&gt;
+&lt;p&gt;上記で取得したテキストは「かに」が重複しています．&lt;br&gt;
+重複を落としたい場合は&lt;code&gt;set()&lt;/code&gt;を使用して以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+with open('./sample.txt', encoding='utf-8') as f:
+    txt = set([word.strip() for word in f if word != '\n'])
+txt = list(txt)
+txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+['えび', '文鳥', 'かに', 'うに']
+&lt;/pre&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;set型は順序が保証されないので，リストの順番は一定ではありません．&lt;br&gt;
+リストの順番を保持したい場合は次項を参照．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_3"&gt;重複削除＋順序を保持したリストを取得&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;sorted()&lt;/code&gt;メソッドでリストのindexをキーとして並び替えると順番が保持されます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 順序を保持したい場合
+with open('./sample.txt', encoding='utf-8') as f:
+    txt_key = [word.strip() for word in f if word != '\n']
+txt = sorted(set(txt_key), key=txt_key.index)
+txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+['えび', 'かに', 'うに', '文鳥']
+&lt;/pre&gt;
+
+&lt;h2 id="_4"&gt;リスト型のデータをテキストファイルに追記する&lt;/h2&gt;
+&lt;p&gt;ここではすでにリスト型で存在するデータを&lt;code&gt;sample.txt&lt;/code&gt;に追記する方法を見てみましょう．&lt;br&gt;
+変数&lt;code&gt;add_list&lt;/code&gt;のデータが今回追加するデータです．&lt;/p&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;&lt;code class="language-python"&gt;
+add_list = ['カラス', 'スズメ']
+first_loop = True
+
+# mode='a'は既存ファイルへの追記を指定
+with open('./sample.txt', mode='a', encoding='utf-8') as f:
+    for i in add_list:
+        if first_loop:
+            f.write('\n' + i + '\n')  # １回目だけ改行を前に入れる
+            first_loop = False
+        else:
+            f.write(i + '\n')  # ２回目以降
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;sample.txt&lt;/code&gt;の内容&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 40px 0px;"&gt;
+えび
+かに
+　うに
+文鳥　
+
+かに
+カラス
+スズメ
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;with&lt;/code&gt;文を使用し&lt;code&gt;mode = 'a'&lt;/code&gt;としてファイルを開きます．&lt;br&gt;
+これによって既存ファイルへの追記ができます．&lt;/p&gt;
+&lt;p&gt;追加したいリストの文字列を&lt;code&gt;for&lt;/code&gt;文で取り出し，１回目のループ時だけ前後に改行を入れた状態でファイルへ書き込みます（&lt;code&gt;f.write('\n' + i + '\n')&lt;/code&gt;部分） ２回目以降は文字列の後ろ側に改行を入れます．&lt;/p&gt;
+&lt;p&gt;上記の処理によって「かに」の下に「カラス，スズメ」が追加されます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;単純に書き込むとテキストの一番後ろから追記されるので以下のような結果となります．&lt;/p&gt;
+&lt;pre style="margin: 10px 15px 15px 15px;"&gt;
+えび
+かに
+　うに
+文鳥　
+
+かにカラススズメ
+&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;テキストを様々な形で利用できると幅が広がりますね．&lt;br&gt;
+リストや&lt;code&gt;set&lt;/code&gt;はよく使うのでしっかりと押さえておきたいです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;今回は&lt;code&gt;sample.txt&lt;/code&gt;のパスをカレントディレクトリからの相対パスで指定しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;'r'&lt;/code&gt;で読み込み専用モードを指定できます．なお，デフォルトも&lt;code&gt;mode='r'&lt;/code&gt;なので，省略しても結果は同じです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="自然言語処理"></category></entry><entry><title>DataFrame内の文字列がリストに含まれるかを確認する方法</title><link href="https://www.tecrab.com/articles/dataframe-str-in-list-query.html" rel="alternate"></link><published>2021-11-12T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-11-12:/articles/dataframe-str-in-list-query.html</id><summary type="html">&lt;p&gt;DataFrameの文字列をリストと照合する方法について解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではDataFrameの文字列と別途定義したリストを照合し，リストに含まれる/含まれない行を抽出する方法について解説しています．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;
+  公式 Reference: &lt;a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.query&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#dataframe"&gt;DataFrameの文字列をリストと照合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dataframe_1"&gt;DataFrame同士で比較&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+df1 = pd.DataFrame({
+    'birds': ['十姉妹', '文鳥', 'ハヤブサ', 'カラス'],
+    'weight(g)': [15, 26, 950, 650]
+})
+df1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;birds&lt;/th&gt;
+      &lt;th&gt;weight(g)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;十姉妹&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;文鳥&lt;/td&gt;
+      &lt;td&gt;26&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;ハヤブサ&lt;/td&gt;
+      &lt;td&gt;950&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;カラス&lt;/td&gt;
+      &lt;td&gt;650&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="dataframe"&gt;DataFrameの文字列をリストと照合&lt;/h3&gt;
+&lt;p&gt;作成したDataFrameのbirds列内に特定の文字列が含まれるかを調べます．&lt;br&gt;
+特定の文字列をリストとして定義し，そのリスト内にある文字列とDataFrameのbirds列を照合します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 調べたいリスト
+birds_list = ['文鳥', 'ハト', 'ムクドリ', 'カラス']
+
+# dfの文字列がリスト内に含まれる場合，dfを返す
+df1.query('birds in @birds_list')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;birds&lt;/th&gt;
+      &lt;th&gt;weight(g)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;文鳥&lt;/td&gt;
+      &lt;td&gt;26&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;カラス&lt;/td&gt;
+      &lt;td&gt;650&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;birds列と&lt;code&gt;birds_list&lt;/code&gt;で一致している「文鳥」「カラス」だけがDataFrameとして返ってきていますね．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;query()&lt;/code&gt;内で変数を使用する場合は&lt;code&gt;@&lt;/code&gt;を変数の前に付けます．&lt;br&gt;
+今回は変数を使用していますが直接リストを指定してもOKです.&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="_2"&gt;リストに「含まれない」行を抽出&lt;/h5&gt;
+&lt;p&gt;&lt;code&gt;not in&lt;/code&gt;を使用して，以下のようにすればOKです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 含まれない，を調べる場合は not in 
+df1.query('birds not in @birds_list')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;birds&lt;/th&gt;
+      &lt;th&gt;weight(g)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;十姉妹&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;ハヤブサ&lt;/td&gt;
+      &lt;td&gt;950&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;birds列と&lt;code&gt;birds_list&lt;/code&gt;で一致していない「十姉妹」「ハヤブサ」だけになりましたね．&lt;/p&gt;
+&lt;h3 id="dataframe_1"&gt;DataFrame同士で比較&lt;/h3&gt;
+&lt;p&gt;DataFrame同士を比較することもできます．&lt;br&gt;
+準備として比較用のDataFrameを新たに作成し&lt;code&gt;df1&lt;/code&gt;と共に出力しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 比較するdfの作成
+df2 = pd.DataFrame({
+    'birds': ['十姉妹', '文鳥', 'ハヤブサ', 'ハト'],
+    'weight(g)': [15, 26, 950, 350]
+})
+display(df1)
+display(df2)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 10px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;birds&lt;/th&gt;
+      &lt;th&gt;weight(g)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;十姉妹&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;文鳥&lt;/td&gt;
+      &lt;td&gt;26&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;ハヤブサ&lt;/td&gt;
+      &lt;td&gt;950&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;カラス&lt;/td&gt;
+      &lt;td&gt;650&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;birds&lt;/th&gt;
+      &lt;th&gt;weight(g)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;十姉妹&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;文鳥&lt;/td&gt;
+      &lt;td&gt;26&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;ハヤブサ&lt;/td&gt;
+      &lt;td&gt;950&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;ハト&lt;/td&gt;
+      &lt;td&gt;350&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;以下でbirds列同士を比較します．&lt;br&gt;
+&lt;code&gt;df1&lt;/code&gt;のbirds列のうち「カラス」だけが&lt;code&gt;df2&lt;/code&gt;のbirds列に含まれないので「カラス」が出力されています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df1.query('birds not in @df2["birds"]')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;birds&lt;/th&gt;
+      &lt;th&gt;weight(g)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;カラス&lt;/td&gt;
+      &lt;td&gt;650&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;詳細が知りたい方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;このコードではこれまでリストを指定していた&lt;code&gt;@&lt;/code&gt;以降の部分に&lt;code&gt;df2["birds"]&lt;/code&gt;(=pandas Series)を指定しています．&lt;/p&gt;
+&lt;p&gt;Seriesはリストと概ね同じように扱うことができ&lt;code&gt;in&lt;/code&gt;演算子も使えるため，上記のようなコードを実行することが可能です．&lt;/p&gt;
+&lt;p&gt;なお&lt;code&gt;df2["birds"]&lt;/code&gt;とデータ型を見ると以下のような感じです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(s := df2["birds"], '\n')  # '\n' は改行を入れているだけです．
+print(type(s))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 10px;"&gt;
+0     十姉妹
+1      文鳥
+2    ハヤブサ
+3      ハト
+Name: birds, dtype: object
+
+&amp;lt;class 'pandas.core.series.Series'&amp;gt;
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;query()&lt;/code&gt;はDataFrameのデータを見る際などによく使うので，さっと使えると便利ですね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>DataFrame同士の差分を確認する方法</title><link href="https://www.tecrab.com/articles/dataframe-isin.html" rel="alternate"></link><published>2021-11-06T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-11-06:/articles/dataframe-isin.html</id><summary type="html">&lt;p&gt;２つのDataFrameを比較する方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではDataFrame同士の差分を確認する方法について解説しています．&lt;br&gt;
+pandasの&lt;code&gt;merge()&lt;/code&gt;や&lt;code&gt;isin()&lt;/code&gt;を使っています．&lt;/p&gt;
+&lt;p&gt;公式 Reference
+&lt;ul style="margin: -15px 0px 0px 15px;"&gt;
+  &lt;li&gt;
+  &lt;a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.merge.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.merge&lt;/a&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+  &lt;a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.isin.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.isin&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#dataframe"&gt;DataFrame同士の差分を横並びで確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dataframe_1"&gt;DataFrame同士の完全一致を確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;差分（一致しない）行だけを確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dataframe_2"&gt;片方のDataFrameを基準に両者の差分のみを確認&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを２つ作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+df1 = pd.DataFrame({
+    'sushi': ['まぐろ', 'いくら', 'えび'],
+    'price': [500, 300, 150]
+})
+display(df1)
+
+df2 = pd.DataFrame({
+    'sushi': ['まぐろ', 'うに', 'えび'],
+    'price': [500, 400, 130]
+})
+display(df2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 10px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;まぐろ&lt;/td&gt;
+      &lt;td&gt;500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;いくら&lt;/td&gt;
+      &lt;td&gt;300&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+      &lt;td&gt;150&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;まぐろ&lt;/td&gt;
+      &lt;td&gt;500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;うに&lt;/td&gt;
+      &lt;td&gt;400&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+      &lt;td&gt;130&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="dataframe"&gt;DataFrame同士の差分を横並びで確認&lt;/h3&gt;
+&lt;p&gt;２つのDataFrameを横並びにして確認する場合は以下のとおりです．&lt;br&gt;
+sushi列を基準にDataFrameを結合しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+pd.merge(df1, df2, how='outer', on='sushi')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price_x&lt;/th&gt;
+      &lt;th&gt;price_y&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;まぐろ&lt;/td&gt;
+      &lt;td&gt;500.0&lt;/td&gt;
+      &lt;td&gt;500.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;いくら&lt;/td&gt;
+      &lt;td&gt;300.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;130.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;うに&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;400.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;片方のDataFrameにしか存在しない要素に関しては&lt;code&gt;NaN&lt;/code&gt;となります.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;結合したDataFrameのカラム名（&lt;code&gt;price_x&lt;/code&gt;, &lt;code&gt;price_y&lt;/code&gt;）を変更したい場合は以下のように&lt;code&gt;suffixes&lt;/code&gt;引数を追加します．&lt;/p&gt;
+&lt;p&gt;&lt;pre&gt;&lt;code class="language-python"&gt;
+pd.merge(df1, df2, how='outer', on='sushi', suffixes=('_df1', '_df2'))
+&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;p&gt;&lt;table class="dataframe" border="1" style="margin: 10px 0px 20px 20px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price_df1&lt;/th&gt;
+      &lt;th&gt;price_df2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;まぐろ&lt;/td&gt;
+      &lt;td&gt;500.0&lt;/td&gt;
+      &lt;td&gt;500.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;いくら&lt;/td&gt;
+      &lt;td&gt;300.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;130.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;うに&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;400.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="dataframe_1"&gt;DataFrame同士の完全一致を確認&lt;/h3&gt;
+&lt;p&gt;DataFrame同士で完全に一致しているデータを見たい場合は以下のとおりです．&lt;br&gt;
+sushi列とprice列が一致している行だけが抽出されています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+pd.merge(df1, df2, how='inner')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 90px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;まぐろ&lt;/td&gt;
+      &lt;td&gt;500&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="_2"&gt;差分（一致しない）行だけを確認&lt;/h3&gt;
+&lt;p&gt;DataFrame同士の差分を確認するには以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df = pd.merge(df1, df2, how='outer', on='sushi', suffixes=('_df1', '_df2'))
+df['flag'] = df['price_df1'] == df['price_df2']
+df.query('flag == False')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price_df1&lt;/th&gt;
+      &lt;th&gt;price_df2&lt;/th&gt;
+      &lt;th&gt;flag&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;いくら&lt;/td&gt;
+      &lt;td&gt;300.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;False&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;130.0&lt;/td&gt;
+      &lt;td&gt;False&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;うに&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;400.0&lt;/td&gt;
+      &lt;td&gt;False&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;コードの内容は以下のとおりです．&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DataFrameを結合&lt;/li&gt;
+&lt;li&gt;各price列同士の一致を確認し，結果を新しい列として追加&lt;/li&gt;
+&lt;li&gt;flag列が&lt;code&gt;False&lt;/code&gt;のデータだけを抽出&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="dataframe_2"&gt;片方のDataFrameを基準に両者の差分のみを確認&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;df1&lt;/code&gt;のsushi列と&lt;code&gt;df2&lt;/code&gt;のsushi列を比較して，&lt;code&gt;df1&lt;/code&gt;にのみ存在する要素を表示しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df1[~df1['sushi'].isin(df2['sushi'])]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="2" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;いくら&lt;/td&gt;
+      &lt;td&gt;300&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;df2&lt;/code&gt;にのみ存在する要素は以下のとおりです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df2[~df2['sushi'].isin(df1['sushi'])]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;うに&lt;/td&gt;
+      &lt;td&gt;400&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;なお，&lt;code&gt;df1&lt;/code&gt;, &lt;code&gt;df2&lt;/code&gt;の両方に存在する要素をsushi列基準で取得するには以下のとおりです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df1[df1['sushi'].isin(df2['sushi'])]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 50px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;sushi&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;まぐろ&lt;/td&gt;
+      &lt;td&gt;500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;えび&lt;/td&gt;
+      &lt;td&gt;150&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;この方法では他の列（=price列）の一致は無視しています．&lt;br&gt;
+あくまでもsushi列同士の比較です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;たまに目視でDataFrame同士を見たりする際に使います．&lt;br&gt;
+&lt;code&gt;isin()&lt;/code&gt;はここで紹介した以外でも色々と使えるので，使えると便利です．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;例えば「いくら」は&lt;code&gt;df1&lt;/code&gt;には存在しますが，&lt;code&gt;df2&lt;/code&gt;には存在しないので，&lt;code&gt;price_y&lt;/code&gt;(=&lt;code&gt;df2&lt;/code&gt;の&lt;code&gt;price&lt;/code&gt;列)は&lt;code&gt;NaN&lt;/code&gt;となっています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【pandas】applymap 関数の数値処理と速度</title><link href="https://www.tecrab.com/articles/dataframe-applymap-int-speed.html" rel="alternate"></link><published>2021-11-03T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-11-03:/articles/dataframe-applymap-int-speed.html</id><summary type="html">&lt;p&gt;DataFrameのapplymap関数を使用した数値処理と速度を確認しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;&lt;code&gt;applymap()&lt;/code&gt;を使用した数値処理と速度を確認しています．&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;
+  公式 Reference: &lt;a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.applymap.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.applymap&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#dataframe10"&gt;DataFrameの各要素を10倍にする&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;処理速度の比較&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import numpy as np
+import pandas as pd
+
+# DataFrameの作成
+df = pd.DataFrame([[1, 2], [3, 4]], columns=['col1', 'col2'])
+df
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col1&lt;/th&gt;
+      &lt;th&gt;col2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="dataframe10"&gt;DataFrameの各要素を10倍にする&lt;/h3&gt;
+&lt;p&gt;DataFrameの各要素を10倍にする方法として以下の2種類を見てみましょう．&lt;br&gt;
+得られる結果はいずれも同じです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df * 10
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 50px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col1&lt;/th&gt;
+      &lt;th&gt;col2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;30&lt;/td&gt;
+      &lt;td&gt;40&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# dfの各要素に対して10倍の処理を適用
+df.applymap(lambda x: x * 10)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col1&lt;/th&gt;
+      &lt;th&gt;col2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;30&lt;/td&gt;
+      &lt;td&gt;40&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="_2"&gt;処理速度の比較&lt;/h3&gt;
+&lt;p&gt;「DataFrame の各要素を10倍」という処理では&lt;code&gt;df * 10&lt;/code&gt;と&lt;code&gt;applymap()&lt;/code&gt;を使用するパターンの２パターンがありました．これらは処理速度の問題で前者の方が望ましいとされています&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;が，どの程度違うのか簡単に検証してみましょう．&lt;/p&gt;
+&lt;p&gt;まず，1000x50のDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+m = 1000
+n = 50
+
+df_large = pd.DataFrame(np.random.normal(5, 2, m * n).reshape(m, n))
+df_large.shape
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+(1000, 50)
+&lt;/pre&gt;
+
+&lt;p&gt;上のコードで作成したDataFrameの各要素を10倍する処理を&lt;code&gt;df * 10&lt;/code&gt;と&lt;code&gt;applymap()&lt;/code&gt;の２パターンで比較します．&lt;/p&gt;
+&lt;p&gt;以下のコードでは100回の処理を3回繰り返した場合における処理速度の平均と標準偏差を見ています.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+%%timeit -r 3 -n 100
+
+# 100回の処理を3回繰り返した時の処理時間
+df_large * 10
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+33.1 µs ± 6.35 µs per loop (mean ± std. dev. of 3 runs, 100 loops each)
+&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class="language-python"&gt;
+%%timeit -r 3 -n 100
+
+# 100回の処理を3回繰り返した時の処理時間
+df_large.applymap(lambda x: x * 10)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+6.97 ms ± 78.4 µs per loop (mean ± std. dev. of 3 runs, 100 loops each)
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;df * 10&lt;/code&gt;の方が200倍以上早いですね・・・&lt;br&gt;
+数値計算では公式どおり&lt;code&gt;applymap()&lt;/code&gt;を使うことは避けましょう．&lt;/p&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;今回確認したDataFrameはそれほど大きいDataFrameではありませんが，かなりの差が出ました．もっと大きいDataFrameだと目も当てられない速度差になりそうです．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;applymap()&lt;/code&gt;で文字列を扱う記事はこちらです．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;
+    &lt;a href="https://www.revalab.net/dataframe-applymap-str-count/" rel="noopener noreferrer" target="_blank"&gt;【pandas】applymap 関数の数値処理と速度&lt;/a&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;公式 Reference でそのように言及されています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;Jupyterのマジックコマンドを使用しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【pandas】DataFrame 要素の文字数をカウントする方法（applymap）</title><link href="https://www.tecrab.com/articles/dataframe-applymap-str-count.html" rel="alternate"></link><published>2021-11-03T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-11-03:/articles/dataframe-applymap-str-count.html</id><summary type="html">&lt;p&gt;DataFrameの各要素に対する処理（文字数カウントなど）を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では&lt;code&gt;applymap()&lt;/code&gt;を使用した以下の内容を解説しています．
+&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;DataFrameにあるテキストの文字数をカウント&lt;/li&gt;
+  &lt;li&gt;DataFrameの各要素に何らかの処理を適用する&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.applymap.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.applymap&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#dataframe"&gt;DataFrame の各要素の文字数をカウント&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;より複雑な処理を適用させることも可能&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+# DataFrameの作成
+df = pd.DataFrame({
+    'Crab': ['たらばがに', '毛ガニ', '松葉がに'],
+    'Shrimp': ['くるまえび', 'オニテナガエビ', '桜エビ']
+})
+
+df
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Crab&lt;/th&gt;
+      &lt;th&gt;Shrimp&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;たらばがに&lt;/td&gt;
+      &lt;td&gt;くるまえび&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;毛ガニ&lt;/td&gt;
+      &lt;td&gt;オニテナガエビ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;松葉がに&lt;/td&gt;
+      &lt;td&gt;桜エビ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="dataframe"&gt;DataFrame の各要素の文字数をカウント&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;applymap()&lt;/code&gt;は引数の処理をDataFrameの各要素に適用させ，DataFrameを返す関数です．&lt;br&gt;
+今回は要素の文字数をカウントしたいので，引数に文字数をカウントする関数を指定します.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# applymap関数を使用して各要素の文字数をカウント
+# 戻り値はDataFrame
+
+df_count = df.applymap(lambda x: len(x))
+df_count
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 50px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Crab&lt;/th&gt;
+      &lt;th&gt;Shrimp&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;7&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;各要素の文字数がカウントされたDataFrameとして返ってきていますね．&lt;/p&gt;
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;要素に欠損値が含まれる場合，欠損値が文字列として認識されるので注意してください．&lt;br&gt;
+これを防ぐには&lt;code&gt;applymap()&lt;/code&gt;の引数に&lt;code&gt;na_action='ignore'&lt;/code&gt;を指定しましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_2"&gt;より複雑な処理を適用させることも可能&lt;/h3&gt;
+&lt;p&gt;別途関数を定義し，それを各要素に適用させることもできます．&lt;br&gt;
+&lt;code&gt;applymap()&lt;/code&gt;の引数に指定する際は関数名だけでOKです．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;文字列を変換・置換する処理を定義した関数の例を見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 別途関数を定義して適用することも可能
+# 一旦カタカナをひらがなに変換 → 文字列置換
+
+import re
+import jaconv
+
+def test_func(x):
+    hiragana = jaconv.kata2hira(x)
+    replaced_text = re.sub('えび', '', hiragana)
+    return replaced_text
+
+# 関数名だけを指定
+df.applymap(test_func)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 50px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Crab&lt;/th&gt;
+      &lt;th&gt;Shrimp&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;たらばがに&lt;/td&gt;
+      &lt;td&gt;くるま&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;毛がに&lt;/td&gt;
+      &lt;td&gt;おにてなが&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;松葉がに&lt;/td&gt;
+      &lt;td&gt;桜&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;applymap()&lt;/code&gt;で指定した&lt;code&gt;test_func()&lt;/code&gt;関数は「えび（エビを含む）」を取り除く関数なので，各要素に関数を当てることで「えび（エビ）」が取り除かれていますね．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;jaconv&lt;/code&gt;ライブラリの&lt;code&gt;kata2hira()&lt;/code&gt;「カタカナ」を「ひらがな」に変換する関数です．&lt;br&gt;
+なお&lt;code&gt;jaconv&lt;/code&gt;は外部ライブラリなのでインストールが必要です． &lt;/p&gt;
+&lt;/div&gt;
+&lt;details class="accordion-block" style="margin-top: -50px;"&gt;
+&lt;summary&gt;コードの詳細が知りたい方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;&lt;code&gt;test_func(x)&lt;/code&gt;関数は「えび（もしくはエビ）」という文字を削除する関数です．&lt;br&gt;
+ 処理は以下のとおりです．&lt;/p&gt;
+&lt;ol style="margin-top: 20px;"&gt;
+     &lt;li&gt;引数の文字列を&lt;code&gt;jaconv.kata2hira()&lt;/code&gt;でひらがなに変換&lt;/li&gt;
+     &lt;li&gt;変換した文字列に「えび」が含まれる場合はその文字を削除&lt;/li&gt;
+     &lt;li&gt;処理した文字列を返す&lt;/li&gt;
+ &lt;/ol&gt;
+&lt;p&gt;&lt;code&gt;re.sub('えび', '', hiragana)&lt;/code&gt;で「えび」の削除を行なっています．&lt;br&gt;
+&lt;code&gt;re.sub()&lt;/code&gt;は第一引数の文字列を第二引数の文字列に変換する関数です.（第三引数は置換対象のデータを指定します）&lt;/p&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;DataFrame の各要素に対して何らかの処理をしたい時に使える&lt;code&gt;applymap()&lt;/code&gt;を紹介しました．&lt;br&gt;
+&lt;code&gt;applymap()&lt;/code&gt;は便利ですが，処理速度が遅いです．&lt;br&gt;
+そのため，巨大なDataFrameに適用する際は時間も気にしておくと吉ですね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;lambdaを使用して，引数にとった文字の数を&lt;code&gt;len()&lt;/code&gt;でカウントしています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【Python】pandas, SciPyで疎行列の演算速度・メモリ使用量を比較</title><link href="https://www.tecrab.com/articles/scipy-pdsparse-cal-memory.html" rel="alternate"></link><published>2021-10-20T00:00:00+09:00</published><updated>2022-01-04T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-10-20:/articles/scipy-pdsparse-cal-memory.html</id><summary type="html">&lt;p&gt;pandas, SciPyで疎行列・密行列のメモリ使用量・速度を検討しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を扱っています．&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;&lt;code&gt;scipy.sparse&lt;/code&gt;と&lt;code&gt;pandas.SparseDtype&lt;/code&gt;の演算速度・メモリ使用量比較&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;バージョン情報&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;概要&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;演算速度とメモリ使用量の比較&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;演算速度の結果&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;メモリ使用量の結果&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;まとめ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_7"&gt;疎行列と密行列を合わせて演算する場合&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_9"&gt;結果&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_10"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;バージョン情報&lt;/h2&gt;
+&lt;p&gt;バージョンの情報は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python 3.10.5&lt;/li&gt;
+&lt;li&gt;NumPy 1.23.1&lt;/li&gt;
+&lt;li&gt;pandas 1.4.3 &lt;/li&gt;
+&lt;li&gt;SciPy 1.8.1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="_2"&gt;概要&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;scipy.sparse&lt;/code&gt;は疎行列を効率的に扱うためのクラスで&lt;code&gt;SciPy&lt;/code&gt;が提供しています．&lt;br&gt;
+また&lt;code&gt;pandas&lt;/code&gt;においても疎行列を扱える&lt;code&gt;pandas.SparseDtype&lt;/code&gt;があります．&lt;/p&gt;
+&lt;p&gt;本記事ではこれらの演算速度やメモリ使用量を比較していきます．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;疎行列の基本的な内容については以下の記事をご覧ください．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;
+    &lt;a href="https://www.revalab.net/sparse-matrix-memory/" rel="noopener noreferrer" target="_blank"&gt;【Python】pandas, SciPyで疎行列を扱う方法とメモリ使用量比較&lt;/a&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_3"&gt;演算速度とメモリ使用量の比較&lt;/h2&gt;
+&lt;p&gt;本記事で使用するライブラリと関数は以下です．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;code class="language-python"&gt;
+# 本記事中で使用するライブラリ
+import numpy as np
+import pandas as pd
+from scipy import sparse as sp
+
+# dfとscipy.sparseのメモリ使用量を算出する関数（単位を付与する関数を含む）
+def format_bytes(size):
+    power = 2**10
+    n = 0
+    power_labels = ['B', 'KB', 'MB', 'GB', 'TB']
+    while size &gt; power and n &lt;= len(power_labels):
+        size /= power
+        n += 1
+    return f'{size :.3f} {power_labels[n]}'
+
+def get_size_of_df(df):
+    return format_bytes(df.memory_usage().sum())
+
+def get_size_sparse_matrix(sp_matrix):
+    return format_bytes((sp_matrix.data.nbytes + sp_matrix.indices.nbytes + sp_matrix.indptr.nbytes))
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;以下のコードで演算速度，メモリ使用量を確認します．&lt;br&gt;
+行列内の&lt;code&gt;0&lt;/code&gt;割合を変えた1000x1000行列で演算速度とメモリ使用量を見ています．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;出力結果は以下のとおりです．&lt;br&gt;
+（&lt;code&gt;scipy.sparse&lt;/code&gt;と&lt;code&gt;pandas.SparseDtype&lt;/code&gt;の結果がそれぞれ出ています）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;メモリ使用量と非&lt;code&gt;0&lt;/code&gt;割合(density&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;)&lt;/li&gt;
+&lt;li&gt;行列積速度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+density_list = [0.0001, 0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
+
+# 疎行列の0でない成分の割合を変えてそれぞれ計算
+for density in density_list:
+    scipy_sp = sp.rand(1000, 1000, density=density, format='csr', random_state=42)
+    pandas_sp = pd.DataFrame.sparse.from_spmatrix(scipy_sp)
+    print(f'scipy_sp: {get_size_sparse_matrix(scipy_sp)}, density={density}')
+    %timeit scipy_sp * scipy_sp
+    print(f'pandas_sp: {get_size_of_df(pandas_sp)}, density={density}')
+    %timeit pandas_sp @ pandas_sp
+    print('')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px; font-size: 0.89em;"&gt;
+scipy_sp: 5.082 KB, density=0.0001
+39.1 µs ± 80.7 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+pandas_sp: 1.297 KB, density=0.0001
+37.5 ms ± 1.45 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 15.629 KB, density=0.001
+44.1 µs ± 38.3 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+pandas_sp: 11.844 KB, density=0.001
+36.3 ms ± 1.66 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 121.098 KB, density=0.01
+560 µs ± 3.8 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+pandas_sp: 117.312 KB, density=0.01
+39.6 ms ± 3.46 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 1.148 MB, density=0.1
+24.6 ms ± 30.8 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+pandas_sp: 1.145 MB, density=0.1
+39.9 ms ± 1.74 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 3.437 MB, density=0.3
+103 ms ± 112 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+pandas_sp: 3.433 MB, density=0.3
+40.1 ms ± 1.75 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 5.726 MB, density=0.5
+257 ms ± 285 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+pandas_sp: 5.722 MB, density=0.5
+43.1 ms ± 2.12 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 8.015 MB, density=0.7
+487 ms ± 697 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+pandas_sp: 8.011 MB, density=0.7
+42.6 ms ± 2.47 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 10.304 MB, density=0.9
+787 ms ± 1.13 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+pandas_sp: 10.300 MB, density=0.9
+49.7 ms ± 1.59 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+scipy_sp: 11.448 MB, density=1.0
+966 ms ± 1.6 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+pandas_sp: 11.444 MB, density=1.0
+29.8 ms ± 1.1 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+&lt;/pre&gt;
+
+&lt;p&gt;for文では順に以下の演算をしています．&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt;でない成分の割合が異なる&lt;code&gt;scipy.sparse&lt;/code&gt;を作成（CSR format）&lt;/li&gt;
+&lt;li&gt;作成した&lt;code&gt;scipy.sparse&lt;/code&gt;をpandasの&lt;code&gt;pandas.SparseDtype&lt;/code&gt;に変換&lt;/li&gt;
+&lt;li&gt;それぞれの行列積にかかる時間を計測&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;li&gt;メモリ使用量を算出する関数でそれぞれのメモリ使用量を確認し，densityと共に出力&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="_4"&gt;演算速度の結果&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt;割合が多い（＝疎な行列の）場合は&lt;code&gt;scipy.sparse&lt;/code&gt;の方が高速．&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt;割合が少ない（＝密な行列の）場合は&lt;code&gt;pandas.SparseDtype&lt;/code&gt;の方が高速．&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pandas.SparseDtype&lt;/code&gt;は&lt;code&gt;0&lt;/code&gt;割合と速度に明確な関係がないが&lt;code&gt;0&lt;/code&gt;成分がないと演算速度が向上する．&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="_5"&gt;メモリ使用量の結果&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt;割合が少ない場合のメモリ効率は&lt;code&gt;pandas.SparseDtype&lt;/code&gt;の方がよい．&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt;成分が多い場合は両者に大きな差はない．&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;なお，密行列のDataFrame（データ型&lt;code&gt;float64&lt;/code&gt;）を作成し，演算速度とメモリ使用量を確認すると，以下のようになります．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+csr = sp.rand(1000, 1000, density=1.0, format='csr', random_state=42)
+normal_df = pd.DataFrame.sparse.from_spmatrix(csr).sparse.to_dense()
+%timeit normal_df @ normal_df
+print(get_size_of_df(normal_df))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px; font-size: 0.89em;"&gt;
+20 ms ± 1.2 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+7.630 MB
+&lt;/pre&gt;
+
+&lt;p&gt;密行列の演算速度・メモリ使用量は通常のDataFrameの方がよいですね.（当たり前ですが）&lt;br&gt;&lt;/p&gt;
+&lt;h3 id="_6"&gt;まとめ&lt;/h3&gt;
+&lt;p&gt;疎行列を扱う際には&lt;code&gt;scipy.sparse&lt;/code&gt;を使うと高速かつメモリ効率も向上するため，基本的には&lt;code&gt;scipy.sparse&lt;/code&gt;を使うとよいでしょう．&lt;/p&gt;
+&lt;p&gt;一方でメモリ観点では&lt;code&gt;pandas.SparseDtype&lt;/code&gt;の方がよい場合もあります．疎行列を扱う際にDataFrameをそのまま使用するケースはあまりないと思いますが，必要性が出てきた時の選択肢として知っておくと吉ですね．&lt;/p&gt;
+&lt;h2 id="_7"&gt;疎行列と密行列を合わせて演算する場合&lt;/h2&gt;
+&lt;p&gt;実際にデータを扱う際には密行列と疎行列を組み合わせることが多いと思います．&lt;br&gt;
+そのため，ここでは簡単な実験で演算速度とメモリ使用量を確認してみます．&lt;/p&gt;
+&lt;h5 id="_8"&gt;準備&lt;/h5&gt;
+&lt;p&gt;以下で前準備として密行列(1000x5)，疎行列(1000x995)を作成します．&lt;br&gt;
+（後ほど行列を結合させて1000x1000行列を２パターン作成するためです）&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 乱数シードの固定
+np.random.seed(42)
+
+# DataFrameの作成
+df = pd.DataFrame({
+    'col_1': np.ones(1000, dtype=np.int8), 
+    'col_2': np.random.rand(1000), 
+    'col_3': np.ones(1000, dtype=np.float32),
+    'col_4': np.random.rand(1000), 
+    'col_5': np.random.rand(1000)
+})
+df.head(3)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+      &lt;th&gt;col_2&lt;/th&gt;
+      &lt;th&gt;col_3&lt;/th&gt;
+      &lt;th&gt;col_4&lt;/th&gt;
+      &lt;th&gt;col_5&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0.374540&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.185133&lt;/td&gt;
+      &lt;td&gt;0.261706&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0.950714&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.541901&lt;/td&gt;
+      &lt;td&gt;0.246979&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0.731994&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.872946&lt;/td&gt;
+      &lt;td&gt;0.906255&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sparse_csr = sp.rand(1000, 995, density=0.005, format='csr', random_state=42)
+sparse_csr
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px; font-size: 0.89em;"&gt;
+&amp;lt;1000x995 sparse matrix of type '&amp;lt;class 'numpy.float64'&amp;gt;'
+    with 4975 stored elements in Compressed Sparse Row format&amp;gt;
+&lt;/pre&gt;
+
+&lt;h5 id="route1-scipysparse"&gt;route1: scipy.sparseで揃えた行列&lt;/h5&gt;
+&lt;p&gt;route1では&lt;code&gt;scipy.sparse&lt;/code&gt;で1000x1000行列を作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# ルート1：両方をscipy.sparseに揃えて結合
+
+# dfをsparse matrixに変換
+df_sparse = sp.csr_matrix(df)
+
+# 変換したdfとsparse_csrを結合
+route_1 = sp.hstack((df_sparse, sparse_csr), format='csr')
+route_1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px; font-size: 0.89em;"&gt;
+&amp;lt;1000x1000 sparse matrix of type '&amp;lt;class 'numpy.float64'&amp;gt;'
+    with 9975 stored elements in Compressed Sparse Row format&amp;gt;
+&lt;/pre&gt;
+
+&lt;h5 id="route2-pandassparsedtype"&gt;route2: pandas.SparseDtypeで揃えた行列&lt;/h5&gt;
+&lt;p&gt;route2では&lt;code&gt;pandas.SparseDtype&lt;/code&gt;で1000x1000行列を作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# ルート2：scipy.sparse を pandas.SparseDtype に変換
+
+# sparse_csr を pandas sparse に変換
+sparse_pds = pd.DataFrame.sparse.from_spmatrix(sparse_csr)
+
+route_2 = pd.concat([df, sparse_pds], axis=1)
+route_2.shape
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px; font-size: 0.89em;"&gt;
+(1000, 1000)
+&lt;/pre&gt;
+
+&lt;h3 id="_9"&gt;結果&lt;/h3&gt;
+&lt;p&gt;演算速度とメモリ使用量はそれぞれ以下のとおりになりました．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(f'route_1: {get_size_sparse_matrix(route_1)}')
+%timeit route_1 * route_1
+
+print('')
+
+print(f'route_2: {get_size_of_df(route_2)}')
+# 行列積の計算のため，index, columnsを揃える
+route_2.index = route_2.columns
+%timeit route_2 @ route_2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px; font-size: 0.89em;"&gt;
+route_1: 120.805 KB
+361 µs ± 560 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+
+route_2: 86.746 KB
+40 ms ± 1.66 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+&lt;/pre&gt;
+
+&lt;p&gt;演算速度は&lt;code&gt;scipy.sparse&lt;/code&gt;，メモリ使用量は&lt;code&gt;pandas.SparseDtype&lt;/code&gt;の方がいいですね．&lt;br&gt;
+今回は簡易的な実験ですので，実際のデータ型やデータ量によって異なることがあると思います．&lt;br&gt;
+しかし「&lt;a href="#_6"&gt;まとめ&lt;/a&gt;」でも記載したとおり通常は&lt;code&gt;scipy.sparse&lt;/code&gt;を使う方がよさそうです．&lt;/p&gt;
+&lt;h2 id="_10"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;scipy.sparse&lt;/code&gt;と&lt;code&gt;pandas.SparseDtype&lt;/code&gt;で色々と実験してみましたが，より巨大でデータ型が混在する行列だと結果が異なってくるかもしれません．&lt;br&gt;
+何らかの参考になれば幸いです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;この値が小さいほど行列中に含まれる&lt;code&gt;0&lt;/code&gt;成分が多くなります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;Jupyter環境であれば&lt;code&gt;%timeit&lt;/code&gt;というマジックコマンドで行ごとの演算速度を計測できます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category><category term="SciPy"></category></entry><entry><title>【Python】pandas, SciPyで疎行列を扱う方法とメモリ使用量比較</title><link href="https://www.tecrab.com/articles/sparse-matrix-memory.html" rel="alternate"></link><published>2021-10-18T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-10-18:/articles/sparse-matrix-memory.html</id><summary type="html">&lt;p&gt;pandas, SciPyで疎行列を生成・変換する方法とメモリ使用量を確認している記事です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を扱っています．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+ &lt;li&gt;sparse matrix（疎行列）と dense matrix（密行列）の概要&lt;/li&gt;
+ &lt;li&gt;sparse matrix をpandasとSciPyで生成・変換する方法&lt;/li&gt;
+ &lt;li&gt;sparse matrix のメモリ使用量比較&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;バージョン情報&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#sparse-matrixdense-matrix"&gt;sparse matrixとdense matrixの概要&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#import"&gt;ライブラリのimport&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#sparse-matrix"&gt;疎行列(sparse matrix)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#dense-matrix"&gt;密行列(dense matrix)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;疎行列を効率的に扱う&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#sparse-matrixpandasscipy"&gt;sparse matrixをpandasとSciPyで生成・変換する方法&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#scipy"&gt;SciPy&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#pandas"&gt;pandas&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#scipysparsepandassparse"&gt;scipy.sparseをpandasのsparse型に変換する&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#sparse-matrix_1"&gt;sparse matrix のメモリ使用量&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;まとめ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;バージョン情報&lt;/h2&gt;
+&lt;p&gt;バージョンの情報は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python 3.10.5&lt;/li&gt;
+&lt;li&gt;NumPy 1.23.1&lt;/li&gt;
+&lt;li&gt;pandas 1.4.3 &lt;/li&gt;
+&lt;li&gt;SciPy 1.8.1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="sparse-matrixdense-matrix"&gt;sparse matrixとdense matrixの概要&lt;/h2&gt;
+&lt;p&gt;sparse matrixは行列の成分がほとんど&lt;code&gt;0&lt;/code&gt;である行列のことをいいます．&lt;br&gt;
+sparse matrixを日本語で言うと「疎行列」です．&lt;br&gt;
+反対に成分の多くが&lt;code&gt;0&lt;/code&gt;でない行列はdense matrixといい，日本語は「密行列」です．&lt;/p&gt;
+&lt;p&gt;以下で疎行列と密行列を見てみましょう．&lt;/p&gt;
+&lt;h3 id="import"&gt;ライブラリのimport&lt;/h3&gt;
+&lt;p&gt;はじめに本記事で使用するライブラリをimportしておきます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;code class="language-python"&gt;
+# 本記事中で使用するライブラリ
+import numpy as np
+import pandas as pd
+from scipy import sparse as sp
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h3 id="sparse-matrix"&gt;疎行列(sparse matrix)&lt;/h3&gt;
+&lt;p&gt;以下のコードでDataFrameを作ります．&lt;br&gt;
+3×1000の行列のうち，ほとんどが&lt;code&gt;0&lt;/code&gt;で稀に&lt;code&gt;1&lt;/code&gt;（＝データ）がある疎行列です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+np.random.seed(42) # 乱数シードの固定
+
+# 乱数を生成して3×1000のdfを作成
+sparse = np.random.binomial(n=1, p=0.1, size=3*1000)
+sdf = pd.DataFrame(sparse.reshape(3, 1000))
+sdf
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;990&lt;/th&gt;
+      &lt;th&gt;991&lt;/th&gt;
+      &lt;th&gt;992&lt;/th&gt;
+      &lt;th&gt;993&lt;/th&gt;
+      &lt;th&gt;994&lt;/th&gt;
+      &lt;th&gt;995&lt;/th&gt;
+      &lt;th&gt;996&lt;/th&gt;
+      &lt;th&gt;997&lt;/th&gt;
+      &lt;th&gt;998&lt;/th&gt;
+      &lt;th&gt;999&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="under-df-info"&gt;&lt;p&gt;3 rows × 1000 columns&lt;/p&gt;&lt;/div&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;今回は例示のために小さい行列で見ていますが，sparse matrixの列数は非常に多いことが普通です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="dense-matrix"&gt;密行列(dense matrix)&lt;/h3&gt;
+&lt;p&gt;続いて密行列を作成します．&lt;br&gt;
+3×1000の行列のうち，ほとんどが&lt;code&gt;1&lt;/code&gt;で稀に&lt;code&gt;0&lt;/code&gt;があるデータです．&lt;br&gt;
+ちなみに密行列の数値に決まりはありません.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+np.random.seed(42) # 乱数シードの固定
+
+# 乱数を生成して3×1000のdfを作成
+dense = np.random.binomial(n=1, p=0.9, size=3*1000)
+ddf = pd.DataFrame(dense.reshape(3, 1000))
+ddf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;990&lt;/th&gt;
+      &lt;th&gt;991&lt;/th&gt;
+      &lt;th&gt;992&lt;/th&gt;
+      &lt;th&gt;993&lt;/th&gt;
+      &lt;th&gt;994&lt;/th&gt;
+      &lt;th&gt;995&lt;/th&gt;
+      &lt;th&gt;996&lt;/th&gt;
+      &lt;th&gt;997&lt;/th&gt;
+      &lt;th&gt;998&lt;/th&gt;
+      &lt;th&gt;999&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="under-df-info"&gt;&lt;p&gt;3 rows × 1000 columns&lt;/p&gt;&lt;/div&gt;
+
+&lt;h3 id="_2"&gt;疎行列を効率的に扱う&lt;/h3&gt;
+&lt;p&gt;疎行列は成分のほとんどが&lt;code&gt;0&lt;/code&gt;です．&lt;br&gt;
+そのため&lt;code&gt;1&lt;/code&gt;の場所だけを記憶しておくとメモリ効率がよくなります．&lt;/p&gt;
+&lt;p&gt;上記のような方法でデータの保持するには&lt;code&gt;scipy.sparse&lt;/code&gt;やpandasのsparse型を使用します．&lt;/p&gt;
+&lt;h2 id="sparse-matrixpandasscipy"&gt;sparse matrixをpandasとSciPyで生成・変換する方法&lt;/h2&gt;
+&lt;h3 id="scipy"&gt;SciPy&lt;/h3&gt;
+&lt;p&gt;先ほど作成した各DataFrameについて，SciPyの&lt;code&gt;coo_matrix()&lt;/code&gt;メソッドを使用して&lt;code&gt;scipy.sparse&lt;/code&gt;に変換してみます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# sparse(sdf_sp) と dense(ddf_sp) を作成
+sdf_sp = sp.coo_matrix(sdf.values)
+ddf_sp = sp.coo_matrix(ddf.values)
+
+# 例としてsdf_spを確認
+sdf_sp
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px; font-size: 0.89em;"&gt;
+&amp;lt;3x1000 sparse matrix of type '&amp;lt;class 'numpy.int64'&amp;gt;'
+    with 298 stored elements in COOrdinate format&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;文字列が出力されていますが，これは&lt;code&gt;scipy.sparse&lt;/code&gt;の情報です．&lt;br&gt;
+オブジェクトのデータ型は&lt;code&gt;scipy.sparse.coo.coo_matrix&lt;/code&gt;です．&lt;/p&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;出力された情報の見方が知りたい方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;出力結果の見方は以下のとおりです． 
+  &lt;/p&gt;
+&lt;ol style="margin-top: 20px;"&gt;
+      &lt;li&gt;&lt;code&gt;3x1000 sparse matrix of type '&amp;lt;class 'numpy.int64'&amp;gt;'&lt;/code&gt;&lt;/li&gt;
+      行列の大きさとデータ型を表しています．今回指定したDataFrameは3×1000でしたので一致していますね．なお，データ型は&lt;code&gt;numpy.int64&lt;/code&gt;です．
+      &lt;li style="margin-top: 20px;"&gt;&lt;code&gt;with 298 stored elements in COOrdinate format&lt;/code&gt;&lt;/li&gt;
+      298 stored elements部分は保持している&lt;code&gt;1&lt;/code&gt;の数です．今回のDataFrameには&lt;code&gt;1&lt;/code&gt;が298個あるということです．その後の&lt;code&gt;COOrdinate format&lt;/code&gt;はsparse matrixの種類です.（sparse matrixにおけるデータの持ち方には色々な種類がありますが，今回はCOOという種類を使っています）
+  &lt;/ol&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h3 id="pandas"&gt;pandas&lt;/h3&gt;
+&lt;p&gt;次にpandasのメソッドを使用してsparse matrixを生成します．&lt;br&gt;
+以下の２パターンを見てみましょう．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DataFrameから&lt;code&gt;astype&lt;/code&gt;メソッドでsparse型に変換する&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scipy.sparse&lt;/code&gt;をpandasのsparse型に変換する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id="dataframeastypesparse"&gt;DataFrameからastypeメソッドでsparse型に変換する&lt;/h5&gt;
+&lt;p&gt;DataFrameに対して&lt;code&gt;astype&lt;/code&gt;メソッドを使用し&lt;code&gt;pandas.SparseDtype&lt;/code&gt;を指定すればOKです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# sparse(pd_sdf) と dense(pd_ddf) を作成
+pd_sdf = sdf.astype(pd.SparseDtype("int64", 0))
+pd_ddf = ddf.astype(pd.SparseDtype("int64", 0))
+
+# 例としてpd_sdfを確認
+pd_sdf
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;990&lt;/th&gt;
+      &lt;th&gt;991&lt;/th&gt;
+      &lt;th&gt;992&lt;/th&gt;
+      &lt;th&gt;993&lt;/th&gt;
+      &lt;th&gt;994&lt;/th&gt;
+      &lt;th&gt;995&lt;/th&gt;
+      &lt;th&gt;996&lt;/th&gt;
+      &lt;th&gt;997&lt;/th&gt;
+      &lt;th&gt;998&lt;/th&gt;
+      &lt;th&gt;999&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="under-df-info"&gt;&lt;p&gt;3 rows × 1000 columns&lt;/p&gt;&lt;/div&gt;
+
+&lt;p&gt;オブジェクトのデータ型は&lt;code&gt;pandas.core.frame.DataFrame&lt;/code&gt;型です.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;
+&lt;code&gt;dtypes&lt;/code&gt;メソッドで各カラムのデータ型を見ると，&lt;code&gt;Sparse[int64, 0]&lt;/code&gt; となっており，データがSparse型で保持されていることがわかります．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(type(pd_sdf), '\n')
+print(pd_sdf.dtypes)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px; font-size: 0.89em;"&gt;
+&amp;lt;class 'pandas.core.frame.DataFrame'&amp;gt;
+
+0      Sparse[int64, 0]
+1      Sparse[int64, 0]
+2      Sparse[int64, 0]
+3      Sparse[int64, 0]
+4      Sparse[int64, 0]
+             ...       
+995    Sparse[int64, 0]
+996    Sparse[int64, 0]
+997    Sparse[int64, 0]
+998    Sparse[int64, 0]
+999    Sparse[int64, 0]
+Length: 1000, dtype: object
+&lt;/pre&gt;
+
+&lt;h3 id="scipysparsepandassparse"&gt;scipy.sparseをpandasのsparse型に変換する&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;scipy.sparse&lt;/code&gt;をpandasのsparse型に変換します．&lt;br&gt;
+&lt;code&gt;pd.DataFrame.sparse.from_spmatrix&lt;/code&gt;というメソッドで変換することができます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+pd_sdf2 = pd.DataFrame.sparse.from_spmatrix(sdf_sp)
+pd_sdf2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;990&lt;/th&gt;
+      &lt;th&gt;991&lt;/th&gt;
+      &lt;th&gt;992&lt;/th&gt;
+      &lt;th&gt;993&lt;/th&gt;
+      &lt;th&gt;994&lt;/th&gt;
+      &lt;th&gt;995&lt;/th&gt;
+      &lt;th&gt;996&lt;/th&gt;
+      &lt;th&gt;997&lt;/th&gt;
+      &lt;th&gt;998&lt;/th&gt;
+      &lt;th&gt;999&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="under-df-info"&gt;&lt;p&gt;3 rows × 1000 columns&lt;/p&gt;&lt;/div&gt;
+
+&lt;p&gt;各カラムのデータ型は&lt;code&gt;scipy.sparse&lt;/code&gt;の型に依存します．&lt;br&gt;
+今回は&lt;code&gt;scipy.sparse&lt;/code&gt;の型が&lt;code&gt;numpy.int64&lt;/code&gt;だったため&lt;code&gt;Sparse[int64, 0]&lt;/code&gt;になっています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(type(pd_sdf2), '\n')
+print(pd_sdf2.dtypes)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px; font-size: 0.89em;"&gt;
+&amp;lt;class 'pandas.core.frame.DataFrame'&amp;gt; 
+
+0      Sparse[int64, 0]
+1      Sparse[int64, 0]
+2      Sparse[int64, 0]
+3      Sparse[int64, 0]
+4      Sparse[int64, 0]
+             ...       
+995    Sparse[int64, 0]
+996    Sparse[int64, 0]
+997    Sparse[int64, 0]
+998    Sparse[int64, 0]
+999    Sparse[int64, 0]
+Length: 1000, dtype: object
+&lt;/pre&gt;
+
+&lt;h2 id="sparse-matrix_1"&gt;sparse matrix のメモリ使用量&lt;/h2&gt;
+&lt;p&gt;DataFrameと&lt;code&gt;scipy.sparse&lt;/code&gt;の各行列について，メモリ使用量を確認してみましょう．&lt;br&gt;
+以下の関数を使用してDataFrameとsparse matrixのメモリ使用量を見ることができます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;&lt;code class="language-python"&gt;
+# DataFrame
+def get_size_of_df(df):
+    return df.memory_usage().sum()
+
+# COO matrix
+def get_size_of_coo(coo):
+    return coo.data.nbytes + coo.row.nbytes + coo.col.nbytes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id="dataframe"&gt;DataFrameの疎行列・密行列&lt;/h5&gt;
+&lt;p&gt;DataFrameで作成した疎行列と密行列のメモリ使用量を比較すると，両者のメモリ使用量は同じです．&lt;br&gt;
+通常のDataFrameで扱うとどちらもメモリ使用量が同じになるので非効率です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(f'DataFrame 疎行列：{get_size_of_df(sdf)}')
+print(f'DataFrame 密行列：{get_size_of_df(ddf)}')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+DataFrame 疎行列：24128
+DataFrame 密行列：24128
+&lt;/pre&gt;
+
+&lt;h5 id="scipysparse"&gt;scipy.sparseの疎行列・密行列&lt;/h5&gt;
+&lt;p&gt;続いて&lt;code&gt;scipy.sparse&lt;/code&gt;に変換した疎行列と密行列のメモリ使用量を比較します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(f'scipy.sparse 疎行列：{get_size_of_coo(sdf_sp)}')
+print(f'scipy.sparse 密行列：{get_size_of_coo(ddf_sp)}')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+scipy.sparse 疎行列：4768
+scipy.sparse 密行列：43232
+&lt;/pre&gt;
+
+&lt;p&gt;疎行列についてはメモリ使用量が非常に少なくなっています．&lt;br&gt;
+必要なデータだけを持っておくことでうまくメモリ使用量を節約できていますね．&lt;/p&gt;
+&lt;p&gt;一方で密行列を&lt;code&gt;scipy.sparse&lt;/code&gt;に変換すると逆にメモリの使用量が増加してしまいました．&lt;br&gt;
+密行列を&lt;code&gt;scipy.sparse&lt;/code&gt;に変換するメリットはないようです．&lt;/p&gt;
+&lt;h5 id="pandas_1"&gt;pandasの疎行列・密行列&lt;/h5&gt;
+&lt;p&gt;最後にpandasのsparse型を見ていきましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(f'pandas sparse 疎行列：{get_size_of_df(pd_sdf)}')
+print(f'pandas sparse 密行列：{get_size_of_df(pd_ddf)}')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+pandas sparse 疎行列：3704
+pandas sparse 密行列：32552
+&lt;/pre&gt;
+
+&lt;p&gt;pandasのsparse型も&lt;code&gt;scipy.sparse&lt;/code&gt;と同じ傾向&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;になりました．&lt;/p&gt;
+&lt;p&gt;また&lt;code&gt;scipy.sparse&lt;/code&gt;とpandasのsparse型を見るとメモリ使用量に関してはpandas sparseの方がより少ないことがわかります．&lt;/p&gt;
+&lt;h2 id="_3"&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;疎行列と密行列を合わせて扱う際にはデータ型やsparse matrix化の方法を検討するとメモリ効率をよくすることができますね．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;疎行列はSciPyやpandasなどで効率的に扱うことができる．&lt;/li&gt;
+&lt;li&gt;密行列をsparse型に変換するとメモリ使用量が増加する．&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;SciPyとpandasの疎行列・密行列の演算速度について検討した記事は以下です．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;
+    &lt;a href="https://www.revalab.net/scipy-pdsparse-cal-memory/" rel="noopener noreferrer" target="_blank"&gt;Python, pandas, SciPyで疎行列の演算速度・メモリ使用量を比較&lt;/a&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;密行列は&lt;code&gt;0&lt;/code&gt;と&lt;code&gt;1&lt;/code&gt;だけで構成されるものではないと言う意味です．なお，疎行列は通常&lt;code&gt;0&lt;/code&gt;か&lt;code&gt;1&lt;/code&gt;のみです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;以下コード&lt;code&gt;print(type(pd_sdf), '\n')&lt;/code&gt;の&lt;code&gt;'\n'&lt;/code&gt;は見栄えのために改行を入れているだけです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;疎行列をsparse型に変換するとメモリ使用量が非常に少なくなり，密行列をsparse型に変換すると逆にメモリ使用量が増加しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category><category term="SciPy"></category></entry><entry><title>【Python・R】コード実行時の警告（Warning）を非表示にする方法</title><link href="https://www.tecrab.com/articles/nowarning.html" rel="alternate"></link><published>2021-07-20T00:00:00+09:00</published><updated>2022-08-03T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-07-20:/articles/nowarning.html</id><summary type="html">&lt;p&gt;PythonやRで出てくる警告を非表示にする方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;Python や R でコード実行する際，エラーではないものの警告が出ることがあります．&lt;br&gt;
+このような警告を消す方法をご紹介します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#python"&gt;Pythonのコード例&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#r"&gt;Rのコード例&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="python"&gt;Pythonのコード例&lt;/h2&gt;
+&lt;p&gt;Python の場合は以下のコードで警告を非表示にできます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;code class="language-python"&gt;
+# 警告を非表示にする
+import warnings
+warnings.filterwarnings('ignore')
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h2 id="r"&gt;Rのコード例&lt;/h2&gt;
+&lt;p&gt;Rの場合は&lt;code&gt;options()&lt;/code&gt;関数の引数&lt;code&gt;warn = -1&lt;/code&gt;を指定することで警告を非表示にできます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+&lt;code class="language-r"&gt;
+# 警告を非表示にする
+options(warn = -1)
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;なお&lt;code&gt;warn = 負の値&lt;/code&gt;とすればいいので&lt;code&gt;warn = -10&lt;/code&gt;などでもOKです．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;最初から警告を非表示とするのはおすすめできないですが，警告内容が分かっている（非表示にしても問題ない）場合は使っていきましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;それほど頻度は多くないですが，時々使いますね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="R"></category></entry><entry><title>【Python・R】グラフの背景色を変更する方法</title><link href="https://www.tecrab.com/articles/graph-bg.html" rel="alternate"></link><published>2021-07-17T00:00:00+09:00</published><updated>2022-08-03T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-07-17:/articles/graph-bg.html</id><summary type="html">&lt;p&gt;PythonやRでグラフの背景色を変更する方法をご紹介します．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;PythonやRでグラフの背景色を変更する方法を解説します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;イメージ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#python"&gt;Pythonのコード例&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#r"&gt;Rのコード例&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;活用例&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;イメージ&lt;/h2&gt;
+&lt;p&gt;以下のような感じです．&lt;br&gt;
+&lt;img alt="00" src="/images/graph-bg/graph-bg_00.png"&gt;&lt;/p&gt;
+&lt;h2 id="python"&gt;Pythonのコード例&lt;/h2&gt;
+&lt;p&gt;Pythonの場合は以下のようなコードでグラフの背景色を指定できます．&lt;br&gt;
+（Pythonではグラフの背景色をあまり変更しませんが・・・）&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# ライブラリのインポート
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn import datasets
+
+# irisデータセットの読み込み
+iris_dataset = datasets.load_iris()
+
+# irisデータセットのDataFrame化
+iris = pd.DataFrame(data=iris_dataset.data, columns=iris_dataset.feature_names)
+
+# 作画領域の設定
+plt.figure(figsize=(5, 5), facecolor='antiquewhite').add_subplot(facecolor='lightblue')
+
+# 散布図の作成・設定
+plt.scatter(iris['sepal length (cm)'], iris['sepal width (cm)'], s=4, c='black')
+plt.xlabel('sepal length (cm)')
+plt.ylabel('sepal width (cm)')
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img alt="01" src="/images/graph-bg/graph-bg_01.png"&gt;&lt;/p&gt;
+&lt;p&gt;作画領域ごとに色を指定する形式です．&lt;br&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;plt.figure()&lt;/code&gt; で作図枠を作成し，引数&lt;code&gt;facecolor&lt;/code&gt;で作図枠の色を指定.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.add_subplot()&lt;/code&gt;の引数&lt;code&gt;facecolor&lt;/code&gt;でグラフ自体の背景色を指定．&lt;br&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;したがって，外側の大きい枠が&lt;code&gt;antiquewhite&lt;/code&gt;，グラフ自体の色が&lt;code&gt;lightblue&lt;/code&gt;という色になっています．&lt;/p&gt;
+&lt;h2 id="r"&gt;Rのコード例&lt;/h2&gt;
+&lt;p&gt;Rの場合は&lt;code&gt;par()&lt;/code&gt;関数の引数&lt;code&gt;bg&lt;/code&gt;を指定することで作画領域の色&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;を変更できます．&lt;br&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-r"&gt;
+# 標準データセットのiris
+iris &lt;- iris
+
+# par()関数で作画領域の色を指定
+par(bg='gray95')
+
+# 散布図を作成
+plot(iris[, 'Sepal.Length'], iris[, 'Sepal.Width'], xlab='Sepal.Length', ylab='Sepal.Width', pch=16)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img alt="02" src="/images/graph-bg/graph-bg_02.png"&gt;&lt;/p&gt;
+&lt;div class="alert-grey" style="margin-bottom: 70px;"&gt;
+&lt;span class="alert-grey-box-title"&gt;Rの実行環境と&lt;code&gt;par()&lt;/code&gt;関数&lt;/span&gt;
+Rの実行環境によって&lt;code&gt;par()&lt;/code&gt;関数の適用範囲が変わります.&lt;br&gt;
+Rstudioで&lt;code&gt;par()&lt;/code&gt;関数を実行すると，それ以降に作成した他のグラフも&lt;code&gt;par()&lt;/code&gt;関数の実行内容が適用されます．&lt;br&gt;
+Jupyter Labの場合は&lt;code&gt;par()&lt;/code&gt;関数はセルごとに適用されます．
+&lt;/div&gt;
+
+&lt;h3 id="_2"&gt;活用例&lt;/h3&gt;
+&lt;p&gt;RのグラフをJupyter Labのダークモードで出力する際に使えます．&lt;br&gt;
+そのままの設定だと背景色と重なってグラフが消えてしまいます・・・&lt;br&gt;
+&lt;img alt="03" src="/images/graph-bg/graph-bg_03.png"&gt;&lt;/p&gt;
+&lt;p&gt;これを解決するために&lt;code&gt;par()&lt;/code&gt;関数で背景色を指定しています．&lt;br&gt;
+Pythonでグラフを書く際は自動で調整してくれるのでいちいち指定する必要がありません．&lt;/p&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;本記事ではRおよびPythonでグラフの背景色をつける方法を紹介しました．&lt;br&gt;
+通常は変更しませんが・・・&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;figsize=(5, 5)&lt;/code&gt; という部分は作図領域のサイズを指定しています&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;今回は&lt;code&gt;bg='gray95'&lt;/code&gt;としているので背景色はグレー（gray95）になります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="R"></category></entry><entry><title>【Python】インストール済みのライブラリを一覧or絞り込んで確認する方法</title><link href="https://www.tecrab.com/articles/jupyter-lab-pip-list.html" rel="alternate"></link><published>2021-07-08T00:00:00+09:00</published><updated>2022-07-08T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-07-08:/articles/jupyter-lab-pip-list.html</id><summary type="html">&lt;p&gt;ローカルPCにインストール済みのPythonライブラリを一覧/絞り込みで確認する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;既にインストール済みのPythonライブラリを確認する方法です．&lt;br&gt;
+ライブラリを一覧で確認 or 特定のライブラリのみを確認する方法をご紹介します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;パッケージすべてを一覧で表示&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;特定のライブラリを確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;パッケージすべてを一覧で表示&lt;/h2&gt;
+&lt;h5 id="_2"&gt;ターミナル&lt;/h5&gt;
+&lt;p&gt;ターミナルで以下のコマンドを実行すればライブラリが一覧で表示されます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;
+Anacondaを使っている場合は&lt;code&gt;conda list&lt;/code&gt;です．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+pip list
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h5 id="jupyter"&gt;Jupyterのセルで確認&lt;/h5&gt;
+&lt;p&gt;Jupyter Lab&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;でも確認することができます．&lt;br&gt;
+セルで以下を実行すればOKです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python" style="margin-bottom: 90px;"&gt;
+!pip list
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="_3"&gt;特定のライブラリを確認&lt;/h2&gt;
+&lt;p&gt;文字列を検索できる&lt;code&gt;grep&lt;/code&gt;コマンド を使用して特定のライブラリを検索することができます．&lt;br&gt;
+以下の例ではNumPyがインストール済みのライブラリ一覧にあるかを確認するコマンドです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+pip list | grep numpy
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+numpy        1.20.3
+numpydoc     1.1.0
+&lt;/pre&gt;
+
+&lt;p&gt;管理人の環境ではNumPyがインストールされているので出力されましたが，インストールされていない場合は何も表示されません．&lt;br&gt;
+インストールしたいライブラリの有無を確認するときなどに利用するといいですね．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;grep&lt;/code&gt;コマンドは部分一致する文字を取得してくれる&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;ので，ライブラリ名の一部だけを指定してもOKです．&lt;br&gt;
+そのため，以下のコマンドでもNumPyのインストール有無を確認できます(&lt;code&gt;num&lt;/code&gt;を含むライブラリを取得しているのでNumPy以外も出力されています).&lt;/p&gt;
+&lt;p&gt;&lt;pre class="command-line" data-prompt="%" style="margin: 10px 0px;"&gt;&lt;code class="language-bash"&gt;
+pip list | grep num
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin: -0.2em 1em 1.2em 1em;"&gt;
+numba        0.53.1
+numexpr      2.7.3
+numpy        1.20.3
+numpydoc     1.1.0
+&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;新しいライブラリを導入する際などに確認としてよく使います．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;出力結果が長いので結果の表記を省略していますが，ライブラリ名とそのバージョンがセットで出力されます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;Jupyter Notebook，Google Colaboratoryでも可能です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;オプションをつければ完全一致なども指定できます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="Jupyter"></category></entry><entry><title>【Python】使っているライブラリのバージョンを確認する方法</title><link href="https://www.tecrab.com/articles/jupyter-lab-version-check.html" rel="alternate"></link><published>2021-06-28T00:00:00+09:00</published><updated>2022-07-05T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-06-28:/articles/jupyter-lab-version-check.html</id><summary type="html">&lt;p&gt;Pythonのライブラリのバージョンを確認する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;Pythonのライブラリのバージョンを確認する方法です．&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;バージョン確認のコード&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#python"&gt;Python自体のバージョン確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;バージョン確認のコード&lt;/h2&gt;
+&lt;p&gt;ライブラリのバージョンは&lt;code&gt;ライブラリ名.__version__&lt;/code&gt;で確認することができます．&lt;br&gt;
+以下のコードは現在使用しているNumPyのバージョンを確認できるコードです.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# ライブラリのインポート
+import numpy as np
+
+# NumPyのバージョン確認
+print(np.__version__)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+'1.20.3'
+&lt;/pre&gt;
+
+&lt;p&gt;pandasの場合なら以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+print(pd.__version__)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+'1.3.1'
+&lt;/pre&gt;
+
+&lt;h2 id="python"&gt;Python自体のバージョン確認&lt;/h2&gt;
+&lt;p&gt;こちらはおまけですが，Pythonのバージョンを確認するにはターミナル等で以下のコマンドを実行すればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+python --version
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+Python 3.10.5
+&lt;/pre&gt;
+
+&lt;h2 id="_2"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;使用頻度はあまり高くありませんが，時々確認することがあるので備忘録として書きました．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;自分の環境にインストールされているバージョンが出力されるので，結果は環境によって違います．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="Jupyter"></category></entry><entry><title>【pandas】locメソッド：DataFrameの行・列を指定して抽出</title><link href="https://www.tecrab.com/articles/pandas-loc.html" rel="alternate"></link><published>2021-06-18T00:00:00+09:00</published><updated>2022-07-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-06-18:/articles/pandas-loc.html</id><summary type="html">&lt;p&gt;DataFrameの行・列データを抽出する方法のうち，locメソッドについて簡潔にまとめました．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;DataFrameのlocメソッドについて簡潔にまとめました．&lt;br&gt;
+以下のような操作を行っています．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;特定の行を抽出したい&lt;/li&gt;
+  &lt;li&gt;２列目と３列目だけが見たい&lt;/li&gt;
+  &lt;li&gt;５行目以降の４列目が見たい&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.loc.html" rel="noopener noreferrer" target="_blank"&gt;pandas.DataFrame.loc&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#loc"&gt;locメソッド&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;コードの書き方&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;行の抽出（行の名前を指定）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;列の抽出（列の名前を指定）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;行・列の指定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#boolean"&gt;booleanでも指定ができる&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="loc"&gt;locメソッド&lt;/h2&gt;
+&lt;p&gt;locメソッドはDataFrameの&lt;strong&gt;行・列の名前&lt;/strong&gt;を指定して抽出する関数です．&lt;br&gt;
+以下の図は行・列（または行・列両方）を指定した際の範囲を示しています．&lt;br&gt;
+&lt;img src="/images/pandas-loc/pandas-loc_01.png" width="650" height="178"&gt;&lt;br&gt;
+最初はあやふやになりますよね．&lt;br&gt;
+行・列の範囲をイメージしながらコードを見ていきましょう．&lt;/p&gt;
+&lt;h2 id="_1"&gt;コードの書き方&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# DataFrameの作成
+import pandas as pd
+
+df = pd.DataFrame([[100, 300, 30000], [300, 50, 15000], [1000, 20, 20000]],
+                  index = ['いか', 'えび', 'かに'], 
+                  columns = ['単価', '数量', '総額'])
+df
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;単価&lt;/th&gt;
+      &lt;th&gt;数量&lt;/th&gt;
+      &lt;th&gt;総額&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;いか&lt;/th&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;30000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;えび&lt;/th&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;50&lt;/td&gt;
+      &lt;td&gt;15000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;かに&lt;/th&gt;
+      &lt;td&gt;1000&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;20000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="_2"&gt;行の抽出（行の名前を指定）&lt;/h3&gt;
+&lt;p&gt;locメソッドを用いて，行の名前を指定します．&lt;br&gt;
+これで「いか・えび」の行だけが抽出できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df.loc[['いか', 'えび']]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;単価&lt;/th&gt;
+      &lt;th&gt;数量&lt;/th&gt;
+      &lt;th&gt;総額&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;いか&lt;/th&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;30000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;えび&lt;/th&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;50&lt;/td&gt;
+      &lt;td&gt;15000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="_3"&gt;列の抽出（列の名前を指定）&lt;/h3&gt;
+&lt;p&gt;次は列の名前で指定してみましょう．&lt;br&gt;
+これで「単価・総額」列の全行が抽出できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 列を指定したい
+df.loc[:, ['単価', '総額']]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;単価&lt;/th&gt;
+      &lt;th&gt;総額&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;いか&lt;/th&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;30000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;えび&lt;/th&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;15000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;かに&lt;/th&gt;
+      &lt;td&gt;1000&lt;/td&gt;
+      &lt;td&gt;20000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[]&lt;/code&gt;内の&lt;code&gt;:,&lt;/code&gt;は「すべての行」を指定するために必要です． &lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_4"&gt;行・列の指定&lt;/h3&gt;
+&lt;p&gt;さらに行・列の名前を同時に指定してみましょう．&lt;br&gt;
+「えび・かに」行の「単価」列だけが抽出できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 行・列の指定
+df.loc[['えび', 'かに'], ['単価']]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;単価&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;えび&lt;/th&gt;
+      &lt;td&gt;300&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;かに&lt;/th&gt;
+      &lt;td&gt;1000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id="boolean"&gt;booleanでも指定ができる&lt;/h3&gt;
+&lt;p&gt;locメソッドは行や列の名前だけでなく，boolean（=&lt;code&gt;True&lt;/code&gt;or&lt;code&gt;False&lt;/code&gt;）でも指定ができます．&lt;br&gt;
+これは&lt;code&gt;True&lt;/code&gt;となっている行（または列）を抽出できるということです．&lt;br&gt;
+早速見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# Trueである行を抽出
+df.loc[[False, True, False]]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 30px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;単価&lt;/th&gt;
+      &lt;th&gt;数量&lt;/th&gt;
+      &lt;th&gt;総額&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;えび&lt;/th&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;50&lt;/td&gt;
+      &lt;td&gt;15000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;今回は行の数が３つなので，各行に対して&lt;code&gt;True&lt;/code&gt;or&lt;code&gt;False&lt;/code&gt;を指定しています．&lt;br&gt;
+※ 行数が指定する&lt;code&gt;True&lt;/code&gt;と&lt;code&gt;False&lt;/code&gt;の数と一致しないとエラーが出ます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;以下のようにすれば列を boolean で指定することも可能です．
+&lt;pre style="margin: 10px 0px;"&gt;&lt;code class="language-python"&gt;
+df.loc[:, [False, True, False]]
+&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;p&gt;上記のコードを実行すると&lt;code&gt;True&lt;/code&gt;の列である「数量」列が抽出されます．&lt;br&gt;
+なお，行・列の同時指定もできます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;DataFrameは慣れるまでは結構ややこしいですよね．&lt;br&gt;
+他にも行・列の番号で指定するilocメソッドなど，様々な関数があるので興味のある方は調べてみるといいと思います．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;例えば &lt;code&gt;df.loc[[False, True]]&lt;/code&gt; は行数３に対して２つしか&lt;code&gt;True&lt;/code&gt;と&lt;code&gt;False&lt;/code&gt;を指定していないのでエラーが出ます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry></feed>

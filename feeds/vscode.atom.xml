@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - VSCode</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/vscode.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-08-05T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【VSCode Neovim】モード切り替えのキーバインディングを設定する方法</title><link href="https://www.tecrab.com/articles/vscode-nvim-ctrlk.html" rel="alternate"></link><published>2022-08-04T00:00:00+09:00</published><updated>2022-08-05T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-08-04:/articles/vscode-nvim-ctrlk.html</id><summary type="html">&lt;p&gt;VSCode Neovimでインサート &amp;gt; ノーマルのキーバインディングを設定する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;VSCode Neovimでインサートモードからノーマルモードへ戻る際のキーバインディングを設定する方法です．&lt;br&gt;
+&lt;kbd&gt;&lt;kbd&gt;jj&lt;/kbd&gt;&lt;/kbd&gt;以外の設定に関しても解説しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;背景&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#keybindingsjson"&gt;keybindings.jsonに関して&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;設定方法&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
+&lt;p&gt;VSCode NeoVimでインサートモードからノーマルモードに戻る際のキーバインディング設定をするには&lt;code&gt;keybindings.json&lt;/code&gt;に設定を追記する必要があります．&lt;/p&gt;
+&lt;h3 id="keybindingsjson"&gt;keybindings.jsonに関して&lt;/h3&gt;
+&lt;p&gt;VSCodeにおいてキーボードショートカットを定義したい場合に編集するファイルです．&lt;br&gt;
+開き方は以下のとおりです．&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;基本設定 &amp;gt; キーボードショートカット&lt;/strong&gt; をクリック.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;
+&lt;img src="/images/vscode-nvim-ctrlk/vscode-nvim-ctrlk_01.png" width="500" height="178"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ウィンドウ右上にあるマーク（画像赤枠）をクリックすると開きます.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;
+&lt;img src="/images/vscode-nvim-ctrlk/vscode-nvim-ctrlk_02.png" width="350" height="74"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="_2"&gt;設定方法&lt;/h2&gt;
+&lt;p&gt;&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt;でインサートモードからノーマルモードへ戻るように設定します．&lt;br&gt;
+以下の内容を&lt;code&gt;keybindings.json&lt;/code&gt;に追記すればOKです.&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+&lt;code class="language-bash"&gt;
+{
+    "key": "ctrl+k",
+    "command": "vscode-neovim.escape",
+    "when": "neovim.mode == insert &amp;&amp; editorTextFocus",
+},
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;ビジュアル &amp;gt; ノーマルも&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt;としたい場合は以下の設定も追記しましょう．&lt;/p&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+&lt;code class="language-bash"&gt;
+{
+    "key": "ctrl+k",
+    "command": "vscode-neovim.escape",
+    "when": "neovim.mode == visual &amp;&amp; editorTextFocus",
+},
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;追記場所がよくわからない方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;&lt;code&gt;keybindings.json&lt;/code&gt;の全体像は以下のとおりです．&lt;/p&gt;
+&lt;pre style="margin: 20px 0px;"&gt;
+&lt;code class="language-bash"&gt;
+[
+    {
+        〜〜設定①〜〜
+    },
+
+    {
+        〜〜設定②〜〜
+    },
+]
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;p&gt;そのため，新たな設定を追記する場合は&lt;code&gt;[]&lt;/code&gt;内の一番下に追記しましょう．&lt;br&gt;
+今回のキーバインディングの設定を追記した例は以下のとおりです．&lt;/p&gt;
+&lt;pre style="margin: 20px 0px;"&gt;
+&lt;code class="language-bash"&gt;
+[
+    {
+        〜〜設定①〜〜
+    },
+
+    {
+        〜〜設定②〜〜
+    },
+
+    {
+        "key": "ctrl+k",
+        "command": "vscode-neovim.escape",
+        "when": "neovim.mode == insert &amp;amp;&amp;amp; editorTextFocus",
+    },
+]
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;p&gt;ちなみに，コメントを入れたい場合は&lt;code&gt;//&lt;/code&gt;をつければコメントになります．&lt;/p&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h3 id="_3"&gt;参考&lt;/h3&gt;
+&lt;p&gt;定番？の&lt;kbd&gt;&lt;kbd&gt;jj&lt;/kbd&gt;&lt;/kbd&gt;を設定したい場合は以下の内容を&lt;code&gt;keybindings.json&lt;/code&gt;に追記すればOKです．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+{
+    "command": "vscode-neovim.compositeEscape1",
+    "key": "j",
+    "when": "neovim.mode == insert &amp;&amp; editorTextFocus",
+    "args": "j"
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;インサートモードからノーマルモードへ戻る際のキーバインディングは&lt;kbd&gt;&lt;kbd&gt;jj&lt;/kbd&gt;&lt;/kbd&gt;が多いようですが，個人的には&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt;が楽でいい感じです．&lt;/p&gt;
+&lt;p&gt;また&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt;にしておくとインサート &amp;gt; ノーマルの際に文字入力を自動で英字に切り替える設定もスムーズなのでおすすめです．&lt;/p&gt;
+&lt;p&gt;英字への切り替え設定は以下の記事で解説しているので興味のある方はぜひご覧ください．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;作成中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;kbd&gt;&lt;kbd&gt;Command&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt; &lt;kbd&gt;&lt;kbd&gt;Command&lt;/kbd&gt;+&lt;kbd&gt;S&lt;/kbd&gt;&lt;/kbd&gt;でもOKです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;「キーボードショートカット」タブを選択した状態でないとマークは出ないのでご注意ください．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;&lt;code&gt;"ctrl+k"&lt;/code&gt;部分を変更すれば任意のキーバインディングを設定することができます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="VSCode"></category><category term="Vim"></category><category term="環境構築"></category></entry><entry><title>【VSCode】Jupyter拡張機能でセル表示を常に展開させる方法</title><link href="https://www.tecrab.com/articles/vscode-jupyter-cell.html" rel="alternate"></link><published>2021-09-30T00:00:00+09:00</published><updated>2022-08-03T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-09-30:/articles/vscode-jupyter-cell.html</id><summary type="html">&lt;p&gt;VSCodeのJupyter拡張機能でセル表示を常に展開させる設定を解説します．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;VSCodeのJupyter拡張機能でセル表示を常に展開させる設定について解説します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;イメージ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;表示の変更方法&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;イメージ&lt;/h2&gt;
+&lt;p&gt;以下のような感じです．&lt;br&gt;
+&lt;img src="/images/vscode-jupyter-cell/vscode-jupyter-cell_00.png" width="600" height="248"&gt;&lt;/p&gt;
+&lt;h2 id="_2"&gt;表示の変更方法&lt;/h2&gt;
+&lt;h5 id="1-vscodecommand"&gt;① VSCodeの設定を&lt;kbd&gt;&lt;kbd&gt;Command&lt;/kbd&gt;+&lt;kbd&gt;,&lt;/kbd&gt;&lt;/kbd&gt;で設定を開く&lt;/h5&gt;
+&lt;p&gt;以下のような設定タブが表示されます．&lt;br&gt;
+&lt;img src="/images/vscode-jupyter-cell/vscode-jupyter-cell_01.png" width="300" height="130"&gt;&lt;/p&gt;
+&lt;h5 id="2-collapse-cell"&gt;② 設定タブの検索窓で「collapse cell」と入力&lt;/h5&gt;
+&lt;p&gt;結果のうち「&lt;strong&gt;Interactive Window: Collapse Cell Input Code&lt;/strong&gt;」を確認します．&lt;br&gt;
+&lt;img src="/images/vscode-jupyter-cell/vscode-jupyter-cell_02.png" width="600" height="229"&gt;&lt;/p&gt;
+&lt;h5 id="3-never"&gt;③ 設定を「never」に変更する&lt;/h5&gt;
+&lt;p&gt;&lt;img src="/images/vscode-jupyter-cell/vscode-jupyter-cell_03.png" width="600" height="238"&gt;&lt;/p&gt;
+&lt;p&gt;これでセルが常に展開されて表示されます！&lt;/p&gt;
+&lt;h3 id="_3"&gt;参考&lt;/h3&gt;
+&lt;p&gt;セルの展開・折りたたみ&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;は「Interactive」タブのメニューで操作できます．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/vscode-jupyter-cell/vscode-jupyter-cell_04.png" width="600" height="78"&gt;&lt;/p&gt;
+&lt;p&gt;VSCodeのウィンドウサイズが小さいと以下のように&lt;code&gt;...&lt;/code&gt;となっている場合もあります．&lt;br&gt;
+この場合は&lt;code&gt;...&lt;/code&gt;をクリックすると展開・折りたたみが選択できます．&lt;br&gt;
+&lt;img src="/images/vscode-jupyter-cell/vscode-jupyter-cell_05.png" width="600" height="99"&gt;&lt;/p&gt;
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;実行したセルのコードと結果をまとめて確認したい派なので，このような設定をしました．&lt;br&gt;
+処理時間や状況を合わせて確認できるのはいいですね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;英語の場合は展開(Expand)，折りたたみ(Collapse)です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="VSCode"></category><category term="Python"></category><category term="Jupyter"></category></entry></feed>

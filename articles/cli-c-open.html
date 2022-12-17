@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【Mac/Linux】openコマンドの活用例 - てっくらぶ</title>
+    <meta name="description" content="Mac/Linuxのopenコマンドについてまとめています．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Mac-Linux</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Mac/Linux】openコマンドの活用例
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/mac-linux.html">Mac-Linux</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/zsh.html">zsh</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2021-09-08
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-08-03
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>Mac/Linuxのopenコマンドについてまとめています．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">動作環境</a></li>
+<li><a href="#macopen">Macにおけるopenコマンド</a></li>
+<li><a href="#_2">よく使うオプション</a><ul>
+<li><a href="#-a">-a （開くアプリを選択）</a></li>
+<li><a href="#-n">-n （新しいインスタンスでアプリを開く）</a></li>
+<li><a href="#-r-finder">-R （指定したファイルを Finder で表示）</a></li>
+</ul>
+</li>
+<li><a href="#linuxopen">Linuxにおけるopenコマンド</a></li>
+<li><a href="#_3">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">動作環境</h2>
+<ul>
+<li>macOS Monterey 12.5: <code>zsh</code></li>
+<li>Linux(Ubuntu 20.04 LTS): <code>bash</code></li>
+</ul>
+<h2 id="macopen">Macにおけるopenコマンド</h2>
+<p>Macではターミナル等で<code>open</code>コマンドを使用するとアプリやURL，ファイルを開いたりすることができます．<br>
+基本的には以下のように入力します．</p>
+<ul>
+<li><code>open [path or URL]</code></li>
+</ul>
+<p>例えば，カレントディレクトリをFinderで開く場合は以下のようなコマンドです.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 30px;">
+<code class="language-bash">
+open .
+</code>
+</pre>
+
+<p>カレントディレクトリに<code>hoge.txt</code>がある場合，以下のコマンドで開くことができます.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 70px;">
+<code class="language-bash">
+open hoge.txt
+</code>
+</pre>
+
+<div class="admonition warning-box">
+<p class="admonition-title">ちなみに・・・</p>
+<p>アプリの起動やファイル展開などはSpotlightの方が基本的に早いです．<br>
+ただし，自動化コマンドなどを作成する場合には<code>open</code>コマンドを上手く使う必要があります．</p>
+</div>
+<details class="accordion-block" style="margin-top: -50px">
+<summary>Spotlightの詳細が知りたい方はこちらをクリック</summary>
+<div class="accordion-summary">
+<p>SpotlightはMac内のアプリ起動やファイル検索，展開を素早く行うことができるMacの標準機能です．基本的には以下のような流れで使用します．
+  </p>
+<ol style="margin-top: 20px;">
+      <li><kbd><kbd>Command</kbd>+<kbd>space</kbd></kbd>でSpotlightを呼び出す</li>
+      <li>検索窓にアプリ名やファイル名を打ち込んで<kbd><kbd>Return</kbd></kbd></li>
+      <li>検索結果に合致するアプリやファイル等が開かれる</li>
+  </ol>
+<p>管理人がよく使うのはアプリの起動です．<br>
+  Chromeを起動する際はSpotlightで<code>chr</code>くらいまで入力して<code>return</code>を押すとChromeを開いてくれます．</p>
+</div>
+</details>
+<h2 id="_2">よく使うオプション</h2>
+<h3 id="-a">-a （開くアプリを選択）</h3>
+<p><code>open -a [アプリ名]</code>のようにして実行します．</p>
+<p>下表にコマンドの実行例を記載しています．</p>
+<table id="normal">
+    <tr>
+        <td>コマンド</td>
+        <td>起動するアプリ</td>
+    </tr>
+    <tr>
+        <td><code>open -a calendar</code></td>
+        <td>カレンダー</td>
+    </tr>
+    <tr>
+        <td><code>open -a notes</code></td>
+        <td>メモ</td>
+    </tr>
+    <tr>
+        <td><code>open -a mail</code></td>
+        <td>メール</td>
+    </tr>
+    <tr>
+        <td><code>open -a reminders</code></td>
+        <td>リマインダー</td>
+    </tr>
+    <tr>
+        <td><code>open -a ‘google chrome’</code></td>
+        <td>Chrome</td>
+    </tr>
+    <tr>
+        <td><code>open -a slack</code></td>
+        <td>Slack</td>
+    </tr>
+</table>
+
+<details class="accordion-block">
+<summary>アプリの名前を調べる方法についてはこちらをクリック</summary>
+<div class="accordion-summary">
+<p>コマンドに渡すアプリ名を調べる方法は以下のとおりです．
+ </p>
+<ol style="margin-top: 20px;">
+     <li style="margin: 5px 0px 5px 0px;">Finderを起動して<kbd><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>a</kbd></kbd>を押す．</li>
+     <li style="margin: 5px 0px 5px 0px;">開いたアプリケーションディレクトリ内でアプリを探して右クリック．</li>
+     メニューの「パッケージの内容を表示」をクリック．<br>
+     <img src="/images/cli-c-open/cli-c-open_01.png" width="500" height="137">
+     <li style="margin: 5px 0px 5px 0px;"><code>Contents</code>ディレクトリに飛ぶので<code>Contents</code> &gt; <code>MacOS</code>と進む．</li>
+     <code>MacOS</code>ディレクトリ内にある実行ファイルの名前がアプリ名です．<br>
+     下図だと「App Store」です．なお，コマンドに渡す際は小文字でもOKです．<br>
+     <img src="/images/cli-c-open/cli-c-open_02.png" width="500" height="118">
+ </ol>
+<div class="admonition warning-box">
+<p class="admonition-title">注意</p>
+<p>アプリ名に半角スペースが入っている場合はアプリ名を<code>'</code>（シングルクォテーション）で囲むことが必要です．<br>
+そのため「App Store」を開くコマンドは<code>open -a 'app store'</code>となります．</p>
+</div>
+<div style="margin: -70px 0px 0px 0px"></div>
+</div>
+</details>
+<p>以下のコマンドを実行するとSafariで<code>hoge.pdf</code>が開きます.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 30px;">
+<code class="language-bash">
+open -a Safari hoge.pdf
+</code>
+</pre>
+
+<p>ブラウザを指定してURLを開く場合は以下のように使います．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
+<code class="language-bash">
+open -a 'google chrome' https://www.google.com
+</code>
+</pre>
+
+<h3 id="-n">-n （新しいインスタンスでアプリを開く）</h3>
+<p>すでに起動しているアプリについて，別のウィンドウで開きたい場合に使えます．<br>
+以下のコマンドではChromeが別ウィンドウで起動します．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
+<code class="language-bash">
+open -n -a 'google chrome'
+</code>
+</pre>
+
+<h3 id="-r-finder">-R （指定したファイルを Finder で表示）</h3>
+<p>ファイルの場所をFinderで表示したい時に使えます．<br>
+以下の例では<code>hoge.txt</code>が存在する場所をFinderで表示してくれます．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
+<code class="language-bash">
+open -R hoge.txt
+</code>
+</pre>
+
+<h2 id="linuxopen">Linuxにおけるopenコマンド</h2>
+<p>Linuxでは<code>xdg-open</code>コマンドがMacの<code>open</code>コマンドに相当します．</p>
+<ul>
+<li><code>xdg-open [path or URL]</code></li>
+</ul>
+<p>基本の使い方は同様ですが，オプションがないので上記だけです．<br>
+コマンドが長いので<code>xdg-open</code>コマンドはやや使い勝手が悪い印象・・・</p>
+<p>ちなみに，Linuxのデフォルトブラウザ（Firefox）を開く場合は以下のコマンドでOKです．</p>
+<pre class="command-line" data-prompt="$" style="margin-bottom: 90px;">
+<code class="language-bash">
+firefox
+</code>
+</pre>
+
+<h2 id="_3">ひとこと</h2>
+<p>本記事ではMac/Linuxにおける<code>open</code>コマンドの活用例について紹介しました．<br>
+<code>open</code>コマンドはその場で使うよりも自動化処理で使う方が便利です．</p>
+<p>自動化についてはコマンドを自作する記事があるので，興味のある方はぜひ見てくださいね．</p>
+<ul>
+<li><a href="https://revalab.net/auto-command">【Mac】自動化（自作）コマンドを３ステップで作成する</a></li>
+</ul>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Finderが起動してGUIで確認できます．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Mac標準アプリのテキストエディットで<code>cli-c-open.txt</code>が開きます．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p><code>open hoge.pdf</code>とすると通常プレビューでPDFが展開されます．&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/mac-linux.html"><div class="fa fa-lg fa-folder-open"></div> Mac-Linux</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/zsh.html"><div class="fa fa-lg fa-tag"></div> zsh</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

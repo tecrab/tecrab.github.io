@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DataFrame内の文字列がリストに含まれるかを確認する方法 - てっくらぶ</title>
+    <meta name="description" content="DataFrameの文字列をリストと照合する方法について解説しています．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Python</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          DataFrame内の文字列がリストに含まれるかを確認する方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/pandas.html">pandas</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2021-11-12
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-08-07
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事ではDataFrameの文字列と別途定義したリストを照合し，リストに含まれる/含まれない行を抽出する方法について解説しています．
+<ul style="margin: -5px 0px 0px 15px;">
+  <li>
+  公式 Reference: <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html" rel="noopener noreferrer" target="_blank">pandas.DataFrame.query</a>
+  </li>
+</ul></p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">事前準備</a><ul>
+<li><a href="#dataframe">DataFrameの文字列をリストと照合</a></li>
+<li><a href="#dataframe_1">DataFrame同士で比較</a></li>
+</ul>
+</li>
+<li><a href="#_3">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">事前準備</h2>
+<p>まずはサンプルのDataFrameを作成します．</p>
+<pre><code class="language-python">
+import pandas as pd
+
+df1 = pd.DataFrame({
+    'birds': ['十姉妹', '文鳥', 'ハヤブサ', 'カラス'],
+    'weight(g)': [15, 26, 950, 650]
+})
+df1
+</code></pre>
+
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>birds</th>
+      <th>weight(g)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>十姉妹</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>文鳥</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ハヤブサ</td>
+      <td>950</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>カラス</td>
+      <td>650</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="dataframe">DataFrameの文字列をリストと照合</h3>
+<p>作成したDataFrameのbirds列内に特定の文字列が含まれるかを調べます．<br>
+特定の文字列をリストとして定義し，そのリスト内にある文字列とDataFrameのbirds列を照合します．</p>
+<pre><code class="language-python">
+# 調べたいリスト
+birds_list = ['文鳥', 'ハト', 'ムクドリ', 'カラス']
+
+# dfの文字列がリスト内に含まれる場合，dfを返す
+df1.query('birds in @birds_list')
+</code></pre>
+
+<table class="dataframe" border="1" style="margin-bottom: 30px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>birds</th>
+      <th>weight(g)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>文鳥</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>カラス</td>
+      <td>650</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>birds列と<code>birds_list</code>で一致している「文鳥」「カラス」だけがDataFrameとして返ってきていますね．</p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p><code>query()</code>内で変数を使用する場合は<code>@</code>を変数の前に付けます．<br>
+今回は変数を使用していますが直接リストを指定してもOKです.</p>
+</div>
+<h5 id="_2">リストに「含まれない」行を抽出</h5>
+<p><code>not in</code>を使用して，以下のようにすればOKです．</p>
+<pre><code class="language-python">
+# 含まれない，を調べる場合は not in 
+df1.query('birds not in @birds_list')
+</code></pre>
+
+<table class="dataframe" border="1" style="margin-bottom: 30px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>birds</th>
+      <th>weight(g)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>十姉妹</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ハヤブサ</td>
+      <td>950</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>birds列と<code>birds_list</code>で一致していない「十姉妹」「ハヤブサ」だけになりましたね．</p>
+<h3 id="dataframe_1">DataFrame同士で比較</h3>
+<p>DataFrame同士を比較することもできます．<br>
+準備として比較用のDataFrameを新たに作成し<code>df1</code>と共に出力しています．</p>
+<pre><code class="language-python">
+# 比較するdfの作成
+df2 = pd.DataFrame({
+    'birds': ['十姉妹', '文鳥', 'ハヤブサ', 'ハト'],
+    'weight(g)': [15, 26, 950, 350]
+})
+display(df1)
+display(df2)
+</code></pre>
+
+<table class="dataframe" border="1" style="margin-bottom: 10px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>birds</th>
+      <th>weight(g)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>十姉妹</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>文鳥</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ハヤブサ</td>
+      <td>950</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>カラス</td>
+      <td>650</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="dataframe" border="1" style="margin-bottom: 30px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>birds</th>
+      <th>weight(g)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>十姉妹</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>文鳥</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ハヤブサ</td>
+      <td>950</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ハト</td>
+      <td>350</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>以下でbirds列同士を比較します．<br>
+<code>df1</code>のbirds列のうち「カラス」だけが<code>df2</code>のbirds列に含まれないので「カラス」が出力されています．</p>
+<pre><code class="language-python">
+df1.query('birds not in @df2["birds"]')
+</code></pre>
+
+<table class="dataframe" border="1" style="margin-bottom: 30px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>birds</th>
+      <th>weight(g)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>カラス</td>
+      <td>650</td>
+    </tr>
+  </tbody>
+</table>
+
+<details class="accordion-block">
+<summary>詳細が知りたい方はこちらをクリック</summary>
+<div class="accordion-summary">
+<p>このコードではこれまでリストを指定していた<code>@</code>以降の部分に<code>df2["birds"]</code>(=pandas Series)を指定しています．</p>
+<p>Seriesはリストと概ね同じように扱うことができ<code>in</code>演算子も使えるため，上記のようなコードを実行することが可能です．</p>
+<p>なお<code>df2["birds"]</code>とデータ型を見ると以下のような感じです．</p>
+<pre><code class="language-python">
+print(s := df2["birds"], '\n')  # '\n' は改行を入れているだけです．
+print(type(s))
+</code></pre>
+<pre style="margin-bottom: 10px;">
+0     十姉妹
+1      文鳥
+2    ハヤブサ
+3      ハト
+Name: birds, dtype: object
+
+&lt;class 'pandas.core.series.Series'&gt;
+</pre>
+</div>
+</details>
+<h2 id="_3">ひとこと</h2>
+<p><code>query()</code>はDataFrameのデータを見る際などによく使うので，さっと使えると便利ですね．</p>
+<div style="margin-bottom: 100px;"></div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/pandas.html"><div class="fa fa-lg fa-tag"></div> pandas</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

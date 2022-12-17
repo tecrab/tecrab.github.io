@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Slack</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/slack.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-08-03T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Slack】リマインダーの設定・確認方法（明日・日時指定・定期）</title><link href="https://www.tecrab.com/articles/slack-remind.html" rel="alternate"></link><published>2021-10-03T00:00:00+09:00</published><updated>2022-08-03T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-10-03:/articles/slack-remind.html</id><summary type="html">&lt;p&gt;Slack でリマインダーを設定する方法をご紹介します．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;Slack でリマインダーを設定する方法をご紹介します．&lt;br&gt;
+＜使用イメージ＞
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;明日の9:00に通知をして欲しい．&lt;/li&gt;
+  &lt;li&gt;会議のURLをXX日の13:00に知らせて欲しい．&lt;/li&gt;
+  &lt;li&gt;毎週火曜日にXXを知らせて欲しい．&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;リマインドのコマンド&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;コマンドの具体例&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#900"&gt;明日の9:00に通知をして欲しい&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;日時指定でリマインドして欲しい&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#1000"&gt;毎週火曜日の10:00にリマインドして欲しい&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;リマインドのリストの確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;リマインドのコマンド&lt;/h2&gt;
+&lt;p&gt;基本のコマンドは以下のとおりです．&lt;br&gt;
+入力枠に&lt;code&gt;/&lt;/code&gt;を入力すると新たな検索窓が出るので続けて&lt;code&gt;remind&lt;/code&gt;&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;と打てばOKです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;/remind me &amp;lt;リマインド内容&amp;gt; &amp;lt;日時&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;コマンドを入力した後に送信すればSlackbotが受け付けた内容を返してくれます．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/&lt;/code&gt;を打つと様々なコマンド候補が表示されます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_2"&gt;コマンドの具体例&lt;/h2&gt;
+&lt;p&gt;コマンドの具体的な例を見ていきましょう．&lt;/p&gt;
+&lt;h3 id="900"&gt;明日の9:00に通知をして欲しい&lt;/h3&gt;
+&lt;p&gt;明日知らせて欲しいと思い立ったときに・・・&lt;/p&gt;
+&lt;pre&gt;
+&lt;code class="language-bash"&gt;
+/remind me 会議案内を送る at 9:00
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="/images/slack-remind/slack-remind_01.png" width="600" height="97"&gt;&lt;/p&gt;
+&lt;h3 id="_3"&gt;日時指定でリマインドして欲しい&lt;/h3&gt;
+&lt;p&gt;日時を指定するには以下のような書き方です．&lt;/p&gt;
+&lt;pre&gt;
+&lt;code class="language-bash"&gt;
+/remind me レビュー対応 10/5 at 9:00
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="/images/slack-remind/slack-remind_02.png" width="600" height="88"&gt;&lt;/p&gt;
+&lt;h3 id="1000"&gt;毎週火曜日の10:00にリマインドして欲しい&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;every 曜日の略記&lt;/code&gt;を指定すればOKです．&lt;/p&gt;
+&lt;pre&gt;
+&lt;code class="language-bash"&gt;
+/remind me https://www.google.com every tue at 10:00
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="/images/slack-remind/slack-remind_03.png" width="600" height="79"&gt;&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;リマインド内容にURLを指定することもできます．&lt;br&gt;
+なお&lt;code&gt;every tuesday&lt;/code&gt;としても結果は同じです．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_4"&gt;リマインドのリストの確認&lt;/h2&gt;
+&lt;p&gt;現在登録されているリマインドのリストを確認することができます．&lt;/p&gt;
+&lt;pre&gt;
+&lt;code class="language-bash"&gt;
+/remind list
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="/images/slack-remind/slack-remind_04.png" width="350" height="145"&gt;&lt;/p&gt;
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;よく使っているリマインダーの設定を列挙してみました．&lt;br&gt;
+今後も気がついたら追加していきたいと思います．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;remind&lt;/code&gt;の後には半角スペースがあります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Slack"></category><category term="Slack"></category></entry></feed>

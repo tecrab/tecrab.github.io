@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - PyTorch</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/pytorch.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-10-30T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【PyTorch】touchvizのインストール方法（Mac）</title><link href="https://www.tecrab.com/articles/pytorch_torchviz.html" rel="alternate"></link><published>2022-10-29T00:00:00+09:00</published><updated>2022-10-30T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-10-29:/articles/pytorch_torchviz.html</id><summary type="html">&lt;p&gt;計算グラフを表示するライブラリtouchvizをインストールする方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではMacにおけるtouchvizのインストール方法をご紹介します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;インストール方法&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;インストール方法&lt;/h2&gt;
+&lt;p&gt;touchvizは計算グラフを表示できるPythonのライブラリです．&lt;br&gt;
+touchvizのインストールには以下の&lt;strong&gt;２つ&lt;/strong&gt;のコマンドを実行すればOKです．&lt;/p&gt;
+&lt;p&gt;torchviz自体のインストール&lt;/p&gt;
+&lt;pre class="command-line s-middle" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+pip install torchviz
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;torchvizを動作させるのに必要なパッケージ（brewでインストール）&lt;/p&gt;
+&lt;pre class="command-line s-end" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+brew install graphviz
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h3 id="_2"&gt;参考&lt;/h3&gt;
+&lt;p&gt;torchvizだけをインストールして動かすと以下のようなエラーが出ます．&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ExecutableNotFound: failed to execute PosixPath('dot'), make sure the Graphviz executables are on your systems' PATH&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;torchvizはgraphvizというパッケージがインストールされていないと動かないようです．&lt;/p&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;管理人はtorchvizだけを入れて動かしたのでエラーとなってしまいました・・・&lt;br&gt;
+&lt;code&gt;brew&lt;/code&gt;でgraphvizも忘れずに入れておきましょう．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="PyTorch"></category><category term="PyTorch"></category><category term="Python"></category><category term="環境構築"></category></entry></feed>

@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【M2 Mac】Pyenv/PoetryによるPython環境構築 - てっくらぶ</title>
+    <meta name="description" content="M2 MacにPoetryでPythonの環境構築する手順です．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Python</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【M2 Mac】Pyenv/PoetryによるPython環境構築
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/env.html">環境構築</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2022-07-31
+        </li>
+            <br>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>新しく購入したまっさらなM2 MacにPython環境を構築した際の手順です．<br></p>
+<ol>
+<li>PyenvとPoetryのインストール</li>
+<li>PoetryでのPython環境構築</li>
+<li>VSCode連携</li>
+</ol>
+<p>仮想環境を使ってシンプルに環境を作ることができます．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#pyenv">Pyenvのインストール</a><ul>
+<li><a href="#_1">前提条件</a></li>
+</ul>
+</li>
+<li><a href="#poetry">Poetryのインストール</a></li>
+<li><a href="#_2">仮想環境の作成</a></li>
+<li><a href="#python">仮想環境内におけるPythonの使い方</a><ul>
+<li><a href="#python_1">一時的に仮想環境を使ってPythonを動かす</a></li>
+<li><a href="#_3">持続的に仮想環境を動かす</a></li>
+</ul>
+</li>
+<li><a href="#vscode">VSCodeとの連携</a><ul>
+<li><a href="#jupyter">Jupyterを使用する場合</a></li>
+</ul>
+</li>
+<li><a href="#_5">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="pyenv">Pyenvのインストール</h2>
+<p>まずはPyenvのインストールを行います．</p>
+<h4 id="_1">前提条件</h4>
+<p>Macのパッケージマネジャーである<code>Homebrew</code>を使うため，インストールしていない場合は先に<code>Homebrew</code>をインストールしましょう．</p>
+<p>以下のサイトが大変わかりやすいです．</p>
+<ul>
+<li><a href="https://original-game.com/how-to-install-homebrew/" rel="noopener noreferrer" target="_blank">Homebrewのインストール方法を分かりやすく解説（M1 Macも対応）</a></li>
+</ul>
+<p><br></p>
+<h5 id="1-pyenv">① Pyenvのインストール</h5>
+<p>以下のコマンドをターミナルに入力してPyenvをインストールします．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
+<code class="language-bash">
+brew install pyenv
+</code>
+</pre>
+
+<h5 id="2-path">② pathの設定</h5>
+<p>Pyenvにpathを通すため，以下のコマンドを実行します．<br>
+なお，最近のMacであればシェルが<code>zsh</code>なので<code>zsh</code>用のコマンドを記載しています.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+</code>
+</pre>
+
+<p>上記で設定した内容を反映させるために以下のコマンドを実行します．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+source ~/.zshrc
+</code>
+</pre>
+
+<p>Pyenvのインストールを確認します．<br>
+以下のようにPyenvのバージョンが表示されればOKです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+pyenv --version
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+pyenv 2.3.2
+</pre>
+
+<h5 id="3-python">③ Pythonを任意のバージョンでインストール</h5>
+<p>続いてPyenvを使用してPythonをインストールしていきます．<br>
+今回は例としてPythonのバージョン<code>3.10.5</code>をインストールします．<br>
+インストールするコマンドは以下のとおりです．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+pyenv install 3.10.5
+</code>
+</pre>
+
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>インストール可能なPythonのバージョンは以下のコマンドで確認できます．
+<pre class="command-line" data-prompt="%"><code class="language-bash">
+pyenv install -l
+</code></pre></p>
+</div>
+<h5 id="4-python">④ 使用するPythonの指定</h5>
+<p>先ほどインストールしたPythonのバージョンをグローバルで使用するために以下のコマンドを実行します．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+pyenv global 3.10.5
+</code>
+</pre>
+
+<p>Pythonのpathを以下のコマンドで確認します．<br>
+pathが<code>.pyenv</code>以下のPythonになっていればOKです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+which python
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+/Users/xxx/.pyenv/shims/python
+</pre>
+
+<h2 id="poetry">Poetryのインストール</h2>
+<p>ここからは<a href="https://python-poetry.org/" rel="noopener noreferrer" target="_blank">Poetry</a>をインストールしていきましょう．
+<br></p>
+<h5 id="1-poetry">① Poetryのインストール</h5>
+<p>Poetryを以下コマンドでインストール．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+</code>
+</pre>
+
+<p>Poetryのインストールを確認します．<br>
+Poetryのバージョンが表示されればOKです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+poetry --version
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+Poetry version 1.1.14
+</pre>
+
+<h2 id="_2">仮想環境の作成</h2>
+<p>本記事ではMac全体で動かす<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>ための仮想環境を作成していきます．</p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>Poetryでは仮想環境のことをプロジェクトと呼んでいますが，本記事では仮想環境で統一しています．</p>
+</div>
+<h5 id="1">① 仮想環境を作成する場所を決める</h5>
+<p>場所に決まりはないので，管理しやすい場所に作成します．<br>
+本記事ではホームディレクトリに仮想環境用のディレクトリを作成します．
+以下のコマンドでホームディレクトリに<code>global_env</code>というディレクトリを作成し，そのディレクトリに移動できます.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 30px;">
+<code class="language-bash">
+cd && mkdir global_env && cd global_env
+</code>
+</pre>
+
+<details class="accordion-block">
+<summary>コマンドの内容が知りたい方はこちらをクリック</summary>
+<div class="accordion-summary">
+<p>上記のコマンドは以下の一連の操作を行なっています．
+ </p>
+<ol style="margin-top: 20px;">
+     <li><code>cd</code>コマンドでホームディレクトリに移動</li>
+     <li><code>mkdir global_env</code>で「global_env」という名前のディレクトリ作成</li>
+     <li><code>cd global_env</code>でglobal_envディレクトリ内に移動</li>
+ </ol>
+</div>
+</details>
+<p>上記で作成したディレクトリの下に仮想環境の実体となるディレクトリ<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup>を配置するため，以下のコマンドで設定を変更します．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+poetry config virtualenvs.in-project true 
+</code>
+</pre>
+
+<p>設定の反映を確認します．<br>
+出力結果の下から２番目<code>virtualenvs.in-project</code>が<code>true</code>になっていればOKです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+poetry config --list
+</code>
+</pre>
+<pre style="margin-bottom: 40px;">
+cache-dir = "/Users/xxx/Library/Caches/pypoetry"
+experimental.new-installer = true
+installer.parallel = true
+virtualenvs.create = true
+<span style="color:red">virtualenvs.in-project = true</span>
+virtualenvs.path = "{cache-dir}/virtualenvs"  # /Users/xxx/Library/Caches/pypoetry/virtualenvs
+</pre>
+
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>この設定は一度すればOKです．</p>
+</div>
+<h5 id="2">② 仮想環境の作成</h5>
+<p>Poetryを使って仮想環境を作成していきましょう．<br>
+まずは以下のコマンドで<code>global_env_pj</code>という名前の仮想環境を作る準備を行います．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+poetry new global_env_pj
+</code>
+</pre>
+<pre style="margin-bottom: 50px;">
+Created package global_env_pj in global_env_pj
+</pre>
+
+<p>上記のコマンドで<code>global_env_pj</code>というディレクトリが作成され，その配下にファイルなどが作成されます．</p>
+<pre style="margin-bottom: 50px;">
+.
+└── global_env_pj
+    ├── README.rst
+    ├── global_env_pj
+    ├── pyproject.toml
+    └── tests
+</pre>
+
+<p><code>cd</code>コマンドで新しく作成された<code>global_env_pj</code>ディレクトリに移動しておきます．<br></p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+cd global_env_pj
+</code>
+</pre>
+
+<p>続いて，以下のコマンドを実行して仮想環境を使用できるようにします．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+poetry install
+</code>
+</pre>
+
+<p>上記のコマンドで<code>.venv</code>と<code>poetry.lock</code>が追加で作成されます．<br>
+これで仮想環境を構築することができました．</p>
+<pre style="margin-bottom: 90px;">
+.
+└── global_env_pj
+    ├── .venv
+    ├── README.rst
+    ├── global_env_pj
+    ├── poetry.lock
+    ├── pyproject.toml
+    └── tests
+</pre>
+
+<h5 id="3">③ 仮想環境内へのライブラリインストール</h5>
+<p>上記の手順で仮想環境を構築した後は仮想環境内に必要なPythonのライブラリをインストールしていきます．<br>
+<code>poetry.lock</code>や<code>pyproject.toml</code>がある階層<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>で以下のようなコマンドを実行します．</p>
+<ul>
+<li><code>poetry add [ライブラリの名称]</code></li>
+</ul>
+<p>Pythonのライブラリであるpandasをインストールする場合は以下のコマンドです．
+実行すると関連するライブラリなども合わせてインストールされます．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+poetry add pandas
+</code>
+</pre>
+
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>インストールされたライブラリを確認したい場合は以下のコマンドです．
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+poetry show
+</code>
+</pre></p>
+</div>
+<h2 id="python">仮想環境内におけるPythonの使い方</h2>
+<p>仮想環境内で構築したPythonを使うには，一時的か持続的かの２パターンがあります．<br>
+それぞれ確認していきましょう．</p>
+<h3 id="python_1">一時的に仮想環境を使ってPythonを動かす</h3>
+<p>一時的に仮想環境内のPythonを使ってPythonスクリプトを動かす際などに使用します．<br>
+<code>poetry.lock</code>や<code>pyproject.toml</code>がある階層で以下のようなコマンドを実行します．</p>
+<ul>
+<li><code>poetry run python [pythonスクリプトのpath]</code></li>
+</ul>
+<p>以下はカレントディレクトリにある<code>hoge.py</code>を仮装環境内のPythonで動かすコマンドです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+poetry run python hoge.py
+</code>
+</pre>
+<pre style="margin-bottom: 50px;">
+      単価   数量     総額
+いか   100  300  30000
+えび   300   50  15000
+かに  1000   20  20000
+</pre>
+
+<p><code>hoge.py</code>の中身は以下のとおりです．</p>
+<pre><code class="language-python">
+import pandas as pd
+
+df = pd.DataFrame([[100, 300, 30000], [300, 50, 15000], [1000, 20, 20000]],
+                  index = ['いか', 'えび', 'かに'], 
+                  columns = ['単価', '数量', '総額'])
+print(df)
+</code></pre>
+
+<div class="admonition danger-box">
+<p class="admonition-title">注意</p>
+<p>上記のコマンドを動かすには<code>poetry run python</code>を実行する仮想環境にpandasがインストールされていることが必要です．</p>
+</div>
+<p>仮想環境内のPythonを使ってスクリプトを動かしたい場合は毎回<code>poetry run python</code>コマンドを使う必要があります．<br>
+仮想環境を持続的に動かしてPythonを実行したい場合は次項を参照してください．</p>
+<h3 id="_3">持続的に仮想環境を動かす</h3>
+<h5 id="on">仮想環境の持続化ON</h5>
+<p>仮想環境を持続的に使う<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>には<code>poetry.lock</code>や<code>pyproject.toml</code>がある階層で以下のようなコマンドを実行します．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 50px;">
+<code class="language-bash">
+poetry shell
+</code>
+</pre>
+
+<p>上記のコマンドを実行すると，プロンプトの行頭に<code>(.venv)</code>という文字が追加されます．<br>
+この状態は仮想環境を稼働させた状態であるため，常に仮想環境を使ってスクリプト等を実行できます．<br>
+そのため，先ほどは<code>poetry run python</code>で仮想環境内のPythonを実行をしましたが，<code>(.venv)</code>となっていれば以下のコマンドで仮想環境内でのPython実行が可能です．</p>
+<pre class="command-line" data-prompt="(.venv) %" style="margin-bottom: 50px;">
+<code class="language-bash">
+python hoge.py
+</code>
+</pre>
+
+<p>なお，ディレクトリを移動してもこの状態は持続し，Python以外のコマンドも通常どおり使うことができます．
+<br></p>
+<h5 id="off">仮想環境の持続化OFF</h5>
+<p>仮想環境の持続化を終了する場合は以下のコマンドです．<br>
+コマンドを実行すると行頭についていた<code>(.venv)</code>がなくなります．</p>
+<pre class="command-line" data-prompt="(.venv) %" style="margin-bottom: 50px;">
+<code class="language-bash">
+exit
+</code>
+</pre>
+
+<div class="admonition info-box">
+<p class="admonition-title">再度仮想環境を持続化させるには</p>
+<p>使いたい仮想環境のディレクトリ（<code>poetry.lock</code>や<code>pyproject.toml</code>がある階層）に戻って<code>poetry shell</code>を実行しましょう．</p>
+</div>
+<h2 id="vscode">VSCodeとの連携</h2>
+<p>仮想環境を使ってPythonを動かす設定をVSCodeに適用します．<br>
+この設定を一度行えば，今後は仮想環境内のPythonをVSCodeで実行することができます．</p>
+<h5 id="vscode_1">VSCodeのウィンドウの右下にあるインタープリタ枠をクリック</h5>
+<p>適当なPythonファイル<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>をVSCodeで開き，VSCodeのウィンドウの右下にあるインタープリタ枠をクリックします．<br>
+画像にある文字と実際の表記が多少異なっていてもOKです．<br></p>
+<p><img alt="01" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_01.png"></p>
+<h5 id="pythonpath">Pythonを動かす際に使いたい環境のpathを選択</h5>
+<p>ウィンドウ上部にインタープリタを選択できるポップアップが出てくるので，使いたいPoetry環境をクリック．<br>
+<img alt="02" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_02.png"></p>
+<p>選択後，ウィンドウ右下のインタープリタ枠の表示が<code>('.venv': poetry)</code>のようになっていればOKです．<br>
+<img alt="03" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_03.png"></p>
+<h5 id="_4">動作確認</h5>
+<p>ウィンドウ右上の実行ボタンを押して確認しましょう．<br>
+<img alt="04" src="/images/mac-python-pyenv-poetry/mac-python-pyenv-poetry_04.png"></p>
+<p>自動でターミナルが起動して仮想環境内でPythonを実行してくれます．<br>
+意図した実行結果であればOKです．</p>
+<h3 id="jupyter">Jupyterを使用する場合</h3>
+<p>PythonをJupyterで動かしたい場合は以下の条件を満たせば可能です．</p>
+<ul>
+<li>VSCodeのJupyter拡張機能をインストール</li>
+<li><code>poetry add jupyter</code> で仮想環境にJupyterをインストール</li>
+<li>Jupyterがインストールされている仮想環境をVScode側で指定</li>
+</ul>
+<h2 id="_5">ひとこと</h2>
+<p>Pythonの環境構築は色々ありますが，仮想環境を使うとクリーンかつシンプルなのでおすすめです．</p>
+<p>余談ですが，久しぶりにMacを新調しました．<br>
+M2 Macは円安の影響もあって高値ですが，動作がすごく軽快で素晴らしいです．</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>ターミナルで<code>echo $SHELL</code>というコマンドを実行するとシェルが確認できます(<code>/bin/zsh</code>が表示されたら<code>zsh</code>です).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>本来は開発/プロジェクト単位で仮想環境を作ったりしますが，今回は私用のMacで動作するようなPython環境を作ります．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>ディレクトリの名前を変更するには<code>mkdir global_env</code>と<code>cd global_env</code>の「global_env」部分を好きな名称に変更してください．なお<code>mkdir</code>や<code>cd</code>の後には半角スペースがあるので，誤って消さないようにご注意ください．&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>仮想環境の実体は<code>.venv</code>というディレクトリです．デフォルトでは<code>~/Library/Caches/pypoetry/virtualenvs/</code>に作成されますが，仮想環境のディレクトリ直下にある方が管理しやすいので設定を変更しています．&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>本ブログの手順に合わせて仮想環境を作成している場合，<code>pwd</code>コマンドを実行して表示される階層が<code>/Users/xxx/global_env/global_env_pj</code>となっている場所です．&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p>持続的に使うとは，明示的に止めるまで仮想環境下のPythonを利用することを指しています．&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:7">
+<p>拡張子が<code>.py</code>のファイルです．なお，可能であればPoetryでインストールしたライブラリを使うようなコードを書いておきましょう（この後の動作確認でエラーなく動くことが確認できればPoetryを使ってPythonを動かしていることがわかるためです）&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/env.html"><div class="fa fa-lg fa-tag"></div> 環境構築</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

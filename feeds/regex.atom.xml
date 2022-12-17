@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - 正規表現</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/regex.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-12-14T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】一番最後に出現する文字のみを置換する方法</title><link href="https://www.tecrab.com/articles/python-reg-replace-end.html" rel="alternate"></link><published>2022-12-14T00:00:00+09:00</published><updated>2022-12-14T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-14:/articles/python-reg-replace-end.html</id><summary type="html">&lt;p&gt;最後にマッチする文字列を正規表現で置換する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では特定の文字を検索し，一番最後にヒットした文字列を置換する方法をご紹介します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;一番最後にヒットした文字列のみを置換&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;行単位で最後の文字列のみを置換&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;今回は正規表現を使用するのでPythonの標準ライブラリの&lt;code&gt;re&lt;/code&gt;を&lt;code&gt;import&lt;/code&gt;します．&lt;br&gt;
+また，置換対象の文章も合わせて変数に入れておきます．&lt;/p&gt;
+&lt;pre class="end"&gt;&lt;code class="language-python"&gt;
+import re
+
+s = '''吾輩は猫である。名前はまだ無い。〜中略〜 吾輩はここで始めて人間というものを見た。
+〜中略〜 はてな何でも容子がおかしいと、のそのそ這い出して見ると非常に痛い。
+吾輩は藁わらの上から急に笹原の中へ棄てられたのである。
+'''
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="_2"&gt;一番最後にヒットした文字列のみを置換&lt;/h3&gt;
+&lt;p&gt;事前準備で用意した文章には「吾輩」という言葉が複数出現しています．&lt;br&gt;
+この「吾輩」のうち，一番最後にヒットする「吾輩」のみを任意の文字列に変換します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+ss = re.sub(r'吾輩(?!.+吾輩)', '★★', s, flags=re.DOTALL)
+print(ss)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;
+吾輩は猫である。名前はまだ無い。〜中略〜 吾輩はここで始めて人間というものを見た。
+〜中略〜 はてな何でも容子がおかしいと、のそのそ這い出して見ると非常に痛い。
+&lt;span style="color:#ff0000;"&gt;★★&lt;/span&gt;は藁わらの上から急に笹原の中へ棄てられたのである。
+&lt;/pre&gt;
+&lt;p style="font-size: 13px;"&gt;※ 実行結果の色は見やすさのためにつけています．&lt;/p&gt;
+&lt;p&gt;結果を見ると最後に出現した「吾輩」のみが「★★」になっていますね．&lt;/p&gt;
+&lt;div style="margin-bottom: 60px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;また，「吾輩」の出現数が１つだけ減っているのも以下で確認できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+print(f'置換前の吾輩の数{s.count("吾輩")}')
+print(f'置換後の吾輩の数{ss.count("吾輩")}')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+置換前の吾輩の数3
+置換後の吾輩の数2
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;正規表現の否定後読みを使用して「吾輩」とマッチし，その後「吾輩」で終わることがなければマッチした「吾輩」を置換するということをしています．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sub()&lt;/code&gt;の引数については以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一引数：正規表現を指定します.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;li&gt;第二引数：置換後の文字列を指定します．&lt;/li&gt;
+&lt;li&gt;第三引数：置換対象の文字列を指定します．&lt;/li&gt;
+&lt;li&gt;第四引数：&lt;code&gt;.&lt;/code&gt;を改行にもマッチさせるためのフラグ指定です.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_3"&gt;行単位で最後の文字列のみを置換&lt;/h2&gt;
+&lt;p&gt;行単位で最後に出現する文字を置換する場合は以下のようなコードです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+sss = re.sub(r'吾輩(?!.+吾輩)', '★★', s)
+print(sss)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;
+吾輩は猫である。名前はまだ無い。〜中略〜 &lt;span style="color:#ff0000;"&gt;★★&lt;/span&gt;はここで始めて人間というものを見た。
+〜中略〜 はてな何でも容子がおかしいと、のそのそ這い出して見ると非常に痛い。
+&lt;span style="color:#ff0000;"&gt;★★&lt;/span&gt;は藁わらの上から急に笹原の中へ棄てられたのである。
+&lt;/pre&gt;
+&lt;p style="font-size: 13px;"&gt;※ 実行結果の色は見やすさのためにつけています．&lt;/p&gt;
+
+&lt;p&gt;前項のコードから&lt;code&gt;flags=re.DOTALL&lt;/code&gt;を除いただけです．&lt;br&gt;
+これにより改行を含む単位で最後に出現する「吾輩」を判定するようになります.&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;もっとよい方法をご存知の方がいればぜひお知らせください．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;r&lt;/code&gt;はraw文字列を指定しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;このフラグがない場合，&lt;code&gt;.&lt;/code&gt;が改行でマッチしなくなります．フラグを付けない場合の検証は事項参照．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;結果を見ると「吾輩」が含まれる1, 3行目について，最後の「吾輩」が「★★」に置換されています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="正規表現"></category><category term="Python"></category><category term="正規表現"></category></entry></feed>

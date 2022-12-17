@@ -1,0 +1,1488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - SQL</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/sql.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-09-12T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>JupyterでDockerのPostgreSQLに接続する方法</title><link href="https://www.tecrab.com/articles/jupyter-sql-postgres.html" rel="alternate"></link><published>2022-09-01T00:00:00+09:00</published><updated>2022-09-02T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-09-01:/articles/jupyter-sql-postgres.html</id><summary type="html">&lt;p&gt;JupyterでDockerに構築したPostgreSQLと接続して動かす方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;ローカルのJupyterとDockerのPostgreSQLを接続しJupyterでクエリを実行する方法について解説しています．&lt;br&gt;
+環境構築後はJupyterのセルで簡単にクエリを実行することができるようになります．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;前提条件&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#postgresql"&gt;PostgreSQLのインストール&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#pythonjupyter"&gt;Python（Jupyter）側の準備&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#docker"&gt;Docker側の設定&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#jupytersql"&gt;JupyterでSQLを実行する&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;前提条件&lt;/h2&gt;
+&lt;p&gt;本記事の前提条件は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;macOS&lt;/li&gt;
+&lt;li&gt;Homebrewがインストール済み&lt;/li&gt;
+&lt;li&gt;Pythonの環境構築済み&lt;/li&gt;
+&lt;li&gt;Docker Desktopがインストール済み&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="postgresql"&gt;PostgreSQLのインストール&lt;/h2&gt;
+&lt;p&gt;PostgreSQLを&lt;code&gt;Homebrew&lt;/code&gt;でインストールします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+brew install postgresql
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h2 id="pythonjupyter"&gt;Python（Jupyter）側の準備&lt;/h2&gt;
+&lt;h5 id="ipython-sql"&gt;ipython-sql のインストール&lt;/h5&gt;
+&lt;p&gt;JupyterでSQLを動かすために&lt;code&gt;ipython-sql&lt;/code&gt;を以下のコマンドでインストールします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+pip install ipython-sql
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h5 id="psycopg2"&gt;psycopg2のインストール&lt;/h5&gt;
+&lt;p&gt;続いてPythonのPostgreSQLドライバー&lt;code&gt;psycopg2&lt;/code&gt;を以下のコマンドでインストールします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 40px;"&gt;
+&lt;code class="language-bash"&gt;
+pip install psycopg2
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;psycopg2をインストールしておかないと後続の処理で&lt;code&gt;No module named 'psycopg2'&lt;/code&gt;が出てしまいます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="docker"&gt;Docker側の設定&lt;/h2&gt;
+&lt;p&gt;PostgreSQLの公式イメージを使用してDocker上に環境を作ります．&lt;br&gt;&lt;/p&gt;
+&lt;h5 id="docker-composeyml"&gt;docker-compose.ymlの作成&lt;/h5&gt;
+&lt;p&gt;以下の内容をコピーして&lt;code&gt;docker-compose.yml&lt;/code&gt;というファイル名で保存します．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;code class="language-yaml"&gt;
+version: '3'
+
+services:
+  db:
+    container_name: postgres_j
+    image: postgres:14.0
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      TZ: "Asia/Tokyo"
+    tty: true
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./init_db:/docker-entrypoint-initdb.d
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h5 id="sql"&gt;構築時に実行するSQLの準備&lt;/h5&gt;
+&lt;p&gt;&lt;code&gt;docker-compose&lt;/code&gt;時に併せて実行するSQLファイルを作成します．&lt;br&gt;
+以下の内容をコピーして&lt;code&gt;00_init.sql&lt;/code&gt;というファイル名で保存します．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;code class="language-sql"&gt;
+--ユーザーの作成
+CREATE USER tst_user;
+
+--DBの作成
+CREATE DATABASE tst_db;
+
+--ユーザーにDBの権限をまとめて付与
+GRANT ALL PRIVILEGES ON DATABASE tst_db TO tst_user;
+
+-- DBを切り替え
+\c tst_db tst_user
+
+--テーブルを作成
+CREATE TABLE tst_tb (
+    id SERIAL PRIMARY KEY, 
+    c_name VARCHAR(10),
+    age INTEGER,
+    check_date DATE
+);
+
+--テーブルにデータを挿入
+INSERT INTO
+    tst_tb
+    (c_name, age, check_date)
+VALUES
+    ('maguro', 18, CURRENT_DATE),
+    ('hokke', 19, CURRENT_DATE),
+    ('iwashi', 20, CURRENT_DATE);
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h5 id="_2"&gt;階層の整理&lt;/h5&gt;
+&lt;p&gt;以下のようなディレクトリ構成にしましょう．&lt;br&gt;&lt;/p&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+postgres_j
+├── docker-compose.yml
+└── init_db
+    └── 00_init.sql
+&lt;/pre&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;postgres_j&lt;/code&gt;ディレクトリの保存場所にpathが通るので，今後も永続して使う場合は保存場所に注意しましょう．&lt;br&gt;
+（次項の&lt;code&gt;docker-compose up -d&lt;/code&gt;を実行する前に適当な場所に移動させればOKです）&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="docker-compose"&gt;docker-compose&lt;/h5&gt;
+&lt;p&gt;dockerアプリを起動し&lt;code&gt;docker-compose.yml&lt;/code&gt;がある階層で以下のコマンドを実行します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 30px;"&gt;
+&lt;code class="language-bash"&gt;
+docker-compose up -d
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;実行後，しばらく待つと&lt;code&gt;postgres_j&lt;/code&gt;というコンテナができます．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;h5 id="psql"&gt;psqlで接続確認&lt;/h5&gt;
+&lt;p&gt;ターミナルからDockerのPostgreSQLに接続します．&lt;br&gt;
+以下のコマンドを実行するとパスワードを求められるので&lt;code&gt;docker-compose.yml&lt;/code&gt;で設定したパスワード&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;を入れてreturnを押します．&lt;br&gt;
+最終的に以下のような出力になっていればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+psql -h localhost -p 5432 -U postgres tst_db
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+Password for user postgres:
+psql (14.5 (Homebrew), server 14.0 (Debian 14.0-1.pgdg110+1))
+Type "help" for help.
+
+tst_db=#
+&lt;/pre&gt;
+
+&lt;h5 id="_3"&gt;クエリでテーブルの存在を確認&lt;/h5&gt;
+&lt;p&gt;&lt;code&gt;00_init.sql&lt;/code&gt;で作成した&lt;code&gt;tst_tb&lt;/code&gt;を確認しましょう．&lt;br&gt;
+以下のクエリを実行してテーブルが表示されればOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="tst_db=#"&gt;
+&lt;code class="language-bash"&gt;
+SELECT * FROM tst_tb;
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+ id | c_name | age | check_date
+----+--------+-----+------------
+  1 | maguro |  18 | 2022-09-01
+  2 | hokke  |  19 | 2022-09-01
+  3 | iwashi |  20 | 2022-09-01
+(3 rows)
+&lt;/pre&gt;
+
+&lt;p&gt;上記の確認が取れたら&lt;code&gt;exit&lt;/code&gt;で抜けておきましょう．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="tst_db=#" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+exit
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h3 id="jupytersql"&gt;JupyterでSQLを実行する&lt;/h3&gt;
+&lt;p&gt;これまでの手順でJupyterでSQLを実行する準備が整いました．&lt;br&gt;
+Jupyterのセルで以下のマジックコマンドを実行します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+%load_ext sql
+%sql postgresql://postgres:pass@localhost:5432/tst_db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;２行目は以下のような構成になっています．&lt;br&gt;
+&lt;code&gt;postgresql://{user}:{password}@{host}:{port}/{db_name}&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;エラーなく実行が完了すればDocker内のPostgreSQLに接続できています．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;上記のコマンドは１回実行すればOKです．&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;あとは，以下のように&lt;code&gt;%sql&lt;/code&gt;と共にクエリをセルで実行すればテーブルを取得できます！&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+%sql SELECT * FROM tst_tb;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output" style="margin-bottom: 50px;"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;id&lt;/th&gt;
+        &lt;th&gt;c_name&lt;/th&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;check_date&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;maguro&lt;/td&gt;
+        &lt;td&gt;18&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;hokke&lt;/td&gt;
+        &lt;td&gt;19&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;iwashi&lt;/td&gt;
+        &lt;td&gt;20&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;なお，クエリを複数行書く場合は&lt;code&gt;%%sql&lt;/code&gt;を使います．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+%%sql
+SELECT
+    *
+FROM
+    tst_tb
+WHERE
+    age &gt;= 20;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;id&lt;/th&gt;
+        &lt;th&gt;c_name&lt;/th&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;check_date&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;iwashi&lt;/td&gt;
+        &lt;td&gt;20&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;以下のように&lt;code&gt;;&lt;/code&gt;で区切れば複数のクエリも使えます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+%%sql
+INSERT INTO
+    tst_tb
+    (c_name, age, check_date)
+VALUES
+    ('saba', 22, CURRENT_DATE);
+
+SELECT * FROM tst_tb;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;id&lt;/th&gt;
+        &lt;th&gt;c_name&lt;/th&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;check_date&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;maguro&lt;/td&gt;
+        &lt;td&gt;18&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;hokke&lt;/td&gt;
+        &lt;td&gt;19&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;iwashi&lt;/td&gt;
+        &lt;td&gt;20&lt;/td&gt;
+        &lt;td&gt;2022-09-01&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;4&lt;/td&gt;
+        &lt;td&gt;saba&lt;/td&gt;
+        &lt;td&gt;22&lt;/td&gt;
+        &lt;td&gt;2022-09-02&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;Jupyterを使ってクエリを気軽に叩けると楽でいいですね．&lt;br&gt;
+当ブログを書く際にもこの機能を使っています．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;Psycopgは2022年9月現在でpsycopg3が出ているのですが，psycopg3だけだとうまく動きません．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;POSTGRES_PASSWORD: pass&lt;/code&gt;の「pass」です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="SQL"></category><category term="PostgreSQL"></category><category term="Docker"></category><category term="環境構築"></category></entry><entry><title>PostgreSQLで文字列を結合（CONCAT, CONCAT_WS）</title><link href="https://www.tecrab.com/articles/sql-concat-ws-functions.html" rel="alternate"></link><published>2022-01-26T00:00:00+09:00</published><updated>2022-09-12T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-01-26:/articles/sql-concat-ws-functions.html</id><summary type="html">&lt;p&gt;PostgreSQLで文字列を結合する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を見ていきます．&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;&lt;code&gt;||&lt;/code&gt;演算子，&lt;code&gt;CONCAT()&lt;/code&gt;を使用した文字列の結合&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;||&lt;/code&gt;演算子，&lt;code&gt;CONCAT()&lt;/code&gt;の違い&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;CONCAT_WS()&lt;/code&gt;を使用した文字列の結合&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;例示を見ながら確認していきましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#postgresql"&gt;PostgreSQLのバージョン&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;||演算子による文字列結合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#concat"&gt;CONCAT()による文字列結合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#concat_ws"&gt;CONCAT_WS()による文字列結合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#concat_1"&gt;||演算子とCONCAT()の違い&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="postgresql"&gt;PostgreSQLのバージョン&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;psql (PostgreSQL) 14.5&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのテーブルを作成します．&lt;br&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+CREATE TABLE str_table (
+    id serial PRIMARY KEY, -- 番号
+    str_1 VARCHAR(5), 
+    str_2 VARCHAR(5)
+);
+
+INSERT INTO str_table (str_1, str_2)
+VALUES
+    ('あ', 'い'),
+    ('App', 'le'),
+    ('GH', NULL)
+;
+
+SELECT * FROM str_table;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;id&lt;/th&gt;
+        &lt;th&gt;str_1&lt;/th&gt;
+        &lt;th&gt;str_2&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;あ&lt;/td&gt;
+        &lt;td&gt;い&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;App&lt;/td&gt;
+        &lt;td&gt;le&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;GH&lt;/td&gt;
+        &lt;td&gt;[null]&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h3 id="_2"&gt;&lt;code&gt;||&lt;/code&gt;演算子による文字列結合&lt;/h3&gt;
+&lt;p&gt;まずは&lt;code&gt;||&lt;/code&gt;演算子を見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    str_1,
+    str_2,
+    str_1 || ' ' || str_2 AS str_1_and_str_2
+FROM
+    str_table;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;str_1&lt;/th&gt;
+        &lt;th&gt;str_2&lt;/th&gt;
+        &lt;th&gt;str_1_and_str_2&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;あ&lt;/td&gt;
+        &lt;td&gt;い&lt;/td&gt;
+        &lt;td&gt;あ い&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;App&lt;/td&gt;
+        &lt;td&gt;le&lt;/td&gt;
+        &lt;td&gt;App le&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;GH&lt;/td&gt;
+        &lt;td&gt;[null]&lt;/td&gt;
+        &lt;td&gt;[null]&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;結合したい文字列（を含む列）を&lt;code&gt;||&lt;/code&gt;演算子で繋げて結合しています．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;str_1 || 任意の文字列(半角スペース) || str_2&lt;/code&gt;としているので，結果としては&lt;code&gt;str_1&lt;/code&gt;,&lt;code&gt;str_2&lt;/code&gt;の文字列が半角スペースで結合されています．&lt;br&gt;
+なお，&lt;code&gt;||&lt;/code&gt;演算子を追加すれば好きなだけ文字列を結合することができます．&lt;/p&gt;
+&lt;h3 id="concat"&gt;&lt;code&gt;CONCAT()&lt;/code&gt;による文字列結合&lt;/h3&gt;
+&lt;p&gt;次に&lt;code&gt;CONCAT()&lt;/code&gt;を使用した文字列結合を見てみましょう．&lt;br&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    str_1,
+    str_2,
+    CONCAT(str_1, ' ', str_2) AS str_1_and_str_2
+FROM
+    str_table;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;str_1&lt;/th&gt;
+        &lt;th&gt;str_2&lt;/th&gt;
+        &lt;th&gt;str_1_and_str_2&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;あ&lt;/td&gt;
+        &lt;td&gt;い&lt;/td&gt;
+        &lt;td&gt;あ い&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;App&lt;/td&gt;
+        &lt;td&gt;le&lt;/td&gt;
+        &lt;td&gt;App le&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;GH&lt;/td&gt;
+        &lt;td&gt;[null]&lt;/td&gt;
+        &lt;td&gt;GH &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;CONCAT()&lt;/code&gt;は引数に指定した文字列が順に結合されます．&lt;br&gt;
+なお&lt;code&gt;||&lt;/code&gt;演算子と同様に引数は好きなだけ指定できます．&lt;/p&gt;
+&lt;h3 id="concat_ws"&gt;&lt;code&gt;CONCAT_WS()&lt;/code&gt;による文字列結合&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;CONCAT_WS()&lt;/code&gt;は基本的に&lt;code&gt;CONCAT()&lt;/code&gt;と同じです．&lt;br&gt;
+両者の違いはセパレーター（区切り文字）の指定可否とNULL存在時の挙動&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;です.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    str_1,
+    str_2,
+    CONCAT_WS(' ', str_1, str_2)
+FROM
+    str_table;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;str_1&lt;/th&gt;
+        &lt;th&gt;str_2&lt;/th&gt;
+        &lt;th&gt;concat_ws&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;あ&lt;/td&gt;
+        &lt;td&gt;い&lt;/td&gt;
+        &lt;td&gt;あ い&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;App&lt;/td&gt;
+        &lt;td&gt;le&lt;/td&gt;
+        &lt;td&gt;App le&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;GH&lt;/td&gt;
+        &lt;td&gt;[null]&lt;/td&gt;
+        &lt;td&gt;GH&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;CONCAT_WS()&lt;/code&gt;は第一引数にセパレーターを指定し，第二引数以降はセパレーターで区切りたい文字列を指定します.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;例示では&lt;code&gt;' '&lt;/code&gt;（＝半角スペース）をセパレーターとしているため，その後の２つの引数が半角スペースで区切られて結合しています．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CONCAT_WS()&lt;/code&gt;の&lt;code&gt;WS&lt;/code&gt;は &lt;span style="text-decoration:underline";&gt;w&lt;/span&gt;ith &lt;span style="text-decoration:underline";&gt;s&lt;/span&gt;eparator に由来します．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="concat_1"&gt;&lt;code&gt;||&lt;/code&gt;演算子と&lt;code&gt;CONCAT()&lt;/code&gt;の違い&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;||&lt;/code&gt;演算子と&lt;code&gt;CONCAT()&lt;/code&gt;（&lt;code&gt;CONCAT_WS()&lt;/code&gt;）は文字列を結合するものですが，違いは以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;NULLの処理&lt;/li&gt;
+&lt;li&gt;処理速度&lt;/li&gt;
+&lt;li&gt;結果のカラム名&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;h5 id="null"&gt;NULLの処理&lt;/h5&gt;
+&lt;p&gt;&lt;code&gt;||&lt;/code&gt;演算子は結合文字列にNULLが含まれている場合，他の文字に関わらずNULLを返します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT 'A' || ',' || NULL || ',' || 'C'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;?column?&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;[null]&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;一方&lt;code&gt;CONCAT()&lt;/code&gt;はNULLを無視して結合するため，NULL以外の指定された文字列を結合して返します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT CONCAT('A', ',', NULL, ',', 'C')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;concat&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;A,,C&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;CONCAT()&lt;/code&gt;は文字列を単純に結合するので，結果は上記のように「&lt;strong&gt;A , , C&lt;/strong&gt;」となります．&lt;br&gt;
+一方で&lt;code&gt;CONCAT_WS()&lt;/code&gt;の場合は文字同士をセパレーターで区切るという指定をしているため，NULLがあっても余分なコンマ（区切り）は付与されません．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT CONCAT_WS(',', 'A', NULL, 'C')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;concat_ws&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;A,C&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;h5 id="_3"&gt;処理速度&lt;/h5&gt;
+&lt;p&gt;処理速度は&lt;code&gt;||&lt;/code&gt;演算子が最も高速です．&lt;br&gt;
+&lt;code&gt;CONCAT()&lt;/code&gt;, &lt;code&gt;CONCAT_WS()&lt;/code&gt;は関数呼び出しがあるため&lt;code&gt;||&lt;/code&gt;演算子よりは低速です．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;h5 id="_4"&gt;結果のカラム名&lt;/h5&gt;
+&lt;p&gt;最後の違いは微妙ですが&lt;code&gt;||&lt;/code&gt;演算子と&lt;code&gt;CONCAT()&lt;/code&gt;（&lt;code&gt;CONCAT_WS()&lt;/code&gt;）では結果のカラム名が異なります．&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/sql-concat-ws-functions/sql-concat-ws-functions_01.png" width="300" height="164"&gt;&lt;/p&gt;
+&lt;div class="s-bubbles"&gt;
+&lt;p&gt;&lt;div class="kani-icon" markdown="1"&gt;
+  &lt;img src="/images/about/kani_chatting.png" width="50" height="50" style="margin: 7px 0px 0px 5px;"&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="chatting"&gt;
+&lt;p&gt;&lt;div class="says" markdown="1"&gt;
+  &lt;code&gt;AS&lt;/code&gt;でカラム名を指定すれば特に困ることはないです！&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;文字列をSQLで整形しておくと後続の処理が楽ですね．&lt;br&gt;
+住所や姓名の結合などに使用できそうです．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;文字列結合に関する記事はこちらです．&lt;br&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.revalab.net/sql-string-agg-functions" rel="noopener noreferrer" target="_blank"&gt;PostgreSQLで文字列を結合，STRING_AGGによるコンマ区切り&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;詳細は「&lt;code&gt;||&lt;/code&gt;演算子と&lt;code&gt;CONCAT()&lt;/code&gt;の違い」の項を参照．ここではセパレーターの指定を見ています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;CONCAT_WS()&lt;/code&gt;も&lt;code&gt;CONCAT()&lt;/code&gt;と同様に引数の数に限りはありません．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="SQL"></category><category term="PostgreSQL"></category></entry><entry><title>PostgreSQLで文字列を結合，STRING_AGGによるコンマ区切り</title><link href="https://www.tecrab.com/articles/sql-string-agg-functions.html" rel="alternate"></link><published>2022-01-22T00:00:00+09:00</published><updated>2022-09-12T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-01-22:/articles/sql-string-agg-functions.html</id><summary type="html">&lt;p&gt;PostgreSQLで文字列を結合/コンマ区切りで取得する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の内容を見ていきます．&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;列に含まれる文字列の結合&lt;/li&gt;
+  &lt;li&gt;結合した文字列をコンマ区切りで取得&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;例示を見ながら確認していきましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#postgresql"&gt;PostgreSQLのバージョン&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;列に含まれる文字列の結合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#concat"&gt;concatを使用する方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;結合した文字列をコンマ区切りで取得&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;結合した文字列を並び替える&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_7"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="postgresql"&gt;PostgreSQLのバージョン&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;psql (PostgreSQL) 14.5&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのテーブルを作成します．&lt;br&gt;
+姓・名がそれぞれ列に格納されたデータです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+CREATE TABLE name_list (
+    id serial PRIMARY KEY, -- 番号
+    group_ VARCHAR(5), -- グループ
+    first_name VARCHAR(30), -- 名
+    last_name VARCHAR(30) -- 姓
+);
+
+INSERT INTO name_list (group_, first_name, last_name)
+VALUES
+    ('A', 'ABC', 'EFG'),
+    ('A', 'ZYX', 'DEF'),
+    ('B', 'Taro', 'Suzuki'),
+    ('C', '青井', '大輔'),
+    ('C', '渡邊', '輝')
+;
+
+SELECT * FROM name_list;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;id&lt;/th&gt;
+        &lt;th&gt;group_&lt;/th&gt;
+        &lt;th&gt;first_name&lt;/th&gt;
+        &lt;th&gt;last_name&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;A&lt;/td&gt;
+        &lt;td&gt;ABC&lt;/td&gt;
+        &lt;td&gt;EFG&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;A&lt;/td&gt;
+        &lt;td&gt;ZYX&lt;/td&gt;
+        &lt;td&gt;DEF&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;B&lt;/td&gt;
+        &lt;td&gt;Taro&lt;/td&gt;
+        &lt;td&gt;Suzuki&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;4&lt;/td&gt;
+        &lt;td&gt;C&lt;/td&gt;
+        &lt;td&gt;青井&lt;/td&gt;
+        &lt;td&gt;大輔&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;5&lt;/td&gt;
+        &lt;td&gt;C&lt;/td&gt;
+        &lt;td&gt;渡邊&lt;/td&gt;
+        &lt;td&gt;輝&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h3 id="_2"&gt;列に含まれる文字列の結合&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;first_name&lt;/code&gt;列と&lt;code&gt;last_name&lt;/code&gt;列の文字列を結合し，フルネームが入った列を作成します．&lt;br&gt;
+文字列を結合するには&lt;code&gt;||&lt;/code&gt;演算子を使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    first_name, 
+    last_name,
+    first_name || ' ' || last_name AS full_name
+FROM
+    name_list;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 50px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;first_name&lt;/th&gt;
+        &lt;th&gt;last_name&lt;/th&gt;
+        &lt;th&gt;full_name&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ABC&lt;/td&gt;
+        &lt;td&gt;EFG&lt;/td&gt;
+        &lt;td&gt;ABC EFG&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ZYX&lt;/td&gt;
+        &lt;td&gt;DEF&lt;/td&gt;
+        &lt;td&gt;ZYX DEF&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Taro&lt;/td&gt;
+        &lt;td&gt;Suzuki&lt;/td&gt;
+        &lt;td&gt;Taro Suzuki&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;青井&lt;/td&gt;
+        &lt;td&gt;大輔&lt;/td&gt;
+        &lt;td&gt;青井 大輔&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;渡邊&lt;/td&gt;
+        &lt;td&gt;輝&lt;/td&gt;
+        &lt;td&gt;渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;first_name || ' ' || last_name&lt;/code&gt;で２列の文字列を半角スペースで結合させています．&lt;br&gt;
+結果として姓・名が半角スペースで区切られた列が取得できます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;h3 id="concat"&gt;&lt;code&gt;concat&lt;/code&gt;を使用する方法&lt;/h3&gt;
+&lt;p&gt;文字列の結合は&lt;code&gt;||&lt;/code&gt;演算子だけでなく&lt;code&gt;CONCAT()&lt;/code&gt;関数でも可能です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    first_name, 
+    last_name,
+    CONCAT(first_name, ' ', last_name) AS full_name
+FROM
+    name_list;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;first_name&lt;/th&gt;
+        &lt;th&gt;last_name&lt;/th&gt;
+        &lt;th&gt;full_name&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ABC&lt;/td&gt;
+        &lt;td&gt;EFG&lt;/td&gt;
+        &lt;td&gt;ABC EFG&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ZYX&lt;/td&gt;
+        &lt;td&gt;DEF&lt;/td&gt;
+        &lt;td&gt;ZYX DEF&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Taro&lt;/td&gt;
+        &lt;td&gt;Suzuki&lt;/td&gt;
+        &lt;td&gt;Taro Suzuki&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;青井&lt;/td&gt;
+        &lt;td&gt;大輔&lt;/td&gt;
+        &lt;td&gt;青井 大輔&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;渡邊&lt;/td&gt;
+        &lt;td&gt;輝&lt;/td&gt;
+        &lt;td&gt;渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;||&lt;/code&gt;演算子と&lt;code&gt;CONCAT()&lt;/code&gt;関数に関する関連記事はこちらです．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;
+    &lt;a href="https://www.revalab.net/sql-concat-ws-functions/" rel="noopener noreferrer" target="_blank"&gt;PostgreSQLで文字列を結合 (CONCAT, CONCAT_WS)&lt;/a&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_3"&gt;結合した文字列をコンマ区切りで取得&lt;/h3&gt;
+&lt;p&gt;先ほどは行ごとに姓・名の結合結果を取得しました．&lt;br&gt;
+ここでは姓・名の結合結果をまとめて取得＋コンマ区切りとする方法を見てみましょう．&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;STRING_AGG()&lt;/code&gt;関数を使用して以下のように記載します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    STRING_AGG(
+        first_name || ' ' || last_name, ','
+    ) AS full_names
+FROM
+    name_list
+;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 50px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;full_names&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF,Taro Suzuki,青井 大輔,渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;STRING_AGG()&lt;/code&gt;関数の引数は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一引数：文字列を指定します．今回は姓名を結合したいのでその処理を指定．&lt;/li&gt;
+&lt;li&gt;第二引数：取得する文字列の区切り方を指定します．今回はコンマを指定．&lt;/li&gt;
+&lt;li&gt;第三引数：取得した結果の並び替えを指定.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: -40px;"&gt;&lt;/div&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;STRING_AGG()&lt;/code&gt;は集約関数の仲間ですので，取得できる結果は１つです．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_4"&gt;結合した文字列を並び替える&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;STRING_AGG()&lt;/code&gt;の第三引数には&lt;code&gt;ORDER BY&lt;/code&gt;句を指定することが可能です．&lt;br&gt;
+そのため，以下のようにすれば取得する文字列の並びを変更することができます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    STRING_AGG(
+        first_name || ' ' || last_name, ','
+        ORDER BY first_name
+    ) AS full_names
+FROM
+    name_list
+;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 50px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;full_names&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ABC EFG,Taro Suzuki,ZYX DEF,渡邊 輝,青井 大輔&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;ORDER BY&lt;/code&gt;句で指定した&lt;code&gt;first_name&lt;/code&gt;列に従って並び替えられるので「ABC EFG, Taro Suzuki, ZYX DEF」の順になりました．&lt;/p&gt;
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;日本語の並び替えはふりがなカラムの追加，データ型を調整などが必要です・・・&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="_5"&gt;グループごとに結果を取得&lt;/h5&gt;
+&lt;p&gt;&lt;code&gt;STRING_AGG()&lt;/code&gt;関数と&lt;code&gt;GROUP BY&lt;/code&gt;句を組み合わせて使うこともできます．&lt;br&gt;
+&lt;code&gt;group_&lt;/code&gt;列の値で集約した結果を取得するには以下のクエリです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    group_,
+    STRING_AGG(
+        first_name || ' ' || last_name, ','
+        ORDER BY first_name
+    ) AS full_names
+FROM
+    name_list
+GROUP BY
+    group_
+;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 50px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;group_&lt;/th&gt;
+        &lt;th&gt;full_names&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;A&lt;/td&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;B&lt;/td&gt;
+        &lt;td&gt;Taro Suzuki&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;C&lt;/td&gt;
+        &lt;td&gt;渡邊 輝,青井 大輔&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;グループごとに姓・名の結合結果が得られましたね．&lt;/p&gt;
+&lt;div style="margin-bottom: 90px;"&gt;&lt;/div&gt;
+
+&lt;h5 id="_6"&gt;参考&lt;/h5&gt;
+&lt;p&gt;行すべてで&lt;code&gt;STRING_AGG()&lt;/code&gt;関数の結果が欲しい場合は&lt;code&gt;OVER()&lt;/code&gt;を使用すればOKです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    first_name,
+    last_name,
+    STRING_AGG(
+        first_name || ' ' || last_name, ','
+    ) OVER() AS full_names
+FROM
+    name_list
+;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 90px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;first_name&lt;/th&gt;
+        &lt;th&gt;last_name&lt;/th&gt;
+        &lt;th&gt;full_names&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ABC&lt;/td&gt;
+        &lt;td&gt;EFG&lt;/td&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF,Taro Suzuki,青井 大輔,渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ZYX&lt;/td&gt;
+        &lt;td&gt;DEF&lt;/td&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF,Taro Suzuki,青井 大輔,渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Taro&lt;/td&gt;
+        &lt;td&gt;Suzuki&lt;/td&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF,Taro Suzuki,青井 大輔,渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;青井&lt;/td&gt;
+        &lt;td&gt;大輔&lt;/td&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF,Taro Suzuki,青井 大輔,渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;渡邊&lt;/td&gt;
+        &lt;td&gt;輝&lt;/td&gt;
+        &lt;td&gt;ABC EFG,ZYX DEF,Taro Suzuki,青井 大輔,渡邊 輝&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h2 id="_7"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;SQL側で文字列を色々と操作することができると便利ですね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;AS full_name&lt;/code&gt;の部分は取得するカラムに名前をつけています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;上記のクエリでは指定していません．詳細は次項を参照．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="SQL"></category><category term="PostgreSQL"></category></entry><entry><title>PostgreSQLで四捨五入・切り捨て/上げ，小数点以下の桁数を確認する方法</title><link href="https://www.tecrab.com/articles/sql-round-trunc-functions.html" rel="alternate"></link><published>2021-12-02T00:00:00+09:00</published><updated>2022-01-22T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-12-02:/articles/sql-round-trunc-functions.html</id><summary type="html">&lt;p&gt;PostgreSQLで四捨五入や切り捨てなどの方法をまとめています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の関数を見ていきます．&lt;br&gt;
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;四捨五入：&lt;code&gt;ROUND()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;切り捨て：&lt;code&gt;TRUNC()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;大きい側の整数を取得（切り上げ）：&lt;code&gt;CEIL()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;小さい側の整数を取得：&lt;code&gt;FLOOR()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;小数点以下の桁数を数える：&lt;code&gt;SCALE()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;例示を見ながら確認していきましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#postgresql"&gt;PostgreSQLのバージョン&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#round"&gt;四捨五入 ROUND()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#trunc"&gt;切り捨て TRUNC()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#ceil"&gt;大きい側の整数を取得（切り上げ）CEIL()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#floor"&gt;小さい側の整数を取得（切り捨て）FLOOR()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#scale"&gt;小数点以下の桁数を数える SCALE()&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="postgresql"&gt;PostgreSQLのバージョン&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;psql (PostgreSQL) 14.5&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;本記事ではテーブルを作成せずに&lt;code&gt;SELECT&lt;/code&gt;文だけを使用します．&lt;/p&gt;
+&lt;h3 id="round"&gt;四捨五入 &lt;code&gt;ROUND()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;四捨五入をするには&lt;code&gt;ROUND()&lt;/code&gt;関数を使用します．&lt;br&gt;
+四捨五入したい数値を引数として渡すと小数点以下を四捨五入して返してくれます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT ROUND(10.4)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 40px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;round&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;10&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT ROUND(10.5)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output" style="margin-bottom: 90px;"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;round&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;11&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h5 id="_2"&gt;表示する小数点以下の位を指定&lt;/h5&gt;
+&lt;p&gt;表示したい小数点以下の位を第二引数で指定することもできます．&lt;br&gt;
+以下の例では小数点第一位まで表示するので，小数点第二位が四捨五入されています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT ROUND(10.554, 1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 50px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;round&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;10.6&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;第二引数のデフォルトは&lt;code&gt;0&lt;/code&gt;（小数点以下で四捨五入）です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;引数を負にすると整数部分での四捨五入もできます．&lt;br&gt;
+小数点を起点に２番目なので，十の位で四捨五入されています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT ROUND(150.554, -2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table  style="margin-bottom: 50px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;round&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;200&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ROUND()&lt;/code&gt;は引数として渡すデータ型に依存して返り値が決まります．&lt;br&gt;
+渡すデータ型によっては挙動が異なる例もあるようなので，データ型に注意が必要です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="trunc"&gt;切り捨て &lt;code&gt;TRUNC()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;数値の切り捨てには&lt;code&gt;TRUNC()&lt;/code&gt;を使用します.（使い方は&lt;code&gt;ROUND()&lt;/code&gt;と同様です）&lt;br&gt;
+第一引数に数値を渡すと小数点以下を切り捨てて返してくれます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT TRUNC(198.9)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;trunc&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;198&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;ROUND()&lt;/code&gt;と同様に&lt;code&gt;TRUNC()&lt;/code&gt;も表示したい小数点以下の位を第二引数で指定できます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;
+以下の例では小数点第二位まで表示するので，小数点第三位以下を切り捨てています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT TRUNC(198.992, 2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;trunc&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;198.99&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;ROUND()&lt;/code&gt;と同様に第二引数を負の数にすると整数部分での切り捨てもできます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT TRUNC(198.992, -1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output" style="margin-bottom: 90px;"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;trunc&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;190&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h3 id="ceil"&gt;大きい側の整数を取得（切り上げ）&lt;code&gt;CEIL()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;ややトリッキーな関数ですが，まずはコードを見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT CEIL(10.1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;ceil&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;11&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;結果は&lt;code&gt;11&lt;/code&gt;となりました．&lt;br&gt;
+これは引数の数値について，大きい側の整数を取っているためです．&lt;br&gt;
+&lt;code&gt;CEIL()&lt;/code&gt;は&lt;strong&gt;引数が正の値&lt;/strong&gt;であれば切り上げと同じ挙動です．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+10 ・・ 10.1 ・・・・・ &lt;span style="text-decoration: underline;"&gt;11&lt;/span&gt;
+　　 　   ↑ 引数
+&lt;/pre&gt;
+
+&lt;p&gt;引数が負の値であっても大きい側の値を取ります．&lt;br&gt;
+ただし，正の値とは異なり切り上げとは違う挙動です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT CEIL(-10.1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;ceil&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;-10&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;切り上げにはなっておらず，&lt;u&gt;大きい方の値&lt;/u&gt;を取っています．&lt;/p&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+-11 ・・・・・ -10.1 ・・ &lt;span style="text-decoration: underline;"&gt;-10&lt;/span&gt;
+　　　　　　　   ↑ 引数
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CEIL()&lt;/code&gt;は&lt;code&gt;CEILING()&lt;/code&gt;と同一の関数です．&lt;br&gt;
+なお&lt;code&gt;CEIL()&lt;/code&gt;に整数を渡すとそのまま帰ってきます（&lt;code&gt;SELECT CEIL(10) -&amp;gt; 10&lt;/code&gt;）&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="floor"&gt;小さい側の整数を取得（切り捨て）&lt;code&gt;FLOOR()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;FLOOR()&lt;/code&gt;は&lt;code&gt;CEIL()&lt;/code&gt;の逆の挙動をする関数です．&lt;br&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT FLOOR(10.1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;floor&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;10&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;結果が&lt;code&gt;10&lt;/code&gt;となったのは，以下のように引数の数値の小さい側の整数を取っているためです．&lt;br&gt;
+&lt;code&gt;FLOOR()&lt;/code&gt;は&lt;strong&gt;引数が正の値&lt;/strong&gt;であれば切り捨てと同じ挙動です．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;span style="text-decoration: underline;"&gt;10&lt;/span&gt; ・・ 10.1 ・・・・・ 11
+　　　　 ↑ 引数
+&lt;/pre&gt;
+
+&lt;p&gt;引数が負の値であっても小さい側の値を取ります．&lt;br&gt;
+ただし，正の値とは異なり切り捨てとは違う挙動です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT FLOOR(-10.1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;floor&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;-11&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;切り捨てにはなっておらず，&lt;u&gt;小さい方の値&lt;/u&gt;を取っています．&lt;/p&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+&lt;span style="text-decoration: underline;"&gt;-11&lt;/span&gt; ・・・・・ -10.1 ・・ -10
+　　　　　　　　↑ 引数
+&lt;/pre&gt;
+
+&lt;h3 id="scale"&gt;小数点以下の桁数を数える &lt;code&gt;SCALE()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;小数点以下の桁数を数える関数もあります．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT SCALE(1.23456789)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="nb-html-output" style="margin-bottom: 90px;"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;scale&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;8&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;小数点まわりの操作をさらっと見てみました．&lt;br&gt;
+SQLでデータを取得する際に必要に応じて使えそうな内容ですね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;第二引数のデフォルトも&lt;code&gt;ROUND()&lt;/code&gt;と同様に&lt;code&gt;0&lt;/code&gt;（小数点以下で切り捨て）です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="SQL"></category><category term="PostgreSQL"></category></entry><entry><title>PostgreSQL集約関数：SQLで計算や最大・最小値を算出する方法</title><link href="https://www.tecrab.com/articles/sql-aggregate-functions.html" rel="alternate"></link><published>2021-11-23T00:00:00+09:00</published><updated>2022-01-22T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-11-23:/articles/sql-aggregate-functions.html</id><summary type="html">&lt;p&gt;PostgreSQLでの集約関数を確認している記事です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では以下の集約関数を見ていきます．
+&lt;br&gt;
+＜使用イメージ＞
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+  &lt;li&gt;足し算：&lt;code&gt;SUM()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;データの個数確認：&lt;code&gt;COUNT()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;平均：&lt;code&gt;AVG()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;最大値：&lt;code&gt;MAX()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;最小値：&lt;code&gt;MIN()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;上記の関数は結果をひとつのデータとして返してきます．&lt;br&gt;
+例示を見ながら確認していきましょう．&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#postgresql"&gt;PostgreSQLのバージョン&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#sum"&gt;足し算 SUM()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#count"&gt;データの個数確認 COUNT()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#avg"&gt;平均 AVG()&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#max-min"&gt;最大値・最小値 MAX() MIN()&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;条件をつけて集約関数を使用する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="postgresql"&gt;PostgreSQLのバージョン&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;psql (PostgreSQL) 14.5&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのテーブルを作成します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+CREATE TABLE buncho (
+    id serial PRIMARY KEY, -- 番号
+    name VARCHAR (30) NOT NULL, -- お名前
+    age INTEGER NOT NULL, -- 年齢(歳)
+    weight DECIMAL(5, 2) NOT NULL, -- 体重(g)
+    birdseed DECIMAL(5, 2) NOT NULL -- １日の餌の量(g)
+);
+
+INSERT INTO buncho (name, age, weight, birdseed)
+VALUES
+    ('ぶんぶん', 2, 21.3, 4),
+    ('ピースケ', 1, 22.6, 4),
+    ('シロ', 3, 23.7, 4),
+    ('うずら', 1, 25.9, 6),
+    ('らむね', 5, 24.0, 5),
+    ('シルバー', 2, 23.5, 5)
+;
+
+SELECT * FROM buncho;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;id&lt;/th&gt;
+        &lt;th&gt;name&lt;/th&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;weight&lt;/th&gt;
+        &lt;th&gt;birdseed&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;ぶんぶん&lt;/td&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;21.30&lt;/td&gt;
+        &lt;td&gt;4.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;ピースケ&lt;/td&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;22.60&lt;/td&gt;
+        &lt;td&gt;4.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;シロ&lt;/td&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;23.70&lt;/td&gt;
+        &lt;td&gt;4.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;4&lt;/td&gt;
+        &lt;td&gt;うずら&lt;/td&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;25.90&lt;/td&gt;
+        &lt;td&gt;6.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;5&lt;/td&gt;
+        &lt;td&gt;らむね&lt;/td&gt;
+        &lt;td&gt;5&lt;/td&gt;
+        &lt;td&gt;24.00&lt;/td&gt;
+        &lt;td&gt;5.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;6&lt;/td&gt;
+        &lt;td&gt;シルバー&lt;/td&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;23.50&lt;/td&gt;
+        &lt;td&gt;5.00&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h3 id="sum"&gt;足し算 &lt;code&gt;SUM()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;birdseed 列をすべて足します．&lt;br&gt;
+結果を見ると，足し算された結果が１つの値として返ってきていますね．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    SUM(birdseed)
+FROM
+    buncho;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;sum&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;28.00&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h3 id="count"&gt;データの個数確認 &lt;code&gt;COUNT()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;データの個数をカウントします．&lt;br&gt;
+６つのデータ（行）がカウントされて返ってきました．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    COUNT(*) AS buncho_count
+FROM
+    buncho;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;buncho_count&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;6&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;COUNT(*)&lt;/code&gt;とすると要素がNULLであってもカウントして返してくれます．&lt;br&gt;
+特定の列を指定する場合はNULLをカウントせずに返してくれます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="avg"&gt;平均 &lt;code&gt;AVG()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;データの平均値を算出します.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    ROUND(AVG(weight), 2) AS weight
+FROM
+    buncho;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;weight&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;23.50&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h3 id="max-min"&gt;最大値・最小値 &lt;code&gt;MAX()&lt;/code&gt; &lt;code&gt;MIN()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;データの最大値・最小値を表示してくれます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    MAX(weight)
+FROM
+    buncho;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output" style="margin-bottom: 50px;"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;max&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;25.90&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    MIN(weight)
+FROM
+    buncho;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;min&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;21.30&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h2 id="_2"&gt;条件をつけて集約関数を使用する&lt;/h2&gt;
+&lt;p&gt;ここでは&lt;code&gt;WHERE&lt;/code&gt;句や&lt;code&gt;GROUP BY&lt;/code&gt;句,&lt;code&gt;HAVING&lt;/code&gt;句で条件を絞って集計する例を見てみます．&lt;/p&gt;
+&lt;h5 id="_3"&gt;特定の条件のデータだけを足し算&lt;/h5&gt;
+&lt;p&gt;age（年齢）が１歳の文鳥だけに絞って集計してみます．&lt;br&gt;
+年齢が１歳の２羽におけるbirdseedを足した結果が返ってきていますね．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT
+    SUM(birdseed)
+FROM
+    buncho
+WHERE
+    age = 1;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;sum&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;10.00&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;h5 id="_4"&gt;グループでまとめて足し算&lt;/h5&gt;
+&lt;p&gt;&lt;code&gt;GROUP BY&lt;/code&gt;句でage（年齢）ごとにまとめて足し算してみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT age,
+    SUM(birdseed)
+FROM
+    buncho
+GROUP BY
+    age
+ORDER BY
+    age;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;sum&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;10.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;9.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;3&lt;/td&gt;
+        &lt;td&gt;4.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;5&lt;/td&gt;
+        &lt;td&gt;5.00&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;今回はデータが少ないのであまりまとまっていませんが，それぞれの年齢ごとにbirdseedが集計されていることがわかりますね．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;クエリの最後にある&lt;code&gt;ORDER BY&lt;/code&gt;句はage列を基準に並び替えるために入れています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="_5"&gt;一旦集計した結果をさらに絞る&lt;/h5&gt;
+&lt;p&gt;上記のグループごとにまとめて足し算した結果のうち，birdseedが７以上のデータを抽出します．&lt;br&gt;
+このような場合には&lt;code&gt;HAVING&lt;/code&gt;句に集約関数を記載します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;
+SELECT age,
+    SUM(birdseed) AS birdseed
+FROM
+    buncho
+GROUP BY
+    age
+HAVING
+    SUM(birdseed) &gt;= 7
+ORDER BY
+    age;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class="nb-html-output"&gt;&lt;table style="margin-bottom: 30px;"&gt;
+    &lt;tbody&gt;&lt;tr&gt;
+        &lt;th&gt;age&lt;/th&gt;
+        &lt;th&gt;birdseed&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;10.00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;9.00&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+
+&lt;p&gt;集約した結果に対し，さらに絞り込んだ結果を得ることができました！&lt;/p&gt;
+&lt;h2 id="_6"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;SQLの集約関数について基本的な使い方を勉強しました．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;ROUND(AVG(weight), 2)&lt;/code&gt;としているのは，出力結果を小数点第二位までとするためです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="SQL"></category><category term="PostgreSQL"></category></entry></feed>

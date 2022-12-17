@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PostgreSQLで文字列を結合（CONCAT, CONCAT_WS） - てっくらぶ</title>
+    <meta name="description" content="PostgreSQLで文字列を結合する方法です．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">SQL</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          PostgreSQLで文字列を結合（CONCAT, CONCAT_WS）
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/sql.html">SQL</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/postgresql.html">PostgreSQL</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2022-01-26
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-09-12
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事では以下の内容を見ていきます．<br>
+<ul style="margin: -5px 0px 0px 15px;">
+  <li><code>||</code>演算子，<code>CONCAT()</code>を使用した文字列の結合</li>
+  <li><code>||</code>演算子，<code>CONCAT()</code>の違い</li>
+  <li><code>CONCAT_WS()</code>を使用した文字列の結合</li>
+</ul></p>
+<p>例示を見ながら確認していきましょう．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#postgresql">PostgreSQLのバージョン</a></li>
+<li><a href="#_1">事前準備</a><ul>
+<li><a href="#_2">||演算子による文字列結合</a></li>
+<li><a href="#concat">CONCAT()による文字列結合</a></li>
+<li><a href="#concat_ws">CONCAT_WS()による文字列結合</a></li>
+<li><a href="#concat_1">||演算子とCONCAT()の違い</a></li>
+</ul>
+</li>
+<li><a href="#_5">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="postgresql">PostgreSQLのバージョン</h2>
+<p><code>psql (PostgreSQL) 14.5</code></p>
+<h2 id="_1">事前準備</h2>
+<p>まずはサンプルのテーブルを作成します．<br></p>
+<pre><code class="language-sql">
+CREATE TABLE str_table (
+    id serial PRIMARY KEY, -- 番号
+    str_1 VARCHAR(5), 
+    str_2 VARCHAR(5)
+);
+
+INSERT INTO str_table (str_1, str_2)
+VALUES
+    ('あ', 'い'),
+    ('App', 'le'),
+    ('GH', NULL)
+;
+
+SELECT * FROM str_table;
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 90px;">
+    <tbody><tr>
+        <th>id</th>
+        <th>str_1</th>
+        <th>str_2</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>あ</td>
+        <td>い</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>App</td>
+        <td>le</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>GH</td>
+        <td>[null]</td>
+    </tr>
+</tbody></table></div>
+
+<h3 id="_2"><code>||</code>演算子による文字列結合</h3>
+<p>まずは<code>||</code>演算子を見てみましょう．</p>
+<pre><code class="language-sql">
+SELECT
+    str_1,
+    str_2,
+    str_1 || ' ' || str_2 AS str_1_and_str_2
+FROM
+    str_table;
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 30px;">
+    <tbody><tr>
+        <th>str_1</th>
+        <th>str_2</th>
+        <th>str_1_and_str_2</th>
+    </tr>
+    <tr>
+        <td>あ</td>
+        <td>い</td>
+        <td>あ い</td>
+    </tr>
+    <tr>
+        <td>App</td>
+        <td>le</td>
+        <td>App le</td>
+    </tr>
+    <tr>
+        <td>GH</td>
+        <td>[null]</td>
+        <td>[null]</td>
+    </tr>
+</tbody></table></div>
+
+<p>結合したい文字列（を含む列）を<code>||</code>演算子で繋げて結合しています．<br></p>
+<p><code>str_1 || 任意の文字列(半角スペース) || str_2</code>としているので，結果としては<code>str_1</code>,<code>str_2</code>の文字列が半角スペースで結合されています．<br>
+なお，<code>||</code>演算子を追加すれば好きなだけ文字列を結合することができます．</p>
+<h3 id="concat"><code>CONCAT()</code>による文字列結合</h3>
+<p>次に<code>CONCAT()</code>を使用した文字列結合を見てみましょう．<br></p>
+<pre><code class="language-sql">
+SELECT
+    str_1,
+    str_2,
+    CONCAT(str_1, ' ', str_2) AS str_1_and_str_2
+FROM
+    str_table;
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 30px;">
+    <tbody><tr>
+        <th>str_1</th>
+        <th>str_2</th>
+        <th>str_1_and_str_2</th>
+    </tr>
+    <tr>
+        <td>あ</td>
+        <td>い</td>
+        <td>あ い</td>
+    </tr>
+    <tr>
+        <td>App</td>
+        <td>le</td>
+        <td>App le</td>
+    </tr>
+    <tr>
+        <td>GH</td>
+        <td>[null]</td>
+        <td>GH </td>
+    </tr>
+</tbody></table></div>
+
+<p><code>CONCAT()</code>は引数に指定した文字列が順に結合されます．<br>
+なお<code>||</code>演算子と同様に引数は好きなだけ指定できます．</p>
+<h3 id="concat_ws"><code>CONCAT_WS()</code>による文字列結合</h3>
+<p><code>CONCAT_WS()</code>は基本的に<code>CONCAT()</code>と同じです．<br>
+両者の違いはセパレーター（区切り文字）の指定可否とNULL存在時の挙動<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>です.</p>
+<pre><code class="language-sql">
+SELECT
+    str_1,
+    str_2,
+    CONCAT_WS(' ', str_1, str_2)
+FROM
+    str_table;
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 30px;">
+    <tbody><tr>
+        <th>str_1</th>
+        <th>str_2</th>
+        <th>concat_ws</th>
+    </tr>
+    <tr>
+        <td>あ</td>
+        <td>い</td>
+        <td>あ い</td>
+    </tr>
+    <tr>
+        <td>App</td>
+        <td>le</td>
+        <td>App le</td>
+    </tr>
+    <tr>
+        <td>GH</td>
+        <td>[null]</td>
+        <td>GH</td>
+    </tr>
+</tbody></table></div>
+
+<p><code>CONCAT_WS()</code>は第一引数にセパレーターを指定し，第二引数以降はセパレーターで区切りたい文字列を指定します.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>例示では<code>' '</code>（＝半角スペース）をセパレーターとしているため，その後の２つの引数が半角スペースで区切られて結合しています．</p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p><code>CONCAT_WS()</code>の<code>WS</code>は <span style="text-decoration:underline";>w</span>ith <span style="text-decoration:underline";>s</span>eparator に由来します．</p>
+</div>
+<h3 id="concat_1"><code>||</code>演算子と<code>CONCAT()</code>の違い</h3>
+<p><code>||</code>演算子と<code>CONCAT()</code>（<code>CONCAT_WS()</code>）は文字列を結合するものですが，違いは以下のとおりです．</p>
+<ul>
+<li>NULLの処理</li>
+<li>処理速度</li>
+<li>結果のカラム名</li>
+</ul>
+<div style="margin-bottom: 50px;"></div>
+
+<h5 id="null">NULLの処理</h5>
+<p><code>||</code>演算子は結合文字列にNULLが含まれている場合，他の文字に関わらずNULLを返します．</p>
+<pre><code class="language-sql">
+SELECT 'A' || ',' || NULL || ',' || 'C'
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 90px;">
+    <tbody><tr>
+        <th>?column?</th>
+    </tr>
+    <tr>
+        <td>[null]</td>
+    </tr>
+</tbody></table></div>
+
+<p>一方<code>CONCAT()</code>はNULLを無視して結合するため，NULL以外の指定された文字列を結合して返します．</p>
+<pre><code class="language-sql">
+SELECT CONCAT('A', ',', NULL, ',', 'C')
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 90px;">
+    <tbody><tr>
+        <th>concat</th>
+    </tr>
+    <tr>
+        <td>A,,C</td>
+    </tr>
+</tbody></table></div>
+
+<p><code>CONCAT()</code>は文字列を単純に結合するので，結果は上記のように「<strong>A , , C</strong>」となります．<br>
+一方で<code>CONCAT_WS()</code>の場合は文字同士をセパレーターで区切るという指定をしているため，NULLがあっても余分なコンマ（区切り）は付与されません．</p>
+<pre><code class="language-sql">
+SELECT CONCAT_WS(',', 'A', NULL, 'C')
+</code></pre>
+
+<div class="nb-html-output"><table style="margin-bottom: 90px;">
+    <tbody><tr>
+        <th>concat_ws</th>
+    </tr>
+    <tr>
+        <td>A,C</td>
+    </tr>
+</tbody></table></div>
+
+<div style="margin-bottom: 50px;"></div>
+
+<h5 id="_3">処理速度</h5>
+<p>処理速度は<code>||</code>演算子が最も高速です．<br>
+<code>CONCAT()</code>, <code>CONCAT_WS()</code>は関数呼び出しがあるため<code>||</code>演算子よりは低速です．</p>
+<div style="margin-bottom: 50px;"></div>
+
+<h5 id="_4">結果のカラム名</h5>
+<p>最後の違いは微妙ですが<code>||</code>演算子と<code>CONCAT()</code>（<code>CONCAT_WS()</code>）では結果のカラム名が異なります．</p>
+<p><img src="/images/sql-concat-ws-functions/sql-concat-ws-functions_01.png" width="300" height="164"></p>
+<div class="s-bubbles">
+<p><div class="kani-icon" markdown="1">
+  <img src="/images/about/kani_chatting.png" width="50" height="50" style="margin: 7px 0px 0px 5px;"></p>
+</div>
+<div class="chatting">
+<p><div class="says" markdown="1">
+  <code>AS</code>でカラム名を指定すれば特に困ることはないです！</p>
+</div>
+<p></div></div></p>
+<h2 id="_5">ひとこと</h2>
+<p>文字列をSQLで整形しておくと後続の処理が楽ですね．<br>
+住所や姓名の結合などに使用できそうです．</p>
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
+<p>文字列結合に関する記事はこちらです．<br></p>
+<ul>
+<li><a href="https://www.revalab.net/sql-string-agg-functions" rel="noopener noreferrer" target="_blank">PostgreSQLで文字列を結合，STRING_AGGによるコンマ区切り</a></li>
+</ul>
+</div>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>詳細は「<code>||</code>演算子と<code>CONCAT()</code>の違い」の項を参照．ここではセパレーターの指定を見ています．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><code>CONCAT_WS()</code>も<code>CONCAT()</code>と同様に引数の数に限りはありません．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/sql.html"><div class="fa fa-lg fa-folder-open"></div> SQL</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/postgresql.html"><div class="fa fa-lg fa-tag"></div> PostgreSQL</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

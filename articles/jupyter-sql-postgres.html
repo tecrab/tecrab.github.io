@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="ja">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JupyterでDockerのPostgreSQLに接続する方法 - てっくらぶ</title>
+    <meta name="description" content="JupyterでDockerに構築したPostgreSQLと接続して動かす方法です．">
+
+
+    <!-- defer-js -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@3.4.0/dist/defer.min.js"></script> -->
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" /> -->
+    <!-- footer固定用 js -->
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footerfixed.js"></script> 
+
+    <!-- CSS読み込み -->
+    <link href="https://www.tecrab.com/theme/prism.css" rel="stylesheet" />
+    <link href="https://www.tecrab.com/theme/style.css" rel="stylesheet" />
+    
+    <!-- 検索用のcss -->
+    <!-- <link rel="stylesheet" href="https://www.tecrab.com/theme/basic.css" /> -->
+    
+    <link rel="shortcut icon" href="https://www.tecrab.com/favicon.ico" type="image/vnd.microsoft.icon">
+  </head>
+
+  <body>
+    <header id="header">
+      <a href="https://www.tecrab.com" aria-label="site"><img src="/theme/images/kanicrab_logo.PNG" alt="" width="400" height="113" style="border-style: none; margin: 0px;"></a>
+      <p style="margin: 0px 0px 0px 20px; padding-bottom: 5px;">PythonやPC関連の情報をまとめているブログです</p>
+    </header>
+
+    <hr class="header-line" size="30">
+    
+    <div id="page">
+      <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">SQL</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          JupyterでDockerのPostgreSQLに接続する方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/sql.html">SQL</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/postgresql.html">PostgreSQL</a> <a href="https://www.tecrab.com/tag/docker.html">Docker</a> <a href="https://www.tecrab.com/tag/env.html">環境構築</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2022-09-01
+        </li>
+            <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-09-02
+            </li>
+    </ul>
+</div><!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>ローカルのJupyterとDockerのPostgreSQLを接続しJupyterでクエリを実行する方法について解説しています．<br>
+環境構築後はJupyterのセルで簡単にクエリを実行することができるようになります．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">前提条件</a></li>
+<li><a href="#postgresql">PostgreSQLのインストール</a></li>
+<li><a href="#pythonjupyter">Python（Jupyter）側の準備</a></li>
+<li><a href="#docker">Docker側の設定</a><ul>
+<li><a href="#jupytersql">JupyterでSQLを実行する</a></li>
+</ul>
+</li>
+<li><a href="#_4">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">前提条件</h2>
+<p>本記事の前提条件は以下のとおりです．</p>
+<ul>
+<li>macOS</li>
+<li>Homebrewがインストール済み</li>
+<li>Pythonの環境構築済み</li>
+<li>Docker Desktopがインストール済み</li>
+</ul>
+<h2 id="postgresql">PostgreSQLのインストール</h2>
+<p>PostgreSQLを<code>Homebrew</code>でインストールします．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
+<code class="language-bash">
+brew install postgresql
+</code>
+</pre>
+
+<h2 id="pythonjupyter">Python（Jupyter）側の準備</h2>
+<h5 id="ipython-sql">ipython-sql のインストール</h5>
+<p>JupyterでSQLを動かすために<code>ipython-sql</code>を以下のコマンドでインストールします．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
+<code class="language-bash">
+pip install ipython-sql
+</code>
+</pre>
+
+<h5 id="psycopg2">psycopg2のインストール</h5>
+<p>続いてPythonのPostgreSQLドライバー<code>psycopg2</code>を以下のコマンドでインストールします．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 40px;">
+<code class="language-bash">
+pip install psycopg2
+</code>
+</pre>
+
+<div class="admonition warning-box">
+<p class="admonition-title">注意</p>
+<p>psycopg2をインストールしておかないと後続の処理で<code>No module named 'psycopg2'</code>が出てしまいます.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+</div>
+<h2 id="docker">Docker側の設定</h2>
+<p>PostgreSQLの公式イメージを使用してDocker上に環境を作ります．<br></p>
+<h5 id="docker-composeyml">docker-compose.ymlの作成</h5>
+<p>以下の内容をコピーして<code>docker-compose.yml</code>というファイル名で保存します．</p>
+<pre style="margin-bottom: 90px;">
+<code class="language-yaml">
+version: '3'
+
+services:
+  db:
+    container_name: postgres_j
+    image: postgres:14.0
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      TZ: "Asia/Tokyo"
+    tty: true
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./init_db:/docker-entrypoint-initdb.d
+</code>
+</pre>
+
+<h5 id="sql">構築時に実行するSQLの準備</h5>
+<p><code>docker-compose</code>時に併せて実行するSQLファイルを作成します．<br>
+以下の内容をコピーして<code>00_init.sql</code>というファイル名で保存します．</p>
+<pre style="margin-bottom: 90px;">
+<code class="language-sql">
+--ユーザーの作成
+CREATE USER tst_user;
+
+--DBの作成
+CREATE DATABASE tst_db;
+
+--ユーザーにDBの権限をまとめて付与
+GRANT ALL PRIVILEGES ON DATABASE tst_db TO tst_user;
+
+-- DBを切り替え
+\c tst_db tst_user
+
+--テーブルを作成
+CREATE TABLE tst_tb (
+    id SERIAL PRIMARY KEY, 
+    c_name VARCHAR(10),
+    age INTEGER,
+    check_date DATE
+);
+
+--テーブルにデータを挿入
+INSERT INTO
+    tst_tb
+    (c_name, age, check_date)
+VALUES
+    ('maguro', 18, CURRENT_DATE),
+    ('hokke', 19, CURRENT_DATE),
+    ('iwashi', 20, CURRENT_DATE);
+</code>
+</pre>
+
+<h5 id="_2">階層の整理</h5>
+<p>以下のようなディレクトリ構成にしましょう．<br></p>
+<pre style="margin-bottom: 50px;">
+postgres_j
+├── docker-compose.yml
+└── init_db
+    └── 00_init.sql
+</pre>
+
+<div class="admonition warning-box">
+<p class="admonition-title">注意</p>
+<p><code>postgres_j</code>ディレクトリの保存場所にpathが通るので，今後も永続して使う場合は保存場所に注意しましょう．<br>
+（次項の<code>docker-compose up -d</code>を実行する前に適当な場所に移動させればOKです）</p>
+</div>
+<h5 id="docker-compose">docker-compose</h5>
+<p>dockerアプリを起動し<code>docker-compose.yml</code>がある階層で以下のコマンドを実行します．</p>
+<pre class="command-line" data-prompt="%" style="margin-bottom: 30px;">
+<code class="language-bash">
+docker-compose up -d
+</code>
+</pre>
+
+<p>実行後，しばらく待つと<code>postgres_j</code>というコンテナができます．</p>
+<div style="margin-bottom: 50px;"></div>
+
+<h5 id="psql">psqlで接続確認</h5>
+<p>ターミナルからDockerのPostgreSQLに接続します．<br>
+以下のコマンドを実行するとパスワードを求められるので<code>docker-compose.yml</code>で設定したパスワード<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>を入れてreturnを押します．<br>
+最終的に以下のような出力になっていればOKです．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+psql -h localhost -p 5432 -U postgres tst_db
+</code>
+</pre>
+<pre style="margin-bottom: 90px;">
+Password for user postgres:
+psql (14.5 (Homebrew), server 14.0 (Debian 14.0-1.pgdg110+1))
+Type "help" for help.
+
+tst_db=#
+</pre>
+
+<h5 id="_3">クエリでテーブルの存在を確認</h5>
+<p><code>00_init.sql</code>で作成した<code>tst_tb</code>を確認しましょう．<br>
+以下のクエリを実行してテーブルが表示されればOKです．</p>
+<pre class="command-line" data-prompt="tst_db=#">
+<code class="language-bash">
+SELECT * FROM tst_tb;
+</code>
+</pre>
+<pre style="margin-bottom: 50px;">
+ id | c_name | age | check_date
+----+--------+-----+------------
+  1 | maguro |  18 | 2022-09-01
+  2 | hokke  |  19 | 2022-09-01
+  3 | iwashi |  20 | 2022-09-01
+(3 rows)
+</pre>
+
+<p>上記の確認が取れたら<code>exit</code>で抜けておきましょう．</p>
+<pre class="command-line" data-prompt="tst_db=#" style="margin-bottom: 90px;">
+<code class="language-bash">
+exit
+</code>
+</pre>
+
+<h3 id="jupytersql">JupyterでSQLを実行する</h3>
+<p>これまでの手順でJupyterでSQLを実行する準備が整いました．<br>
+Jupyterのセルで以下のマジックコマンドを実行します．</p>
+<pre><code class="language-python">
+%load_ext sql
+%sql postgresql://postgres:pass@localhost:5432/tst_db
+</code></pre>
+
+<p>２行目は以下のような構成になっています．<br>
+<code>postgresql://{user}:{password}@{host}:{port}/{db_name}</code></p>
+<p>エラーなく実行が完了すればDocker内のPostgreSQLに接続できています．</p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>上記のコマンドは１回実行すればOKです．</p>
+</div>
+<p>あとは，以下のように<code>%sql</code>と共にクエリをセルで実行すればテーブルを取得できます！</p>
+<pre><code class="language-python">
+%sql SELECT * FROM tst_tb;
+</code></pre>
+
+<div class="nb-html-output" style="margin-bottom: 50px;"><table>
+    <tbody><tr>
+        <th>id</th>
+        <th>c_name</th>
+        <th>age</th>
+        <th>check_date</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>maguro</td>
+        <td>18</td>
+        <td>2022-09-01</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>hokke</td>
+        <td>19</td>
+        <td>2022-09-01</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>iwashi</td>
+        <td>20</td>
+        <td>2022-09-01</td>
+    </tr>
+</tbody></table></div>
+
+<p>なお，クエリを複数行書く場合は<code>%%sql</code>を使います．</p>
+<pre><code class="language-sql">
+%%sql
+SELECT
+    *
+FROM
+    tst_tb
+WHERE
+    age >= 20;
+</code></pre>
+
+<div class="nb-html-output"><table>
+    <tbody><tr>
+        <th>id</th>
+        <th>c_name</th>
+        <th>age</th>
+        <th>check_date</th>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>iwashi</td>
+        <td>20</td>
+        <td>2022-09-01</td>
+    </tr>
+</tbody></table></div>
+
+<p>以下のように<code>;</code>で区切れば複数のクエリも使えます．</p>
+<pre><code class="language-sql">
+%%sql
+INSERT INTO
+    tst_tb
+    (c_name, age, check_date)
+VALUES
+    ('saba', 22, CURRENT_DATE);
+
+SELECT * FROM tst_tb;
+</code></pre>
+
+<div class="nb-html-output"><table>
+    <tbody><tr>
+        <th>id</th>
+        <th>c_name</th>
+        <th>age</th>
+        <th>check_date</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>maguro</td>
+        <td>18</td>
+        <td>2022-09-01</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>hokke</td>
+        <td>19</td>
+        <td>2022-09-01</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>iwashi</td>
+        <td>20</td>
+        <td>2022-09-01</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>saba</td>
+        <td>22</td>
+        <td>2022-09-02</td>
+    </tr>
+</tbody></table></div>
+
+<h2 id="_4">ひとこと</h2>
+<p>Jupyterを使ってクエリを気軽に叩けると楽でいいですね．<br>
+当ブログを書く際にもこの機能を使っています．</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Psycopgは2022年9月現在でpsycopg3が出ているのですが，psycopg3だけだとうまく動きません．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><code>POSTGRES_PASSWORD: pass</code>の「pass」です．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
+      </div>
+
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/sql.html"><div class="fa fa-lg fa-folder-open"></div> SQL</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/postgresql.html"><div class="fa fa-lg fa-tag"></div> PostgreSQL</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/docker.html"><div class="fa fa-lg fa-tag"></div> Docker</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/env.html"><div class="fa fa-lg fa-tag"></div> 環境構築</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
+      
+      </article>
+
+      <aside id="sidebar">
+        <h4 class="side-top" style="margin-bottom: 0px;">サイト内検索</h4>
+        <!-- <script async src="https://cse.google.com/cse.js?cx=a5f605a4a126b4341">
+        </script>
+        <div class="gcse-searchbox-only" style="display: block; height: 57px;"></div> -->
+
+        <!-- <input data-stork="sitesearch" class="search-box" type="text" placeholder="キーワードを入力" /><div data-stork="sitesearch-output"></div>
+        <span style="font-size: 14px;">３文字以上でヒット記事を表示します．</span><br>
+        <span style="font-size: 14px;">検索結果はスクロール可能です．</span> -->
+
+        <h4>サイト情報</h4>
+        <ul>
+          <li>管理人  ：<a href="https://www.tecrab.com/pages/about.html">かに</a></li>
+          <li>Twitter ：<a href="https://twitter.com/@tecrab_blog" target="_blank" rel="noopener noreferrer">てっくらぶ</a></li>
+          <li>記事一覧：<a href="https://www.tecrab.com/archives.html">アーカイブ</a></li>
+        </ul>
+
+        <h4>おすすめの記事</h4>
+        <ul>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/auto-command.html">【Mac】簡単３ステップで自動化（自作）コマンドを作成する </a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/python-pyenv-poetry.html">【M2 Mac】Pyenv/PoetryによるPython環境構築</a></li>
+          <li style="margin: 15px 0px;"><a href="https://www.tecrab.com/articles/copyclip-2-paste-directly.html">【Mac】CopyClip2 クリップボード管理アプリのおすすめ設定 </a></li>
+        </ul>
+        <h4>カテゴリー</h4>
+        <ul class="side-c">          <li>
+              <a href="https://www.tecrab.com/category/blog-ope.html"> ブログ運営 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/google workspace.html"> Google Workspace </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac.html"> Mac </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/mac-linux.html"> Mac-Linux </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/python.html"> Python </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/pytorch.html"> PyTorch </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/regex.html"> 正規表現 </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/slack.html"> Slack </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/sql.html"> SQL </a>
+          </li>
+          <li>
+              <a href="https://www.tecrab.com/category/vscode.html"> VSCode </a>
+          </li>
+        </ul>
+        <h4>Tag</h4>
+        <div class="side-t">
+          <ul class="list-inline">            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/app.html"> App  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/env.html"> 環境構築  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/google-slide.html"> Googleスライド  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/jupyter.html"> Jupyter  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/keynote.html"> Keynote  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/nlp.html"> 自然言語処理  <span class="category-design">(3)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/notes.html"> 雑記  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(25)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/r.html"> R  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/regex.html"> 正規表現  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/scipy.html"> SciPy  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/shellscript.html"> shellscript  <span class="category-design">(4)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/slack.html"> Slack  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/type-hint.html"> 型ヒント  <span class="category-design">(2)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/vim.html"> Vim  <span class="category-design">(1)</span></a>
+            </li>
+            <li class="category-design">
+                <a class="category-design" href="https://www.tecrab.com/tag/zsh.html"> zsh  <span class="category-design">(6)</span></a>
+            </li>
+          </ul>
+        </div>
+        
+        <h4>ads</h4>
+
+        <h4>推薦書籍</h4>
+        <ul>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+          <li><a href="#">準備中</a></li>
+        </ul>
+
+        <h4>ads</h4>
+      </aside>
+
+      <footer id="footer">
+      <div class="copyright">
+          <ul class="copy-ul">
+            <li class="copy-li" style="margin-right: 10px;"><a href="https://www.tecrab.com/pages/about.html">管理人</a></li>
+            <li class="copy-li" style="margin: 0px 10px 0px 10px;"><a href="https://www.tecrab.com/pages/contact.html">お問い合わせ</a></li>
+            <li class="copy-li" style="margin-left: 10px;"><a href="https://www.tecrab.com/pages/privacy-policy.html">プライバシーポリシー/免責事項</a></li>
+          </ul>
+          <div>&copy; 2022 <a href="https://www.tecrab.com">てっくらぶ</a> powered by <a href="https://getpelican.com/">pelican</a></div>
+        </div>
+      </footer>
+    </div>
+      
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+    
+    <!-- footnoteのためのjquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/prism.js"></script>
+    <script type="text/javascript" src="https://www.tecrab.com/theme/js/footnotes.js"></script>
+    
+    <!-- 検索用のjavascript -->
+    <!-- <script src="https://files.stork-search.net/releases/v1.5.0/stork.js"></script>
+    <script>
+        stork.register("sitesearch", "https://www.tecrab.com/search-index.st")
+    </script> -->
+
+    <!-- <script>
+    
+    //遅延読込みさせる外部参照ファイル
+    var deferUrl1 = 'https://www.tecrab.com/theme/prism.css';
+    var deferUrl2 = 'https://www.tecrab.com/theme/js/prism.js';
+    var deferUrl3 = 'https://www.tecrab.com/theme/js/footnotes.js';
+    
+    //遅延表示させるクラス
+    const embed1 = document.getElementsByClassName('line-numbers');
+    const embed2 = document.getElementsByClassName('footnote-ref');
+    
+    try {
+        //prismのJavaScriptとcssの遅延読込み
+        if (embed1.length !== 0) Defer.css(deferUrl1, 'prism-css', 1000, function() { Defer.dom('pre code', 200, 'loaded'); });
+        if (embed1.length !== 0) Defer.js(deferUrl2, 'prism-js', 1000, function() { Defer.dom('pre code', 100, 'ide-loaded', Prism.highlightElement, { rootMargin: "120%" }); });
+        //footnotes
+        if (embed2.length !== 0) Defer.js(deferUrl3, 'footnotes-js', 1000, function() { Defer.dom(embed2, 200, 'loaded'); });
+    } catch (error) { console.log(error) }
+      
+    
+    </script> -->
+
+    
+  </body>
+</html>

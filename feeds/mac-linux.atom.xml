@@ -1,0 +1,1138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Mac-Linux</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/mac-linux.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-10-07T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Mac/Linux】zsh dateコマンドで日付操作・フォーマットをする方法</title><link href="https://www.tecrab.com/articles/zsh-date.html" rel="alternate"></link><published>2022-07-18T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-07-18:/articles/zsh-date.html</id><summary type="html">&lt;p&gt;zshにおけるdateコマンドの使い方です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;zshにおける&lt;code&gt;date&lt;/code&gt;コマンドについて，簡単にまとめています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;日付の取得&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;現在時刻&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;出力されるフォーマットを変更&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;月・日・曜日・時刻の取得&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_10"&gt;任意の日時を指定してフォーマット&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_11"&gt;過去の日時を指定&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_12"&gt;指定できる期間の種類&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#xxx"&gt;X日・Xヶ月・X年前&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#xx"&gt;X年X日前の指定&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_13"&gt;未来の日時を指定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_14"&gt;未来の任意の日時を指定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_15"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;日付の取得&lt;/h2&gt;
+&lt;h3 id="_2"&gt;現在時刻&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;date&lt;/code&gt;コマンドをそのまま使うと現在時刻が出力されます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+2022年 7月19日 火曜日 19時25分11秒 JST
+&lt;/pre&gt;
+
+&lt;h3 id="_3"&gt;出力されるフォーマットを変更&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;date&lt;/code&gt;コマンドに以下のようなオプションをつけると出力フォーマットを変更できます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%Y-%m-%d
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+2022-07-19
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;+&lt;/code&gt;以降の部分を変更すれば様々なフォーマットで出力することができます．&lt;br&gt;
+最後のコマンドは秒単位まで表示しています．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%Y/%m/%d
+date +%y%m%d
+date +%Y%m%d%H%M%S
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+2022/07/19
+220719
+20220719193756
+&lt;/pre&gt;
+
+&lt;h3 id="_4"&gt;月・日・曜日・時刻の取得&lt;/h3&gt;
+&lt;h5 id="_5"&gt;月だけを取得&lt;/h5&gt;
+&lt;p&gt;月だけを取得するには以下のようなコマンドです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%b
+date +%B
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+7
+7月
+&lt;/pre&gt;
+
+&lt;h5 id="_6"&gt;日付だけを取得&lt;/h5&gt;
+&lt;p&gt;日付だけを取得するには以下のようなコマンドです．&lt;br&gt;
+なお，&lt;code&gt;+%d&lt;/code&gt;を&lt;code&gt;+%-d&lt;/code&gt;に変更すると，日付が一桁の場合に前に&lt;code&gt;0&lt;/code&gt;がつかなくなります.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%d
+date +%d日
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+21
+21日
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;21日&lt;/code&gt;のように出力するには&lt;code&gt;+%d&lt;/code&gt;に「日」をくっつける方法しかなさそうです．&lt;br&gt;
+もしコマンドで指定できる方法をご存知の方がいればお知らせください...&lt;/p&gt;
+&lt;/div&gt;
+&lt;h5 id="_7"&gt;曜日だけを取得&lt;/h5&gt;
+&lt;p&gt;曜日名だけを取得するには以下のようなコマンドです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%a
+date +%A
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+水
+水曜日
+&lt;/pre&gt;
+&lt;h5 id="_8"&gt;曜日を数値で取得&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;+%u&lt;/code&gt;: 曜日を１〜７で表し，１が月曜日です．&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;+%w&lt;/code&gt;: 曜日を０〜６で表し，０が日曜日です．&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以下の例はコマンドの実行日が水曜日なので両方３になっています．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%u
+date +%w
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+3
+3
+&lt;/pre&gt;
+
+&lt;h5 id="_9"&gt;時刻だけを取得&lt;/h5&gt;
+&lt;p&gt;時刻だけを取得するには以下のようなコマンドです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date +%H:%M:%S
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+14:42:54
+&lt;/pre&gt;
+
+&lt;h2 id="_10"&gt;任意の日時を指定してフォーマット&lt;/h2&gt;
+&lt;p&gt;現在時刻ではなく任意の日時を指定するには以下のコマンドです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date -j -f %Y-%m-%d 2022-01-01 +%Y%m%d
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+20220101
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;-j&lt;/code&gt;オプションで任意の日時を受け取るようにし，&lt;code&gt;-f&lt;/code&gt;オプションで日時のフォーマットを指定しています．
+&lt;code&gt;%Y-%m-%d&lt;/code&gt;は入力日時のフォーマット&lt;code&gt;2022-01-01&lt;/code&gt;は入力日時&lt;code&gt;+%Y%m%d&lt;/code&gt;は出力フォーマットです．&lt;/p&gt;
+&lt;p&gt;シェルスクリプトで日時引数をフォーマット化，変数に代入する際などに使えます．&lt;/p&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;具体例はこちらをクリックしてください&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;内容が以下のような&lt;code&gt;date_sample.sh&lt;/code&gt;を作成します．&lt;/p&gt;
+&lt;pre style="margin: 20px 0px;"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+f_date=`date -j -f %Y-%m-%d "$1" +%Y%m%d`
+echo フォーマット前：$1
+echo フォーマット後：$f_date
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;上記のシェルスクリプトについて，日時引数をつけて実行すると以下のようになります．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-top: 20px;"&gt;
+&lt;code class="language-bash"&gt;
+./date_sample.sh 2022-01-01
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+フォーマット前：2022-01-01
+フォーマット後：20220101
+&lt;/pre&gt;
+&lt;p&gt;引数に取った日時をシェルスクリプト内の&lt;code&gt;date&lt;/code&gt;コマンドに渡してフォーマットを変換，変数に代入しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h2 id="_11"&gt;過去の日時を指定&lt;/h2&gt;
+&lt;p&gt;日付の指定をする際は&lt;code&gt;-v&lt;/code&gt;オプションを使用して操作します．&lt;br&gt;
+&lt;code&gt;bash&lt;/code&gt;のコマンドとはかなり異なるため，注意が必要です．&lt;/p&gt;
+&lt;h3 id="_12"&gt;指定できる期間の種類&lt;/h3&gt;
+&lt;p&gt;指定可能な種類は以下のとおりです．&lt;br&gt;
+現在日時から「２週間前」「５時間前」などの指定ができます．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;y 年&lt;/li&gt;
+&lt;li&gt;m 月&lt;/li&gt;
+&lt;li&gt;w 週&lt;/li&gt;
+&lt;li&gt;d 日&lt;/li&gt;
+&lt;li&gt;H 時間&lt;/li&gt;
+&lt;li&gt;M 分&lt;/li&gt;
+&lt;li&gt;S 秒&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="xxx"&gt;X日・Xヶ月・X年前&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;-v&lt;/code&gt;オプションのあとに期間を指定します．&lt;br&gt;
+以下のようにすれば（現在日時から）&lt;code&gt;-7days&lt;/code&gt;となります.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date -v -7d
+date -v -7d +%Y-%m-%d
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+2022年 7月13日 水曜日 23時06分53秒 JST
+2022-07-13
+&lt;/pre&gt;
+
+&lt;p&gt;「Xヶ月・X年前」を指定するには以下のとおりです．&lt;br&gt;
+それぞれ上から「６ヶ月前・３年前」となっています．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date -v -6m
+date -v -3y
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 90px;"&gt;
+2022年 1月20日 木曜日 23時11分47秒 JST
+2019年 7月20日 土曜日 23時11分59秒 JST
+&lt;/pre&gt;
+
+&lt;h3 id="xx"&gt;X年X日前の指定&lt;/h3&gt;
+&lt;p&gt;上記で確認した期間指定は組み合わせることも可能です．&lt;br&gt;
+以下は「１年と３日前」という指定です．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date -v -1y -v -3d
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+2021年 7月19日 月曜日 23時16分28秒 JST
+&lt;/pre&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;複数の単位で期間を指定する場合はそれぞれに&lt;code&gt;-v&lt;/code&gt;オプションが必要です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_13"&gt;未来の日時を指定&lt;/h2&gt;
+&lt;p&gt;過去の日時を指定する場合と同様に&lt;code&gt;-v&lt;/code&gt;オプションのあとに期間を指定します．&lt;br&gt;
+以下のようにすれば（現在日時から）&lt;code&gt;+5days&lt;/code&gt;となります.&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date -v +5d
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+2022年 7月25日 月曜日 23時24分18秒 JST
+&lt;/pre&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;その他の日時操作も過去の日時指定で使用した&lt;code&gt;-&lt;/code&gt;を&lt;code&gt;+&lt;/code&gt;に変えれば未来の日時指定になります．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_14"&gt;未来の任意の日時を指定&lt;/h2&gt;
+&lt;p&gt;あまり使い道がわかりません&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;が，以下のような指定もできます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date -v 2045y -v 7m -v 20d
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+2045年 7月20日 木曜日 23時40分04秒 JST
+&lt;/pre&gt;
+&lt;p&gt;未来の日時を&lt;code&gt;-v&lt;/code&gt;オプションを使って指定しています．&lt;br&gt;
+なお，&lt;code&gt;date -v 2045y -v julm -v 20d&lt;/code&gt;でも同様の結果が得られます.&lt;sup id="fnref:4"&gt;&lt;a class="footnote-ref" href="#fn:4"&gt;4&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;h2 id="_15"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;シェルスクリプトで日付の操作をすることが多いので，他にも気になった使い方などがあれば追記したいと思います．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;例えば現在日時が2022/07/01の場合，&lt;code&gt;date +%d&lt;/code&gt;を実行すると&lt;code&gt;01&lt;/code&gt;と出力されます．一方で&lt;code&gt;date +%-d&lt;/code&gt;を実行すると&lt;code&gt;1&lt;/code&gt;となります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;以下のコマンドを実行した日が2022/7/20なので，7日前の2022/7/13が出力されています．
+なお，２つ目のコマンドは出力フォーマット指定を組み合わせたものです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;未来の日付の曜日を知りたい(&lt;code&gt;date -v 2045y -v 7m -v 20d +%a&lt;/code&gt;)，未来の基準日を指定するなど...？&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:4"&gt;
+&lt;p&gt;月の指定をJulyの略記に置き換えています(&lt;u&gt;Jul&lt;/u&gt;y + &lt;u&gt;m&lt;/u&gt;onth)．通常は数値で指定する方がわかりやすいと思いますが...&amp;#160;&lt;a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category><category term="shellscript"></category></entry><entry><title>【Mac/Linux】シェルスクリプトから別のシェルスクリプトを呼び出す方法</title><link href="https://www.tecrab.com/articles/shell-sh-call-sh.html" rel="alternate"></link><published>2022-06-08T00:00:00+09:00</published><updated>2022-10-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-06-08:/articles/shell-sh-call-sh.html</id><summary type="html">&lt;p&gt;シェルスクリプト中で別のシェルスクリプトを呼び出す方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事はシェルスクリプトから別のシェルスクリプトを呼び出す方法を解説しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;別のシェルスクリプトを呼び出す方法&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#source"&gt;sourceコマンドでの呼び出し&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;それぞれの方法の違い&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;実験&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;別のシェルスクリプトを呼び出す方法&lt;/h2&gt;
+&lt;p&gt;シェルスクリプトから別のシェルスクリプトを呼び出す方法は，以下の３種類があります．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;source&lt;/code&gt;コマンド&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.&lt;/code&gt; （ドット [ピリオド]）&lt;/li&gt;
+&lt;li&gt;呼び出すシェルスクリプトのパスを記載&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="source"&gt;&lt;code&gt;source&lt;/code&gt;コマンドでの呼び出し&lt;/h3&gt;
+&lt;p&gt;例として&lt;code&gt;source&lt;/code&gt;コマンドでの呼び出しを確認してみましょう．
+以下のようなディレクトリ構造で&lt;code&gt;b.sh&lt;/code&gt;内から&lt;code&gt;a.sh&lt;/code&gt;を呼び出すようにします．&lt;/p&gt;
+&lt;pre style="margin-bottom: 40px"&gt;
+.
+├── a.sh
+└── b.sh
+&lt;/pre&gt;
+
+&lt;p&gt;&amp;lt;ファイルの中身＞&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;a.sh&lt;/code&gt;&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 10px 0px;"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+a_var=100
+echo 'echo from a.sh'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;b.sh&lt;/code&gt;&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 40px 0px;"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+source ./a.sh
+echo ${a_var}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;b.sh&lt;/code&gt;を実行すると以下のようになります．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+./b.sh
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 40px;"&gt;
+echo from a.sh
+100
+&lt;/pre&gt;
+
+&lt;p&gt;結果を見てみると&lt;code&gt;a.sh&lt;/code&gt;で記載した処理が実行されており，さらに&lt;code&gt;a.sh&lt;/code&gt;で定義した変数(&lt;code&gt;a_var&lt;/code&gt;)が&lt;code&gt;b.sh&lt;/code&gt;に引き継がれて出力されています．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;上記のコードを試してみる場合&lt;code&gt;a.sh&lt;/code&gt;, &lt;code&gt;b.sh&lt;/code&gt;それぞれに権限付与が必要です．&lt;br&gt;
+&lt;code&gt;a.sh&lt;/code&gt;, &lt;code&gt;b.sh&lt;/code&gt;がある階層で以下のコマンドを実行して権限を付与すればOKです.
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+chmod 755 a.sh b.sh
+&lt;/code&gt;
+&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_2"&gt;それぞれの方法の違い&lt;/h2&gt;
+&lt;p&gt;違いは以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;source&lt;/code&gt;もしくは&lt;code&gt;.&lt;/code&gt;コマンド：実行したシェルスクリプトと同じプロセスで動作&lt;/li&gt;
+&lt;li&gt;シェルスクリプトをそのまま呼び出す場合：別プロセスで動作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="_3"&gt;実験&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;test_a.sh&lt;/code&gt;と&lt;code&gt;test_b.sh&lt;/code&gt;を準備します.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;ファイルの中身＞&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;test_a.sh&lt;/code&gt;&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 10px 0px;"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+a_var=100
+a_process=$$  # $$はカレントプロセスのプロセス番号を保持
+
+echo "test_a current_process: ${a_process}"
+echo 'echo from test_a.sh'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;test_b.sh&lt;/code&gt;&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 40px 0px;"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+b_process=$$
+
+echo "current_process:${b_process}"
+
+echo -source-----
+# sourceで呼び出す
+a_var=0
+source ./test_a.sh
+echo ${a_var}
+
+echo -ドット-----
+# . (ドット[ピリオド])で呼び出す
+a_var=0
+. ./test_a.sh
+echo ${a_var}
+
+echo -そのまま-----
+# そのまま呼び出す
+a_var=0
+./test_a.sh
+echo ${a_var}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;test_b.sh&lt;/code&gt;を実行した結果は以下のとおりです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+./test_b.sh
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+current_process:8730
+-source-----
+test_a current_process: 8730
+echo from test_a.sh
+100
+-ドット-----
+test_a current_process: 8730
+echo from test_a.sh
+100
+-そのまま-----
+test_a current_process: 8731
+echo from test_a.sh
+0
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;source&lt;/code&gt;や&lt;code&gt;.&lt;/code&gt;コマンドでは実行したシェルスクリプトと同じプロセスで動作していますが，シェルスクリプトをそのまま記載している部分はプロセス番号が異なっています．&lt;/p&gt;
+&lt;p&gt;そのため，シェルスクリプトをそのまま実行している箇所では変数が上書きされることなく&lt;code&gt;0&lt;/code&gt;が出力されています．&lt;/p&gt;
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;（あまりないような気がしますが）関数や変数などをまとめて定義した&lt;code&gt;.sh&lt;/code&gt;ファイルを読み込むことにも使えそうです．&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;source&lt;/code&gt;と&lt;code&gt;.&lt;/code&gt;の違いはよくわからなかったので，もしご存知の方がいらっしゃれば是非ご連絡ください．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;それぞれのファイルは同じ階層に配置し&lt;code&gt;chmod&lt;/code&gt;で権限を付与しておきます（前項の「参考」を参照）&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category><category term="shellscript"></category></entry><entry><title>【Mac/Linux】zshで *（メタ文字/ワイルドカード）を展開する方法</title><link href="https://www.tecrab.com/articles/shell-zsh-meta.html" rel="alternate"></link><published>2022-04-12T00:00:00+09:00</published><updated>2022-10-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-04-12:/articles/shell-zsh-meta.html</id><summary type="html">&lt;p&gt;zshでメタ文字（ワイルドカード）を展開する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事は zsh で&lt;code&gt;*&lt;/code&gt;を展開する方法について解説しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;背景&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#zsh"&gt;シェルが zsh ではうまくいかない&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;対応策&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;部分的に有効化&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;シェルスクリプト単位で有効化&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#zshenv"&gt;.zshenvファイル（設定ファイル）で全体に有効化&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;背景&lt;/h2&gt;
+&lt;p&gt;bash や sh などのシェルではファイルを一括で処理したいとき，以下のようなスクリプトで対応できます．&lt;/p&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;&lt;code class="language-bash"&gt;
+#!/bin/bash
+
+files="./*.txt"
+for file in ${files}; do
+    echo ${file}
+done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上記のスクリプトを&lt;code&gt;sample.sh&lt;/code&gt;として保存し，以下のようなディレクトリで実行した結果を見てみましょう．&lt;/p&gt;
+&lt;div style="margin-bottom: 30px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;ディレクトリ構造&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 20px 0px;"&gt;
+.
+├── 001.txt
+├── 002.txt
+├── 003.txt
+└── sample.sh
+&lt;/pre&gt;
+
+&lt;p&gt;結果&lt;/p&gt;
+&lt;pre style="margin: -15px 0px 30px 0px;"&gt;
+./001.txt
+./002.txt
+./003.txt
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;for&lt;/code&gt;文で一つずつ処理される際に&lt;code&gt;*.txt&lt;/code&gt;が展開されるため，指定したディレクトリ内の&lt;code&gt;*.txt&lt;/code&gt;ファイルに対して任意の操作ができます．&lt;br&gt;
+今回の例ではカレントディレクトリ内の&lt;code&gt;*.txt&lt;/code&gt;ファイルパスが&lt;code&gt;echo&lt;/code&gt;で表示されています．&lt;/p&gt;
+&lt;h2 id="zsh"&gt;シェルが zsh ではうまくいかない&lt;/h2&gt;
+&lt;p&gt;ここでシェルを&lt;code&gt;zsh&lt;/code&gt;にする&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;と&lt;code&gt;*.txt&lt;/code&gt;の展開がうまくいかず以下のような結果になります．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+files="./*.txt"
+for file in ${files}; do
+    echo ${file}
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+./*.txt
+&lt;/pre&gt;
+
+&lt;p&gt;結果を見ると&lt;code&gt;*.txt&lt;/code&gt;ファイルとして認識されており，意図する挙動ではないですね・・・&lt;/p&gt;
+&lt;h2 id="_2"&gt;対応策&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;zsh&lt;/code&gt;では&lt;code&gt;GLOB_SUBST&lt;/code&gt;というオプションを有効にしないと&lt;code&gt;*&lt;/code&gt;などが展開されません．&lt;/p&gt;
+&lt;p&gt;有効にする方法は以下の３つがあります．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;部分的に有効化&lt;/li&gt;
+&lt;li&gt;シェルスクリプト単位で有効化&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.zshenv&lt;/code&gt;ファイル（設定ファイル）で全体に有効化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;順に見ていきましょう．&lt;/p&gt;
+&lt;h3 id="_3"&gt;部分的に有効化&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;~&lt;/code&gt;オプションを変数につけることで部分的に&lt;code&gt;GLOB_SUBST&lt;/code&gt;を有効化することができます．&lt;br&gt;
+具体的には以下のように記載します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+files="./*.txt"
+for file in ${~files}; do  # filesの前に ~オプションを付与
+    echo ${file}
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+./001.txt
+./002.txt
+./003.txt
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;*.txt&lt;/code&gt;が展開され，意図した挙動となりました！&lt;/p&gt;
+&lt;h3 id="_4"&gt;シェルスクリプト単位で有効化&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;GLOB_SUBST&lt;/code&gt;を有効にしたいシェルスクリプトに以下の内容を記載します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;setopt GLOB_SUBST&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+setopt GLOB_SUBST  # 追記
+
+files="./*.txt"
+for file in ${files}; do
+    echo ${file}
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+./001.txt
+./002.txt
+./003.txt
+&lt;/pre&gt;
+
+&lt;p&gt;シェルスクリプト全体で&lt;code&gt;GLOB_SUBST&lt;/code&gt;が有効になるため&lt;code&gt;~&lt;/code&gt;オプションを付けなくても bash や sh と同一の記載で展開されるようになります．&lt;/p&gt;
+&lt;h3 id="zshenv"&gt;&lt;code&gt;.zshenv&lt;/code&gt;ファイル（設定ファイル）で全体に有効化&lt;/h3&gt;
+&lt;p&gt;最後に&lt;code&gt;.zshenv&lt;/code&gt;&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;に追記する方法です．&lt;br&gt;
+&lt;code&gt;.zshenv&lt;/code&gt;に以下の内容を追記して有効化すれば，永続的な設定が全体に適用されます．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;setopt GLOB_SUBST&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;有効化のコマンド&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;は以下です．&lt;br&gt;
+（成功しても何も表示されません）&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 30px;"&gt;
+&lt;code class="language-bash"&gt;
+echo setopt GLOB_SUBST &gt;&gt; ~/.zshenv &amp;&amp; source ~/.zshenv
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;上記のコマンドを実行後は bash や sh と同じように記載することができます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+files="./*.txt"
+for file in ${files}; do
+    echo ${file}
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre style="margin-bottom: 30px;"&gt;
+./001.txt
+./002.txt
+./003.txt
+&lt;/pre&gt;
+
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;bash と zsh の差は色々とありますね．&lt;br&gt;
+どちらでもいい感じに書けるようになりたい・・・&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;シバン（&lt;code&gt;#!/bin/zsh&lt;/code&gt;）で指定しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;.zshenv&lt;/code&gt;というファイルはログイン/インタラクティブ/シェルスクリプトで常に使用する設定を定義しています．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;このコマンドではホームディレクトリの&lt;code&gt;.zshenv&lt;/code&gt;ファイルに&lt;code&gt;setopt GLOB_SUBST&lt;/code&gt;を追記し，それを有効化（&lt;code&gt;source&lt;/code&gt;）しています．なお，ホームディレクトリに&lt;code&gt;.zshenv&lt;/code&gt;ファイルが存在していない場合は，&lt;code&gt;.zshenv&lt;/code&gt;を作成してから追記してくれます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category><category term="shellscript"></category></entry><entry><title>シェルスクリプトのクォテーションまとめ</title><link href="https://www.tecrab.com/articles/shell-quotation.html" rel="alternate"></link><published>2022-04-02T00:00:00+09:00</published><updated>2022-10-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-04-02:/articles/shell-quotation.html</id><summary type="html">&lt;p&gt;シェルスクリプトのクォテーションについて記法をまとめています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事はシェルスクリプトで見られる&lt;br&gt;
+クォテーション（&lt;code&gt;'&lt;/code&gt;や&lt;code&gt;"&lt;/code&gt;など）の記法についてまとめています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;種類&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;前提知識&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;各クォテーションの違い&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;シングルクォート&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ダブルクォート&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;バッククォート&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_7"&gt;バックスラッシュ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_8"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;種類&lt;/h2&gt;
+&lt;p&gt;クォテーションは以下の４種類です．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;シングルクォート：&lt;code&gt;'&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;ダブルクォート　：&lt;code&gt;"&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;バッククォート　：&lt;code&gt;`&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;バックスラッシュ：&lt;code&gt;\&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="_2"&gt;前提知識&lt;/h2&gt;
+&lt;p&gt;ここでは前提となる内容を記載しています．&lt;br&gt;
+各クォテーションの意味をさっと知りたい方は読み飛ばしても大丈夫です．&lt;/p&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;確認する場合はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;シェルは様々な文字や記号を読み解いて処理していきますが，一部の記号はシェルが特別の解釈をします．&lt;br&gt;
+ この特別の解釈をする記号を総称して「特殊文字」や「メタキャラクタ」と呼びます．&lt;br&gt;
+ （特殊文字には「&lt;code&gt;$&lt;/code&gt;や&lt;code&gt;*&lt;/code&gt;」など，多くの記号があります）&lt;/p&gt;
+&lt;p&gt;シェルは特殊文字が存在すると，その特殊文字に応じた解釈をします．&lt;br&gt;
+ そのため特殊文字を普通の文字として解釈して欲しい場合，そのための目印が必要であり，その目印として使用する記号がクォテーションです．&lt;/p&gt;
+&lt;p&gt;すなわちクォテーションは&lt;strong&gt;シェルの解釈のうまく誘導してあげて，こちらが意図したとおりに挙動させるため&lt;/strong&gt;に使います．&lt;/p&gt;
+&lt;p&gt;【具体例】&lt;br&gt;
+ &lt;code&gt;$&lt;/code&gt;は&lt;code&gt;$&lt;/code&gt;の後に続く変数を展開して表示するための特殊文字です．&lt;br&gt;
+ 例えばある変数を定義して，変数の中身を表示したい場合は以下のように記述します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-top: 20px;"&gt;
+&lt;code class="language-bash"&gt;
+KANI=100
+echo $KANI
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+100
+&lt;/pre&gt;
+&lt;p&gt;では「$100」という「文字」を表示させたい場合を考えます．&lt;br&gt;
+ 以下のコードを見てみましょう．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-top: 20px;"&gt;
+&lt;code class="language-bash"&gt;
+echo $100
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+
+&lt;/pre&gt;
+&lt;p&gt;上記のコマンドでは結果が何も表示されないのです・・・&lt;br&gt;
+ これはシェルが&lt;code&gt;$&lt;/code&gt;を特別に解釈して&lt;code&gt;$&lt;/code&gt;の後の&lt;code&gt;100&lt;/code&gt;という変数を展開するためです．&lt;br&gt;
+ しかし&lt;code&gt;100&lt;/code&gt;という変数は定義していないので中身はありません．そのため空白が表示されています．&lt;/p&gt;&lt;/p&gt;
+&lt;p&gt;ここでクォーテーションの出番です．&lt;br&gt;
+ 今回&lt;code&gt;$&lt;/code&gt;は普通の文字として扱って欲しいので，それをシェルに伝えるためにシングルクォートを使用したものが以下のコードです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-top: 20px;"&gt;
+&lt;code class="language-bash"&gt;
+echo '$100'
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+$100
+&lt;/pre&gt;
+&lt;p&gt;シングルクォートで囲まれた部分はただの文字として解釈されるので，こちらの意図どおりの出力を得ることができました．&lt;/p&gt;
+&lt;p&gt;以上のような感じでクォテーションを使用します．&lt;br&gt;
+ クォテーションは複数あり，それぞれの意味があるので本記事ではそうした違いを見ています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h2 id="_3"&gt;各クォテーションの違い&lt;/h2&gt;
+&lt;h3 id="_4"&gt;シングルクォート&lt;/h3&gt;
+&lt;p&gt;シングルクォート（&lt;code&gt;'&lt;/code&gt;）で囲まれた文字はすべて&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;「普通の文字」として解釈されます．&lt;br&gt;
+そのため，シェルによる特殊文字の解釈を一切させない場合に用います．&lt;br&gt;
+「書いたとおりに解釈してね」ということです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo '$KANI'
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+$KANI
+&lt;/pre&gt;
+
+&lt;p&gt;結果を見ると，シングルクォートで囲まれた文字がそのまま出力されていますね．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;唯一の例外は&lt;code&gt;'&lt;/code&gt;（シングルクォート自身）だけです．&lt;br&gt;
+以下のコマンドを実行するとエラーこそ出ませんが，変な表示が出てきます．&lt;br&gt;
+（&lt;code&gt;quote&amp;gt;&lt;/code&gt;を抜けるには&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;C&lt;/kbd&gt;&lt;/kbd&gt;）&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo 'KANI's book'
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+quote&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;シングルクォートを含む文字をそのまま表示させたい場合はダブルクォートで囲みます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo "KANI's book"
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+KANI's book
+&lt;/pre&gt;
+
+&lt;p&gt;こちらの意図どおり出力されましたね．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;h3 id="_5"&gt;ダブルクォート&lt;/h3&gt;
+&lt;p&gt;ダブルクォート（&lt;code&gt;"&lt;/code&gt;）で囲まれた文字列は原則「普通の文字」として解釈されます．&lt;br&gt;
+しかし&lt;code&gt;$&lt;/code&gt;と&lt;code&gt;`&lt;/code&gt;, &lt;code&gt;\&lt;/code&gt;, &lt;code&gt;"&lt;/code&gt;（ダブルクォート自身）は例外です．&lt;/p&gt;
+&lt;p&gt;シングルクォートと比較しながら見てみましょう．&lt;/p&gt;
+&lt;p&gt;まずは変数への代入とシンプルな出力です．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+KANI=100
+echo $KANI
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+100
+&lt;/pre&gt;
+&lt;p&gt;結果には変数&lt;code&gt;KANI&lt;/code&gt;が展開されて表示されています．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;次にシングルクォートの場合を見てみます．&lt;br&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo '$KANI'
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+$KANI
+&lt;/pre&gt;
+&lt;p&gt;シングルクォートは強いので囲んだものを文字として解釈させます．&lt;br&gt;
+そのため，&lt;code&gt;$KANI&lt;/code&gt;がそのまま出力されています．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;最後にダブルクォートです．&lt;br&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo "$KANI"
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+100
+&lt;/pre&gt;
+&lt;p&gt;ダブルクォートは&lt;code&gt;$&lt;/code&gt;を特殊文字としてシェルに解釈させるため，変数の展開が実行された結果が出力されます．&lt;/p&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;参考：&lt;code&gt;echo $KANI&lt;/code&gt;と&lt;code&gt;echo "$KANI"&lt;/code&gt;の違い（クリックで展開されます）&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;先ほど確認した&lt;code&gt;echo $KANI&lt;/code&gt;と&lt;code&gt;echo "$KANI"&lt;/code&gt;はいずれも出力結果が同じです．&lt;/p&gt;
+&lt;p&gt;「どっちでも同じならいちいち&lt;code&gt;"&lt;/code&gt;で囲まなくてもいいのでは？」となりそうですが，囲まない場合は展開する変数にスペースが含まれないことが前提です.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;"&lt;/code&gt;で囲まないとスクリプトが動かない例を見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash" style="margin: 20px 0px;"&gt;
+#!/bin/bash
+
+category='dog cat'
+
+if [ $category = "dog cat" ]; then
+    echo 犬猫！
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;このシェルスクリプトは変数&lt;code&gt;category&lt;/code&gt;が&lt;code&gt;dog cat&lt;/code&gt;なら「犬猫！」と表示するだけのものです．
+ これを&lt;code&gt;txt.sh&lt;/code&gt;として保存・権限付与をして実行すると以下のようなエラーが発生します．&lt;/p&gt;
+&lt;div style="margin-top: 10px;"&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;./tst.sh: line 5: [: too many arguments&lt;/code&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 20px;"&gt;&lt;/div&gt;
+&lt;p&gt;これは&lt;code&gt;if&lt;/code&gt;文の判定式&lt;code&gt;[ $category = "dog cat" ]&lt;/code&gt;の&lt;code&gt;$category&lt;/code&gt;が原因です．&lt;br&gt;
+ 原因を探るために変数展開後の判定式を以下で見てみましょう．&lt;/p&gt;
+&lt;div style="margin-top: 10px;"&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;[ dog cat = "dog cat" ]&lt;/code&gt;&lt;br&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 20px;"&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;dog cat&lt;/code&gt;に半角スペースが含まれているため，シェルがそれを解釈し余計な引数あるということでエラーになっていました．&lt;br&gt;
+ これを解消するにはスクリプトを以下のように修正します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash" style="margin: 20px 0px;"&gt;
+#!/bin/bash
+
+category='dog cat'
+
+# $categoryを"で囲む
+if [ "$category" = "dog cat" ]; then
+    echo 犬猫！
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;これで変数展開された後の判定式は次のようになるため，エラーなく処理を実行できます．
+ （文字列同士の比較になっているためエラーが発生しません）&lt;/p&gt;
+&lt;div style="margin-top: 10px;"&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;[ "dog cat" = "dog cat" ]&lt;/code&gt;&lt;br&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 20px;"&gt;&lt;/div&gt;
+&lt;p&gt;以上を踏まえると，変数展開を行う際は基本的に&lt;code&gt;"&lt;/code&gt;で囲っておくと安心です．&lt;br&gt;
+なお，先述したとおり&lt;code&gt;echo $KANI&lt;/code&gt;と&lt;code&gt;echo "$KANI"&lt;/code&gt;に関してはスペースの有無でエラーになることはありません．&lt;br&gt;
+これは&lt;code&gt;echo&lt;/code&gt;コマンドが引数の文字をそのまま出力するため，半角スペースがあっても引数が複数あると解釈してそのまま出力してくれるためです．&lt;/p&gt;
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;シェルの種類に注意&lt;/p&gt;
+&lt;p&gt;上記で確認した内容はシェルが&lt;code&gt;bash&lt;/code&gt;, &lt;code&gt;sh&lt;/code&gt;の場合です．&lt;br&gt;
+Macのデフォルトシェル&lt;code&gt;zsh&lt;/code&gt;は最初のスクリプトでもエラーなく実行されます．&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin: -70px 0px 0px 0px"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;ダブルクォートは囲んだ文字列について変数やコマンドの置き換えを行う場合に使用するケースが多いです．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+date
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+2022年 4月 2日 土曜日 12時12分17秒 JST
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;date&lt;/code&gt;は現在日時を表示してくれるコマンドなので，結果を見ると日時が表示されています．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo 'ただいまの日時は`date`'
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+ただいまの日時は`date`
+&lt;/pre&gt;
+
+&lt;p&gt;シングルクォートで囲まれた部分は文字&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;として解釈されるのでそのまま表示されています．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo "ただいまの日時は`date`"
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+ただいまの日時は2022年 4月 2日 土曜日 12時12分17秒 JST
+&lt;/pre&gt;
+
+&lt;p&gt;ダブルクォートの場合は&lt;code&gt;`&lt;/code&gt;を解釈するためコマンドが実行されます．&lt;/p&gt;
+&lt;p&gt;上記の例はコマンドの置き換えを行なったものです．&lt;br&gt;
+ダブルクォートを使うことでコマンドの実行結果と文字列を組み合わせて表示できています．&lt;br&gt;
+ここで使用している&lt;code&gt;`&lt;/code&gt;（バッククォート）については次項で解説しています．&lt;/p&gt;
+&lt;p&gt;なお&lt;code&gt;"&lt;/code&gt;を普通の文字として扱いたい場合は&lt;code&gt;"&lt;/code&gt;で囲まず，シングルクォートで囲みます．&lt;br&gt;
+次の２つのコマンドで確認しましょう．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo "KANI said "hoge"" 
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+KANI said hoge
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;"&lt;/code&gt;を含む文字を&lt;code&gt;"&lt;/code&gt;で囲むと&lt;code&gt;KANI said "hoge"&lt;/code&gt;とはなりませんでした．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;"&lt;/code&gt;を含む文字を&lt;code&gt;'&lt;/code&gt;で囲むと・・・&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo 'KANI said "hoge"'
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+KANI said "hoge" 
+&lt;/pre&gt;
+
+&lt;p&gt;シングルクォートで囲むと意図どおりに表示されました．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;h3 id="_6"&gt;バッククォート&lt;/h3&gt;
+&lt;p&gt;バッククォート（&lt;code&gt;`&lt;/code&gt;）は先の例のとおり，コマンドを囲むことでそのコマンドを実行して置き換えます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo "こんにちは`echo KANI`さん"
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 20px;"&gt;
+こんにちはKANIさん
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;`&lt;/code&gt;で囲まれた部分のコマンドが実行されて&lt;code&gt;KANI&lt;/code&gt;に置き換わり表示されています．&lt;br&gt;
+バッククォートは色々と応用の幅があるので記法を知っておくと便利です．&lt;/p&gt;
+&lt;div style="margin-bottom: 70px;"&gt;&lt;/div&gt;
+
+&lt;h3 id="_7"&gt;バックスラッシュ&lt;/h3&gt;
+&lt;p&gt;バックスラッシュ（&lt;code&gt;\&lt;/code&gt;）は特殊文字を解釈させないために使用します．&lt;br&gt;
+具体的にはバックスラッシュ直後の特殊文字の意味を剥奪します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+KANI=100
+echo $KANI
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+100
+&lt;/pre&gt;
+
+&lt;p&gt;上記のコードでは&lt;code&gt;$&lt;/code&gt;をつけて変数展開を行っています．&lt;br&gt;
+この&lt;code&gt;$&lt;/code&gt;の意味を取り除いてただの&lt;code&gt;$&lt;/code&gt;とするには以下のようにします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo \$KANI
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+$KANI
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;\&lt;/code&gt;を&lt;code&gt;$&lt;/code&gt;の前につけることで&lt;code&gt;$&lt;/code&gt;の意味を剥奪しています．
+結果として&lt;code&gt;$&lt;/code&gt;が特殊文字として解釈されないためそのまま表示されます．&lt;/p&gt;
+&lt;p&gt;ところで，バックスラッシュは直後の文字にしか効果がありません．&lt;br&gt;
+そのため，以下のように記載すると最初の&lt;code&gt;$&lt;/code&gt;は意味を剥奪されますが，次の&lt;code&gt;$&lt;/code&gt;は特殊文字として機能するため変数が展開されます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo \$$KANI
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+$100
+&lt;/pre&gt;
+
+&lt;p&gt;ちなみに&lt;code&gt;\&lt;/code&gt;を２つ使って以下のように書けば両方の&lt;code&gt;$&lt;/code&gt;の意味が剥奪されます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+echo \$\$KANI
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre style="margin-bottom: 50px;"&gt;
+$$KANI
+&lt;/pre&gt;
+
+&lt;p&gt;ただし，上記のような結果（&lt;code&gt;$$KANI&lt;/code&gt;）を得たいのであれば&lt;code&gt;echo '$$KANI'&lt;/code&gt;で事足ります．&lt;br&gt;
+複数のバッククォートを使う場合は正規表現などでよく見られるので，気になる方は調べてみましょう．&lt;/p&gt;
+&lt;h2 id="_8"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;本記事ではクォテーションに関する基本的な部分を解説しました．&lt;br&gt;
+クォテーションの使い方は様々なものがあるため，色々とパターンを学んでいきたいですね．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;例外については後述&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;&lt;code&gt;echo $KANI&lt;/code&gt;と&lt;code&gt;echo "$KANI"&lt;/code&gt;はどちらも同じですが・・・理由は後述&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;&lt;code&gt;date&lt;/code&gt;を囲んでいるのはバッククォートです．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category><category term="shellscript"></category></entry><entry><title>【Mac/Linux】openコマンドの活用例</title><link href="https://www.tecrab.com/articles/cli-c-open.html" rel="alternate"></link><published>2021-09-08T00:00:00+09:00</published><updated>2022-08-03T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2021-09-08:/articles/cli-c-open.html</id><summary type="html">&lt;p&gt;Mac/Linuxのopenコマンドについてまとめています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;Mac/Linuxのopenコマンドについてまとめています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;動作環境&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#macopen"&gt;Macにおけるopenコマンド&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;よく使うオプション&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#-a"&gt;-a （開くアプリを選択）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#-n"&gt;-n （新しいインスタンスでアプリを開く）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#-r-finder"&gt;-R （指定したファイルを Finder で表示）&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#linuxopen"&gt;Linuxにおけるopenコマンド&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;動作環境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;macOS Monterey 12.5: &lt;code&gt;zsh&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Linux(Ubuntu 20.04 LTS): &lt;code&gt;bash&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="macopen"&gt;Macにおけるopenコマンド&lt;/h2&gt;
+&lt;p&gt;Macではターミナル等で&lt;code&gt;open&lt;/code&gt;コマンドを使用するとアプリやURL，ファイルを開いたりすることができます．&lt;br&gt;
+基本的には以下のように入力します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;open [path or URL]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;例えば，カレントディレクトリをFinderで開く場合は以下のようなコマンドです.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 30px;"&gt;
+&lt;code class="language-bash"&gt;
+open .
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;カレントディレクトリに&lt;code&gt;hoge.txt&lt;/code&gt;がある場合，以下のコマンドで開くことができます.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 70px;"&gt;
+&lt;code class="language-bash"&gt;
+open hoge.txt
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;ちなみに・・・&lt;/p&gt;
+&lt;p&gt;アプリの起動やファイル展開などはSpotlightの方が基本的に早いです．&lt;br&gt;
+ただし，自動化コマンドなどを作成する場合には&lt;code&gt;open&lt;/code&gt;コマンドを上手く使う必要があります．&lt;/p&gt;
+&lt;/div&gt;
+&lt;details class="accordion-block" style="margin-top: -50px"&gt;
+&lt;summary&gt;Spotlightの詳細が知りたい方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;SpotlightはMac内のアプリ起動やファイル検索，展開を素早く行うことができるMacの標準機能です．基本的には以下のような流れで使用します．
+  &lt;/p&gt;
+&lt;ol style="margin-top: 20px;"&gt;
+      &lt;li&gt;&lt;kbd&gt;&lt;kbd&gt;Command&lt;/kbd&gt;+&lt;kbd&gt;space&lt;/kbd&gt;&lt;/kbd&gt;でSpotlightを呼び出す&lt;/li&gt;
+      &lt;li&gt;検索窓にアプリ名やファイル名を打ち込んで&lt;kbd&gt;&lt;kbd&gt;Return&lt;/kbd&gt;&lt;/kbd&gt;&lt;/li&gt;
+      &lt;li&gt;検索結果に合致するアプリやファイル等が開かれる&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;p&gt;管理人がよく使うのはアプリの起動です．&lt;br&gt;
+  Chromeを起動する際はSpotlightで&lt;code&gt;chr&lt;/code&gt;くらいまで入力して&lt;code&gt;return&lt;/code&gt;を押すとChromeを開いてくれます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h2 id="_2"&gt;よく使うオプション&lt;/h2&gt;
+&lt;h3 id="-a"&gt;-a （開くアプリを選択）&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;open -a [アプリ名]&lt;/code&gt;のようにして実行します．&lt;/p&gt;
+&lt;p&gt;下表にコマンドの実行例を記載しています．&lt;/p&gt;
+&lt;table id="normal"&gt;
+    &lt;tr&gt;
+        &lt;td&gt;コマンド&lt;/td&gt;
+        &lt;td&gt;起動するアプリ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;open -a calendar&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;カレンダー&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;open -a notes&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;メモ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;open -a mail&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;メール&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;open -a reminders&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;リマインダー&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;open -a ‘google chrome’&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;Chrome&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;open -a slack&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;Slack&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;アプリの名前を調べる方法についてはこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;コマンドに渡すアプリ名を調べる方法は以下のとおりです．
+ &lt;/p&gt;
+&lt;ol style="margin-top: 20px;"&gt;
+     &lt;li style="margin: 5px 0px 5px 0px;"&gt;Finderを起動して&lt;kbd&gt;&lt;kbd&gt;Command&lt;/kbd&gt;+&lt;kbd&gt;Shift&lt;/kbd&gt;+&lt;kbd&gt;a&lt;/kbd&gt;&lt;/kbd&gt;を押す．&lt;/li&gt;
+     &lt;li style="margin: 5px 0px 5px 0px;"&gt;開いたアプリケーションディレクトリ内でアプリを探して右クリック．&lt;/li&gt;
+     メニューの「パッケージの内容を表示」をクリック．&lt;br&gt;
+     &lt;img src="/images/cli-c-open/cli-c-open_01.png" width="500" height="137"&gt;
+     &lt;li style="margin: 5px 0px 5px 0px;"&gt;&lt;code&gt;Contents&lt;/code&gt;ディレクトリに飛ぶので&lt;code&gt;Contents&lt;/code&gt; &amp;gt; &lt;code&gt;MacOS&lt;/code&gt;と進む．&lt;/li&gt;
+     &lt;code&gt;MacOS&lt;/code&gt;ディレクトリ内にある実行ファイルの名前がアプリ名です．&lt;br&gt;
+     下図だと「App Store」です．なお，コマンドに渡す際は小文字でもOKです．&lt;br&gt;
+     &lt;img src="/images/cli-c-open/cli-c-open_02.png" width="500" height="118"&gt;
+ &lt;/ol&gt;
+&lt;div class="admonition warning-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;アプリ名に半角スペースが入っている場合はアプリ名を&lt;code&gt;'&lt;/code&gt;（シングルクォテーション）で囲むことが必要です．&lt;br&gt;
+そのため「App Store」を開くコマンドは&lt;code&gt;open -a 'app store'&lt;/code&gt;となります．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin: -70px 0px 0px 0px"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;p&gt;以下のコマンドを実行するとSafariで&lt;code&gt;hoge.pdf&lt;/code&gt;が開きます.&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 30px;"&gt;
+&lt;code class="language-bash"&gt;
+open -a Safari hoge.pdf
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;ブラウザを指定してURLを開く場合は以下のように使います．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+open -a 'google chrome' https://www.google.com
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h3 id="-n"&gt;-n （新しいインスタンスでアプリを開く）&lt;/h3&gt;
+&lt;p&gt;すでに起動しているアプリについて，別のウィンドウで開きたい場合に使えます．&lt;br&gt;
+以下のコマンドではChromeが別ウィンドウで起動します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+open -n -a 'google chrome'
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h3 id="-r-finder"&gt;-R （指定したファイルを Finder で表示）&lt;/h3&gt;
+&lt;p&gt;ファイルの場所をFinderで表示したい時に使えます．&lt;br&gt;
+以下の例では&lt;code&gt;hoge.txt&lt;/code&gt;が存在する場所をFinderで表示してくれます．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+open -R hoge.txt
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h2 id="linuxopen"&gt;Linuxにおけるopenコマンド&lt;/h2&gt;
+&lt;p&gt;Linuxでは&lt;code&gt;xdg-open&lt;/code&gt;コマンドがMacの&lt;code&gt;open&lt;/code&gt;コマンドに相当します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;xdg-open [path or URL]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;基本の使い方は同様ですが，オプションがないので上記だけです．&lt;br&gt;
+コマンドが長いので&lt;code&gt;xdg-open&lt;/code&gt;コマンドはやや使い勝手が悪い印象・・・&lt;/p&gt;
+&lt;p&gt;ちなみに，Linuxのデフォルトブラウザ（Firefox）を開く場合は以下のコマンドでOKです．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="$" style="margin-bottom: 90px;"&gt;
+&lt;code class="language-bash"&gt;
+firefox
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;本記事ではMac/Linuxにおける&lt;code&gt;open&lt;/code&gt;コマンドの活用例について紹介しました．&lt;br&gt;
+&lt;code&gt;open&lt;/code&gt;コマンドはその場で使うよりも自動化処理で使う方が便利です．&lt;/p&gt;
+&lt;p&gt;自動化についてはコマンドを自作する記事があるので，興味のある方はぜひ見てくださいね．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://revalab.net/auto-command"&gt;【Mac】自動化（自作）コマンドを３ステップで作成する&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;Finderが起動してGUIで確認できます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;Mac標準アプリのテキストエディットで&lt;code&gt;cli-c-open.txt&lt;/code&gt;が開きます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;&lt;code&gt;open hoge.pdf&lt;/code&gt;とすると通常プレビューでPDFが展開されます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category></entry></feed>
