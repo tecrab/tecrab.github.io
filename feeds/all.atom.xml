@@ -51,7 +51,7 @@ print(f'置換後の吾輩の数{ss.count("吾輩")}')
 
 &lt;div class="admonition explanation"&gt;
 &lt;p class="admonition-title"&gt;解説&lt;/p&gt;
-&lt;p&gt;正規表現の否定後読みを使用して「吾輩」とマッチし，その後「吾輩」で終わることがなければマッチした「吾輩」を置換するということをしています．&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;正規表現の否定先読みを使用して「吾輩」とマッチし，その後「吾輩」で終わることがなければマッチした「吾輩」を置換するということをしています．&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;sub()&lt;/code&gt;の引数については以下のとおりです．&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;第一引数：正規表現を指定します.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
