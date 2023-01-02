@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>お問い合わせ - てっくらぶ</title>
-    <meta name="description" content="お問い合わせ">
+    <title>【シェルスクリプト】文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法 - てっくらぶ</title>
+    <meta name="description" content="文字列判定「〜で始まる/終わる/〜が含まれる/存在有無」をまとめています．">
 
 
     <!-- defer-js -->
@@ -49,28 +49,308 @@
     
     <div id="page">
       <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Mac-Linux</li>
+    </ol>
     <section id="content" class="article content">
       <header>
         <h2 class="entry-title">
-          お問い合わせ
+          【シェルスクリプト】文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法
         </h2>
         
       </header>
 <div class="part1">
     <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/mac-linux.html">Mac-Linux</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/zsh.html">zsh</a> <a href="https://www.tecrab.com/tag/shellscript.html">shellscript</a> </li>
+        <br>
         <li class="i-item">
-            <span>Posted on: </span>2022-07-06
+            <span>Posted on: </span>2022-12-26
         </li>
             <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-12-27
+            </li>
     </ul>
-</div><!-- .entry-content -->
+</div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="2331400317"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+<!-- .entry-content -->
       <div class="entry-content">
         <main>
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScWzTNZaePnwuOmd9VqXoNdlffZtfBV2-YvilKaF-f0GgBBOA/viewform?embedded=true" width="640" height="700" frameborder="0" marginheight="0" marginwidth="0">読み込んでいます…</iframe>
+        <div class="admonition abstract">
+<p>本記事ではシェルスクリプトの文字列判定に関する以下の内容をまとめています．<br></p>
+<ul>
+<li>「〜で始まる/終わる」文字を判定</li>
+<li>「〜が含まれる」文字を判定</li>
+<li>文字列の有無による判定</li>
+</ul>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">「〜で始まる/終わる」文字を判定</a></li>
+<li><a href="#_2">「〜が含まれる」文字を判定</a></li>
+<li><a href="#_3">大文字と小文字の区別</a></li>
+<li><a href="#_4">文字列の有無による判定</a><ul>
+<li><a href="#_5">文字列ありの場合を判定</a></li>
+<li><a href="#_6">文字列なしの場合を判定</a></li>
+<li><a href="#_7">文字列の内容で判定</a></li>
+</ul>
+</li>
+<li><a href="#_8">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">「〜で始まる/終わる」文字を判定</h2>
+<p>「〜で始まる/終わる」についてコード例と共に見ていきましょう．<br>
+例として「<code>m_</code>で始まる」 を判定する例は以下です．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+match_check=('ab' 'm_b' 'c' 'm_d')
+
+# 要素を1つずつ取り出す
+for i in "${match_check[@]}"; do
+    # m_で始まるか
+    if [[ "$i" = "m_"* ]]; then
+        echo $i
+    fi
+done
+</code></pre>
+<pre class="middle">
+m_b
+m_d
+</pre>
+
+<p>if文の条件式でパターンマッチを使用しており<code>[[ "$i" = "m_"* ]]</code>の<code>"m_"*</code>が「<code>m_</code>で始まる」を指定している部分です.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<div style="margin-bottom: 50px;"></div>
+
+<p>次に「<code>b</code>で終わる」を判定する場合を見てみましょう．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+match_check=('ab' 'm_b' 'c' 'm_d')
+
+# 要素を1つずつ取り出す
+for i in "${match_check[@]}"; do
+    # bで終わるか
+    if [[ "$i" = *"b" ]]; then
+        echo $i
+    fi
+done
+</code></pre>
+<pre class="middle">
+ab
+m_b
+</pre>
+
+<p>「〜で始まる」と同じようにif文の条件式でパターンマッチを使用しています．<br>
+そのため<code>b</code>で終わる<code>ab</code>, <code>m_b</code>が出力されていますね．</p>
+<h2 id="_2">「〜が含まれる」文字を判定</h2>
+<p>「〜が含まれる」のコード例は以下のとおりです．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+match_check2=('abc' 'bbc' 'cnn' 'WBS')
+
+for i in "${match_check2[@]}"; do
+    # bが含まれるか
+    if [[ "$i" = *"b"* ]]; then
+        echo $i
+    fi
+done
+</code></pre>
+<pre class="middle">
+abc
+bbc
+</pre>
+
+<p>if文の条件式でパターンマッチを使用し「<code>b</code>が含まれる」を表現しています．<br>
+そのため<code>b</code>で終わる<code>ab</code>, <code>m_b</code>が出力されていますね．</p>
+<h2 id="_3">大文字と小文字の区別</h2>
+<p>パターンマッチを使用して判定する場合，アルファベットの大文字小文字は区別されます．<br>
+もし区別せずに判定したい場合は条件式を以下のようにします．</p>
+<pre class="middle"><code class="language-bash">
+if [[ "$i" = *[bB]* ]]; then
+</code></pre>
+
+<p><code>*[bB]*</code>は「<code>b</code>もしくは<code>B</code>が含まれる」を表現しています．</p>
+<h2 id="_4">文字列の有無による判定</h2>
+<p>任意の変数に文字列が存在するか否かを確認するには<code>test</code>コマンドの<code>-z</code>, <code>-n</code>オプションを使用します．</p>
+<h3 id="_5">文字列ありの場合を判定</h3>
+<p><code>-n</code>オプションをつけると「文字列の長さが０でない」場合に真となります．<br>
+すなわち，変数に何らかの文字が存在すれば真です．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+moji='moji'
+
+if [ -n "$moji" ]; then
+    echo '文字あり'
+fi
+</code></pre>
+<pre class="middle">
+文字あり
+</pre>
+
+<p>変数<code>moji</code>には４文字の文字列が代入されているので<code>if</code>文内の処理が実行されます．</p>
+<h3 id="_6">文字列なしの場合を判定</h3>
+<p>文字が含まれない場合を判定するには<code>-z</code>オプションを使用します．<br>
+<code>-z</code>オプションは「文字列の長さが０」の場合に真となります．</p>
+<pre class="middle"><code class="language-bash">
+#!/bin/zsh
+
+moji='moji'
+
+if [ -z "$moji" ]; then
+    echo '文字あり'
+fi
+</code></pre>
+
+<p>前項のコードのオプションを変更して実行すると今回は何も表示されません．<br>
+（変数<code>moji</code>には文字列が代入されており「文字列の長さが０」ではないため<code>if</code>文内の処理が実行されていません）</p>
+<details class="accordion-block">
+<summary>文字列の長さ判定に関する別記法を確認したい方はこちらをクリック</summary>
+<div class="accordion-summary">
+<p>文字列の長さ判定は以下のように記載することも可能です．<br>
+しかし，オプション指定の方がシンプルで速度もやや速いです（後述）</p>
+<pre class="middle"><code class="language-bash">
+#!/bin/zsh
+
+moji='moji'
+
+# 文字列の長さが0で真
+if [ "$moji" = "" ]; then
+    echo '文字なし'
+fi
+
+# 文字列の長さが0でない場合に真
+if [ "$moji" != "" ]; then
+    echo '文字あり'
+fi
+
+# 条件式は[ "$moji" != "" ]と同義（書き方が違うだけです）
+# わかりづらいので非推奨
+if [ ! "$moji" = "" ]; then
+    echo '文字あり'
+fi
+</code></pre>
+<p><strong>＜速度＞</strong><br>
+以下のコード・コマンドで速度を確認<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>したところ両者に大きな差はありませんでした．</p>
+<p><strong>str_time.sh</strong></p>
+<div style="margin: 0px 0px -15px 0px;"></div>
+<pre class="middle"><code class="language-bash">
+n=0
+nn=1000000
+moji=''
+
+# オプション比較
+while [ $n -le $nn ]; do
+    if [ -z "$moji" ]; then
+        :
+    fi
+    n=$((n + 1))
+done
+
+# 文字列比較
+while [ $n -le $nn ]; do
+    if [ "$moji" = "" ]; then
+        :
+    fi
+    n=$((n + 1))
+done
+</code></pre>
+<p>実行</p>
+<div style="margin: 0px 0px -15px 0px;"></div>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+time ./str_time.sh
+</code>
+</pre>
+<div style="margin-bottom: 50px;"></div>
+<p>結果は以下のとおりで，差は微妙ですがオプションの方が高速です．<br></p>
+<ul>
+<li><code>7.22s user 0.44s system 99% cpu 7.663 total</code>（オプション）</li>
+<li><code>7.61s user 0.44s system 99% cpu 8.061 total</code>（文字列比較）</li>
+</ul>
+</div>
+</details>
+<h3 id="_7">文字列の内容で判定</h3>
+<p>変数に代入されている特定の文字列を確認して条件分岐させたい場合は以下です．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+moji='任意'
+
+if [ "$moji" = "任意" ]; then
+    echo '任意です'
+fi
+</code></pre>
+<pre class="middle">
+任意です
+</pre>
+
+<p><code>test</code>コマンドで文字列同士を比較するには<code>=</code>演算子を使用します．<br>
+上記のコードでは変数<code>moji</code>に「任意」が入っているためif文内の処理が実行されています．</p>
+<div style="margin-bottom: 50px;"></div>
+
+<p>否定の場合は<code>!</code>を使用して以下のように記載すればOKです．</p>
+<pre><code class="language-bash">
+if [ "$moji" != "任意" ]; then
+</code></pre>
+
+<h2 id="_8">ひとこと</h2>
+<p>シェルスクリプトの条件式は色々と書き方があるので，なかなかややこしいですね．<br>
+もっとよい書き方をご存知の方がいればぜひお知らせください！</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p><code>m_</code>の後に（あらゆる）文字が０字以上続く（＝<code>m_</code>で始まる）という意味です．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>以下のコードを実行する際はどちらかの<code>while</code>をコメントアウトして行います．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
         </main>
       </div>
+
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-format="autorelaxed"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="6953171609"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
 <!-- /.entry-content -->
-    </section>    
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/mac-linux.html"><div class="fa fa-lg fa-folder-open"></div> Mac-Linux</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/zsh.html"><div class="fa fa-lg fa-tag"></div> zsh</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/shellscript.html"><div class="fa fa-lg fa-tag"></div> shellscript</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
       
       </article>
 

@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>お問い合わせ - てっくらぶ</title>
-    <meta name="description" content="お問い合わせ">
+    <title>【シェルスクリプト】if文でのブール値（true/false）判定 - てっくらぶ</title>
+    <meta name="description" content="シェルスクリプトのif文におけるブール値判定をまとめています">
 
 
     <!-- defer-js -->
@@ -49,28 +49,129 @@
     
     <div id="page">
       <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Mac-Linux</li>
+    </ol>
     <section id="content" class="article content">
       <header>
         <h2 class="entry-title">
-          お問い合わせ
+          【シェルスクリプト】if文でのブール値（true/false）判定
         </h2>
         
       </header>
 <div class="part1">
     <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/mac-linux.html">Mac-Linux</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/zsh.html">zsh</a> <a href="https://www.tecrab.com/tag/shellscript.html">shellscript</a> </li>
+        <br>
         <li class="i-item">
-            <span>Posted on: </span>2022-07-06
+            <span>Posted on: </span>2022-12-25
         </li>
             <br>
+            <li class="i-item">
+                <span>Updated on: </span>2022-12-26
+            </li>
     </ul>
-</div><!-- .entry-content -->
+</div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="2331400317"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+<!-- .entry-content -->
       <div class="entry-content">
         <main>
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScWzTNZaePnwuOmd9VqXoNdlffZtfBV2-YvilKaF-f0GgBBOA/viewform?embedded=true" width="640" height="700" frameborder="0" marginheight="0" marginwidth="0">読み込んでいます…</iframe>
+        <div class="admonition abstract">
+<p>本記事ではシェルスクリプトにおけるif文のブール値判定について解説しています．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">ブール値判定</a></li>
+<li><a href="#_2">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">ブール値判定</h2>
+<p>シェルスクリプトの<code>if</code>文でシンプルにブール値判定を行うには以下のとおりです．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+check=true
+
+if $check; then
+    echo 'check'
+fi
+
+</code></pre>
+<pre class="middle">
+check
+</pre>
+
+<p>上記のように記載すると<code>if</code>文の条件式に<code>true</code>コマンドを入れているものと同義です．<br>
+引数等で条件分岐する際に簡便に使用できます．</p>
+<div style="margin-bottom: 50px;"></div>
+
+<p>否定の場合は<code>!</code>を使用して以下のように記載します．</p>
+<pre><code class="language-bash">
+#!/bin/zsh
+
+check=false
+
+if ! $check; then
+    echo 'check false'
+fi
+
+</code></pre>
+<pre class="end">
+check false
+</pre>
+
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
+<p>任意の文字列について「〜で始まる/終わる/〜が含まれる」を条件式にしたい場合は以下の記事をご覧ください．</p>
+<ul>
+<li>シェルスクリプト<br>
+　<a href="https://www.tecrab.com/articles/shell-if-test-str.html" rel="noopener noreferrer" target="_blank">文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法</a></li>
+<li>Python<br>
+　<a href="https://www.tecrab.com/articles/python-starts-ends-with-in.html" rel="noopener noreferrer" target="_blank">文字列を「〜で始まる/終わる/〜が含まれる」で抽出する方法</a></li>
+</ul>
+</div>
+<h2 id="_2">ひとこと</h2>
+<p>if文の条件式としてシンプルにbooleanで判定する方法について紹介しました．<br></p>
+<div style="margin-bottom: 100px;"></div>
         </main>
       </div>
+
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-format="autorelaxed"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="6953171609"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
 <!-- /.entry-content -->
-    </section>    
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/mac-linux.html"><div class="fa fa-lg fa-folder-open"></div> Mac-Linux</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/zsh.html"><div class="fa fa-lg fa-tag"></div> zsh</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/shellscript.html"><div class="fa fa-lg fa-tag"></div> shellscript</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
       
       </article>
 

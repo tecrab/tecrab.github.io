@@ -1,5 +1,294 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Mac-Linux</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/mac-linux.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-10-07T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Mac/Linux】zsh dateコマンドで日付操作・フォーマットをする方法</title><link href="https://www.tecrab.com/articles/zsh-date.html" rel="alternate"></link><published>2022-07-18T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-07-18:/articles/zsh-date.html</id><summary type="html">&lt;p&gt;zshにおけるdateコマンドの使い方です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Mac-Linux</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/mac-linux.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-12-27T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【シェルスクリプト】文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法</title><link href="https://www.tecrab.com/articles/shell-if-test-str.html" rel="alternate"></link><published>2022-12-26T00:00:00+09:00</published><updated>2022-12-27T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-26:/articles/shell-if-test-str.html</id><summary type="html">&lt;p&gt;文字列判定「〜で始まる/終わる/〜が含まれる/存在有無」をまとめています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではシェルスクリプトの文字列判定に関する以下の内容をまとめています．&lt;br&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;「〜で始まる/終わる」文字を判定&lt;/li&gt;
+&lt;li&gt;「〜が含まれる」文字を判定&lt;/li&gt;
+&lt;li&gt;文字列の有無による判定&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;「〜で始まる/終わる」文字を判定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;「〜が含まれる」文字を判定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;大文字と小文字の区別&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;文字列の有無による判定&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;文字列ありの場合を判定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;文字列なしの場合を判定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_7"&gt;文字列の内容で判定&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_8"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;「〜で始まる/終わる」文字を判定&lt;/h2&gt;
+&lt;p&gt;「〜で始まる/終わる」についてコード例と共に見ていきましょう．&lt;br&gt;
+例として「&lt;code&gt;m_&lt;/code&gt;で始まる」 を判定する例は以下です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+match_check=('ab' 'm_b' 'c' 'm_d')
+
+# 要素を1つずつ取り出す
+for i in "${match_check[@]}"; do
+    # m_で始まるか
+    if [[ "$i" = "m_"* ]]; then
+        echo $i
+    fi
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+m_b
+m_d
+&lt;/pre&gt;
+
+&lt;p&gt;if文の条件式でパターンマッチを使用しており&lt;code&gt;[[ "$i" = "m_"* ]]&lt;/code&gt;の&lt;code&gt;"m_"*&lt;/code&gt;が「&lt;code&gt;m_&lt;/code&gt;で始まる」を指定している部分です.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;次に「&lt;code&gt;b&lt;/code&gt;で終わる」を判定する場合を見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+match_check=('ab' 'm_b' 'c' 'm_d')
+
+# 要素を1つずつ取り出す
+for i in "${match_check[@]}"; do
+    # bで終わるか
+    if [[ "$i" = *"b" ]]; then
+        echo $i
+    fi
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+ab
+m_b
+&lt;/pre&gt;
+
+&lt;p&gt;「〜で始まる」と同じようにif文の条件式でパターンマッチを使用しています．&lt;br&gt;
+そのため&lt;code&gt;b&lt;/code&gt;で終わる&lt;code&gt;ab&lt;/code&gt;, &lt;code&gt;m_b&lt;/code&gt;が出力されていますね．&lt;/p&gt;
+&lt;h2 id="_2"&gt;「〜が含まれる」文字を判定&lt;/h2&gt;
+&lt;p&gt;「〜が含まれる」のコード例は以下のとおりです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+match_check2=('abc' 'bbc' 'cnn' 'WBS')
+
+for i in "${match_check2[@]}"; do
+    # bが含まれるか
+    if [[ "$i" = *"b"* ]]; then
+        echo $i
+    fi
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+abc
+bbc
+&lt;/pre&gt;
+
+&lt;p&gt;if文の条件式でパターンマッチを使用し「&lt;code&gt;b&lt;/code&gt;が含まれる」を表現しています．&lt;br&gt;
+そのため&lt;code&gt;b&lt;/code&gt;で終わる&lt;code&gt;ab&lt;/code&gt;, &lt;code&gt;m_b&lt;/code&gt;が出力されていますね．&lt;/p&gt;
+&lt;h2 id="_3"&gt;大文字と小文字の区別&lt;/h2&gt;
+&lt;p&gt;パターンマッチを使用して判定する場合，アルファベットの大文字小文字は区別されます．&lt;br&gt;
+もし区別せずに判定したい場合は条件式を以下のようにします．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+if [[ "$i" = *[bB]* ]]; then
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;*[bB]*&lt;/code&gt;は「&lt;code&gt;b&lt;/code&gt;もしくは&lt;code&gt;B&lt;/code&gt;が含まれる」を表現しています．&lt;/p&gt;
+&lt;h2 id="_4"&gt;文字列の有無による判定&lt;/h2&gt;
+&lt;p&gt;任意の変数に文字列が存在するか否かを確認するには&lt;code&gt;test&lt;/code&gt;コマンドの&lt;code&gt;-z&lt;/code&gt;, &lt;code&gt;-n&lt;/code&gt;オプションを使用します．&lt;/p&gt;
+&lt;h3 id="_5"&gt;文字列ありの場合を判定&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;-n&lt;/code&gt;オプションをつけると「文字列の長さが０でない」場合に真となります．&lt;br&gt;
+すなわち，変数に何らかの文字が存在すれば真です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+moji='moji'
+
+if [ -n "$moji" ]; then
+    echo '文字あり'
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+文字あり
+&lt;/pre&gt;
+
+&lt;p&gt;変数&lt;code&gt;moji&lt;/code&gt;には４文字の文字列が代入されているので&lt;code&gt;if&lt;/code&gt;文内の処理が実行されます．&lt;/p&gt;
+&lt;h3 id="_6"&gt;文字列なしの場合を判定&lt;/h3&gt;
+&lt;p&gt;文字が含まれない場合を判定するには&lt;code&gt;-z&lt;/code&gt;オプションを使用します．&lt;br&gt;
+&lt;code&gt;-z&lt;/code&gt;オプションは「文字列の長さが０」の場合に真となります．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+moji='moji'
+
+if [ -z "$moji" ]; then
+    echo '文字あり'
+fi
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;前項のコードのオプションを変更して実行すると今回は何も表示されません．&lt;br&gt;
+（変数&lt;code&gt;moji&lt;/code&gt;には文字列が代入されており「文字列の長さが０」ではないため&lt;code&gt;if&lt;/code&gt;文内の処理が実行されていません）&lt;/p&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;文字列の長さ判定に関する別記法を確認したい方はこちらをクリック&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;文字列の長さ判定は以下のように記載することも可能です．&lt;br&gt;
+しかし，オプション指定の方がシンプルで速度もやや速いです（後述）&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+moji='moji'
+
+# 文字列の長さが0で真
+if [ "$moji" = "" ]; then
+    echo '文字なし'
+fi
+
+# 文字列の長さが0でない場合に真
+if [ "$moji" != "" ]; then
+    echo '文字あり'
+fi
+
+# 条件式は[ "$moji" != "" ]と同義（書き方が違うだけです）
+# わかりづらいので非推奨
+if [ ! "$moji" = "" ]; then
+    echo '文字あり'
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;＜速度＞&lt;/strong&gt;&lt;br&gt;
+以下のコード・コマンドで速度を確認&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;したところ両者に大きな差はありませんでした．&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;str_time.sh&lt;/strong&gt;&lt;/p&gt;
+&lt;div style="margin: 0px 0px -15px 0px;"&gt;&lt;/div&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+n=0
+nn=1000000
+moji=''
+
+# オプション比較
+while [ $n -le $nn ]; do
+    if [ -z "$moji" ]; then
+        :
+    fi
+    n=$((n + 1))
+done
+
+# 文字列比較
+while [ $n -le $nn ]; do
+    if [ "$moji" = "" ]; then
+        :
+    fi
+    n=$((n + 1))
+done
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;実行&lt;/p&gt;
+&lt;div style="margin: 0px 0px -15px 0px;"&gt;&lt;/div&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+time ./str_time.sh
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+&lt;p&gt;結果は以下のとおりで，差は微妙ですがオプションの方が高速です．&lt;br&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;7.22s user 0.44s system 99% cpu 7.663 total&lt;/code&gt;（オプション）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;7.61s user 0.44s system 99% cpu 8.061 total&lt;/code&gt;（文字列比較）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h3 id="_7"&gt;文字列の内容で判定&lt;/h3&gt;
+&lt;p&gt;変数に代入されている特定の文字列を確認して条件分岐させたい場合は以下です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+moji='任意'
+
+if [ "$moji" = "任意" ]; then
+    echo '任意です'
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+任意です
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;test&lt;/code&gt;コマンドで文字列同士を比較するには&lt;code&gt;=&lt;/code&gt;演算子を使用します．&lt;br&gt;
+上記のコードでは変数&lt;code&gt;moji&lt;/code&gt;に「任意」が入っているためif文内の処理が実行されています．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;否定の場合は&lt;code&gt;!&lt;/code&gt;を使用して以下のように記載すればOKです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+if [ "$moji" != "任意" ]; then
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="_8"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;シェルスクリプトの条件式は色々と書き方があるので，なかなかややこしいですね．&lt;br&gt;
+もっとよい書き方をご存知の方がいればぜひお知らせください！&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;m_&lt;/code&gt;の後に（あらゆる）文字が０字以上続く（＝&lt;code&gt;m_&lt;/code&gt;で始まる）という意味です．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;以下のコードを実行する際はどちらかの&lt;code&gt;while&lt;/code&gt;をコメントアウトして行います．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category><category term="shellscript"></category></entry><entry><title>【シェルスクリプト】if文でのブール値（true/false）判定</title><link href="https://www.tecrab.com/articles/shell-if-test-boolean.html" rel="alternate"></link><published>2022-12-25T00:00:00+09:00</published><updated>2022-12-26T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-25:/articles/shell-if-test-boolean.html</id><summary type="html">&lt;p&gt;シェルスクリプトのif文におけるブール値判定をまとめています&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではシェルスクリプトにおけるif文のブール値判定について解説しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;ブール値判定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;ブール値判定&lt;/h2&gt;
+&lt;p&gt;シェルスクリプトの&lt;code&gt;if&lt;/code&gt;文でシンプルにブール値判定を行うには以下のとおりです．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+check=true
+
+if $check; then
+    echo 'check'
+fi
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+check
+&lt;/pre&gt;
+
+&lt;p&gt;上記のように記載すると&lt;code&gt;if&lt;/code&gt;文の条件式に&lt;code&gt;true&lt;/code&gt;コマンドを入れているものと同義です．&lt;br&gt;
+引数等で条件分岐する際に簡便に使用できます．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;否定の場合は&lt;code&gt;!&lt;/code&gt;を使用して以下のように記載します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+#!/bin/zsh
+
+check=false
+
+if ! $check; then
+    echo 'check false'
+fi
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="end"&gt;
+check false
+&lt;/pre&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;任意の文字列について「〜で始まる/終わる/〜が含まれる」を条件式にしたい場合は以下の記事をご覧ください．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;シェルスクリプト&lt;br&gt;
+　&lt;a href="https://www.tecrab.com/articles/shell-if-test-str.html" rel="noopener noreferrer" target="_blank"&gt;文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Python&lt;br&gt;
+　&lt;a href="https://www.tecrab.com/articles/python-starts-ends-with-in.html" rel="noopener noreferrer" target="_blank"&gt;文字列を「〜で始まる/終わる/〜が含まれる」で抽出する方法&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_2"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;if文の条件式としてシンプルにbooleanで判定する方法について紹介しました．&lt;br&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="Mac-Linux"></category><category term="zsh"></category><category term="shellscript"></category></entry><entry><title>【Mac/Linux】zsh dateコマンドで日付操作・フォーマットをする方法</title><link href="https://www.tecrab.com/articles/zsh-date.html" rel="alternate"></link><published>2022-07-18T00:00:00+09:00</published><updated>2022-08-07T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-07-18:/articles/zsh-date.html</id><summary type="html">&lt;p&gt;zshにおけるdateコマンドの使い方です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;zshにおける&lt;code&gt;date&lt;/code&gt;コマンドについて，簡単にまとめています．&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
