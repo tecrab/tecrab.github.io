@@ -683,14 +683,14 @@ table#dataframe tr:nth-child(1) {
 }
 /* 通常の表のデザイン */
 table#normal {
-  width: auto !important;
+  width: 80% !important;
   border-collapse: collapse;
   margin-bottom: 50px;
 }
 
-table#normal tr:nth-child(1) {
+/* table#normal tr:nth-child(1) {
   background: #caeae7;
-}
+} */
 
 table#normal td:nth-last-child(1) {
   width: 60% !important;
@@ -699,7 +699,7 @@ table#normal td:nth-last-child(1) {
 table#normal th {
   font-size: 14px !important;
   text-align: left;
-  padding: 10px 10px 10px 10px;
+  padding: 5px 10px 5px 10px;
   border: solid 1px #303030;
 }
 

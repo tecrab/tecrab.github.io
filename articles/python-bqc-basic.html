@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PostgreSQL集約関数：SQLで計算や最大・最小値を算出する方法 - てっくらぶ</title>
-    <meta name="description" content="PostgreSQLでの集約関数を確認している記事です．">
+    <title>【Python】BigQueryのテーブル/テーブルスキーマを取得する方法 - てっくらぶ</title>
+    <meta name="description" content="BigQueryのPythonクライアントライブラリでテーブル情報を取得する方法です．">
 
 
     <!-- defer-js -->
@@ -52,27 +52,24 @@
     <ol class="breadcrumb">
       <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
       <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
-      <li class="active">SQL</li>
+      <li class="active">Python</li>
     </ol>
     <section id="content" class="article content">
       <header>
         <h2 class="entry-title">
-          PostgreSQL集約関数：SQLで計算や最大・最小値を算出する方法
+          【Python】BigQueryのテーブル/テーブルスキーマを取得する方法
         </h2>
         
       </header>
 <div class="part1">
     <ul class="i-list">
-        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/sql.html">SQL</a></li>
-        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/postgresql.html">PostgreSQL</a> </li>
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/bigquery.html">BigQuery</a> </li>
         <br>
         <li class="i-item">
-            <span>Posted on: </span>2021-11-23
+            <span>Posted on: </span>2023-01-24
         </li>
             <br>
-            <li class="i-item">
-                <span>Updated on: </span>2022-01-22
-            </li>
     </ul>
 </div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
       crossorigin="anonymous"></script>
@@ -89,311 +86,287 @@
       <div class="entry-content">
         <main>
         <div class="admonition abstract">
-<p>本記事では以下の集約関数を見ていきます．
-<br>
-＜使用イメージ＞
+<p>本記事ではPythonを使用した以下の操作を解説しています．
 <ul style="margin: -5px 0px 0px 15px;">
-  <li>足し算：<code>SUM()</code></li>
-  <li>データの個数確認：<code>COUNT()</code></li>
-  <li>平均：<code>AVG()</code></li>
-  <li>最大値：<code>MAX()</code></li>
-  <li>最小値：<code>MIN()</code></li>
+    <li>BigQueryからテーブルをpandas DataFrameとして取得する</li>
+    <li>テーブルのスキーマに関する情報を取得する</li>
 </ul></p>
-<p>上記の関数は結果をひとつのデータとして返してきます．<br>
-例示を見ながら確認していきましょう．</p>
-</div>
 </div>
 <div class="toc"><span class="toctitle">目次</span><ul>
-<li><a href="#postgresql">PostgreSQLのバージョン</a></li>
-<li><a href="#_1">事前準備</a><ul>
-<li><a href="#sum">足し算 SUM()</a></li>
-<li><a href="#count">データの個数確認 COUNT()</a></li>
-<li><a href="#avg">平均 AVG()</a></li>
-<li><a href="#max-min">最大値・最小値 MAX() MIN()</a></li>
+<li><a href="#_1">前提条件</a><ul>
+<li><a href="#bigquery">BigQueryからテーブルを取得する</a></li>
 </ul>
 </li>
-<li><a href="#_2">条件をつけて集約関数を使用する</a></li>
-<li><a href="#_6">ひとこと</a></li>
+<li><a href="#_2">テーブルのスキーマに関する情報を取得する</a><ul>
+<li><a href="#_3">スキーマ</a><ul>
+<li><a href="#_4">列名（カラム名，フィールド名）</a></li>
+<li><a href="#_5">列のデータ型（フィールドタイプ）</a></li>
+<li><a href="#_6">列名，データ型，モードを辞書で取得</a></li>
+<li><a href="#_7">行数</a></li>
+<li><a href="#_8">その他の属性</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_9">関連情報</a></li>
+<li><a href="#_10">ひとこと</a></li>
 </ul>
 </div>
-<h2 id="postgresql">PostgreSQLのバージョン</h2>
-<p><code>psql (PostgreSQL) 14.5</code></p>
-<h2 id="_1">事前準備</h2>
-<p>まずはサンプルのテーブルを作成します．</p>
-<pre><code class="language-sql">
-CREATE TABLE buncho (
-    id serial PRIMARY KEY, -- 番号
-    name VARCHAR (30) NOT NULL, -- お名前
-    age INTEGER NOT NULL, -- 年齢(歳)
-    weight DECIMAL(5, 2) NOT NULL, -- 体重(g)
-    birdseed DECIMAL(5, 2) NOT NULL -- １日の餌の量(g)
-);
+<h2 id="_1">前提条件</h2>
+<p>本記事ではPythonの<a href="https://cloud.google.com/bigquery/docs/reference/libraries#client-libraries-install-python" rel="noopener noreferrer" target="_blank">BigQuery APIクライアントライブラリ</a>を使用します．<br>
+インストールをしていない場合は先にインストールが必要です．</p>
+<ul>
+<li>検証バージョン：<code>google-cloud-bigquery 3.4.0</code></li>
+</ul>
+<h3 id="bigquery">BigQueryからテーブルを取得する</h3>
+<p>BigQuery上にあるテーブルをSQLクエリで取得します．</p>
+<pre><code class="language-python">
+from google.cloud import bigquery
 
-INSERT INTO buncho (name, age, weight, birdseed)
-VALUES
-    ('ぶんぶん', 2, 21.3, 4),
-    ('ピースケ', 1, 22.6, 4),
-    ('シロ', 3, 23.7, 4),
-    ('うずら', 1, 25.9, 6),
-    ('らむね', 5, 24.0, 5),
-    ('シルバー', 2, 23.5, 5)
-;
-
-SELECT * FROM buncho;
-</code></pre>
-
-<div class="nb-html-output"><table>
-    <tbody><tr>
-        <th>id</th>
-        <th>name</th>
-        <th>age</th>
-        <th>weight</th>
-        <th>birdseed</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>ぶんぶん</td>
-        <td>2</td>
-        <td>21.30</td>
-        <td>4.00</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>ピースケ</td>
-        <td>1</td>
-        <td>22.60</td>
-        <td>4.00</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>シロ</td>
-        <td>3</td>
-        <td>23.70</td>
-        <td>4.00</td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td>うずら</td>
-        <td>1</td>
-        <td>25.90</td>
-        <td>6.00</td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td>らむね</td>
-        <td>5</td>
-        <td>24.00</td>
-        <td>5.00</td>
-    </tr>
-    <tr>
-        <td>6</td>
-        <td>シルバー</td>
-        <td>2</td>
-        <td>23.50</td>
-        <td>5.00</td>
-    </tr>
-</tbody></table></div>
-
-<h3 id="sum">足し算 <code>SUM()</code></h3>
-<p>birdseed 列をすべて足します．<br>
-結果を見ると，足し算された結果が１つの値として返ってきていますね．</p>
-<pre><code class="language-sql">
+# BigQueryのパブリックデータ(67.58 KB)
+query = '''
 SELECT
-    SUM(birdseed)
+    County_of_Residence,
+    Births,
+    Ave_Age_of_Mother
 FROM
-    buncho;
+    `bigquery-public-data.sdoh_cdc_wonder_natality.county_natality`
+LIMIT
+    10
+'''
+
+client = bigquery.Client()
+cj = client.query(query)
+print(cj, '\n', type(cj))
 </code></pre>
+<pre class="middle">
+QueryJob&lt;project=***, location=US, id=***&gt;
+ &lt;class 'google.cloud.bigquery.job.query.QueryJob'&gt;
+</pre>
 
-<div class="nb-html-output"><table>
-    <tbody><tr>
-        <th>sum</th>
-    </tr>
-    <tr>
-        <td>28.00</td>
-    </tr>
-</tbody></table></div>
+<p>BigQueryからのテーブル取得は<code>Client()</code>オブジェクトのメソッド<code>query()</code>で可能です．<br>
+<code>query()</code>を実行するとQueryJobオブジェクトが返ってきます．</p>
+<ul>
+<li>公式 Reference: <a href="https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.job.QueryJob" rel="noopener noreferrer" target="_blank">QueryJob</a></li>
+</ul>
+<div style="margin-bottom: 50px;"></div>
 
-<h3 id="count">データの個数確認 <code>COUNT()</code></h3>
-<p>データの個数をカウントします．<br>
-６つのデータ（行）がカウントされて返ってきました．</p>
-<pre><code class="language-sql">
-SELECT
-    COUNT(*) AS buncho_count
-FROM
-    buncho;
-</code></pre>
-
-<div class="nb-html-output"><table>
-    <tbody><tr>
-        <th>buncho_count</th>
-    </tr>
-    <tr>
-        <td>6</td>
-    </tr>
-</tbody></table></div>
-
-<div class="admonition warning-box">
+<div class="admonition danger-box">
 <p class="admonition-title">注意</p>
-<p><code>COUNT(*)</code>とすると要素がNULLであってもカウントして返してくれます．<br>
-特定の列を指定する場合はNULLをカウントせずに返してくれます．</p>
+<p>BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
 </div>
-<h3 id="avg">平均 <code>AVG()</code></h3>
-<p>データの平均値を算出します.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
-<pre><code class="language-sql">
-SELECT
-    ROUND(AVG(weight), 2) AS weight
-FROM
-    buncho;
+<p>QueryJobオブジェクトには様々なメソッドがあり<code>to_dataframe()</code>メソッドを使用すれば取得したテーブルをDataFrameとして取得できます．</p>
+<pre><code class="language-python">
+df = cj.to_dataframe()
+df.head(3)
 </code></pre>
-
-<div class="nb-html-output"><table>
-    <tbody><tr>
-        <th>weight</th>
+<table class="dataframe middle" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>County_of_Residence</th>
+      <th>Births</th>
+      <th>Ave_Age_of_Mother</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Calhoun County, AL</td>
+      <td>1265</td>
+      <td>26.67</td>
     </tr>
     <tr>
-        <td>23.50</td>
+      <th>1</th>
+      <td>Tulsa County, OK</td>
+      <td>8933</td>
+      <td>28.13</td>
     </tr>
-</tbody></table></div>
+    <tr>
+      <th>2</th>
+      <td>Carroll County, GA</td>
+      <td>1540</td>
+      <td>27.20</td>
+    </tr>
+  </tbody>
+</table>
 
-<h3 id="max-min">最大値・最小値 <code>MAX()</code> <code>MIN()</code></h3>
-<p>データの最大値・最小値を表示してくれます．</p>
-<pre><code class="language-sql">
-SELECT
-    MAX(weight)
-FROM
-    buncho;
+<p><code>to_dataframe()</code>メソッドの主な引数は以下のとおりです．</p>
+<ul>
+<li>公式 Reference: <a href="https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.job.QueryJob#google_cloud_bigquery_job_QueryJob_to_dataframe" rel="noopener noreferrer" target="_blank">to_dataframe</a></li>
+</ul>
+<table id="normal">
+    <thead><tr>
+        <th>引数</th>
+        <th>説明</th>
+    </tr>
+</thead><tr>
+<tr>
+<td>bqstorage_client</td>
+<td>BigQuery Storage API client を使用して高速に結果を取得する</td>
+</tr>
+<tr>
+    <td>dtypes</td>
+    <td>DataFrameの列におけるデータ型を指定</td>
+</tr>
+<tr>
+    <td>progress_bar_type</td>
+    <td>tqdm packageのプログレスバーを表示できる</td>
+</tr>
+<tr>
+    <td>max_results</td>
+    <td>取得する結果の最大行数を指定</td>
+</tr>
+</table>
+
+<p>以下は<code>dtypes</code>と<code>progress_bar_type</code>を指定して実行した例です．</p>
+<pre><code class="language-python">
+dtypes={'Births': 'float16'}
+
+df = cj.to_dataframe(dtypes=dtypes, progress_bar_type='tqdm')
+df.dtypes
 </code></pre>
+<pre class="middle">
+Job ID *** successfully executed: 100%|<span style="color:rgb(0, 187, 0)">██████████</span>|
+Downloading: 100%|<span style="color:rgb(0, 187, 0)">██████████</span>|
 
-<div class="nb-html-output" style="margin-bottom: 50px;"><table>
-    <tbody><tr>
-        <th>max</th>
-    </tr>
-    <tr>
-        <td>25.90</td>
-    </tr>
-</tbody></table></div>
-
-<pre><code class="language-sql">
-SELECT
-    MIN(weight)
-FROM
-    buncho;
+County_of_Residence     object
+Births                 float16
+Ave_Age_of_Mother      float64
+dtype: object
+</pre>
+<p>DataFrameのデータ型を見ると指定した「Births」列が<code>float16</code>になっていますね．<br>
+また<code>progress_bar_type</code>を指定しているので，進捗具合も表示されています．</p>
+<details class="accordion-block">
+<summary>高速化に関して（クリックで展開します）</summary>
+<div class="accordion-summary">
+<p><code>bqstorage_client</code>にBigQuery Storage API clientを指定すると高速にテーブルを取得できると公式ドキュメントに記載がありますが，管理人の手元では指定の有無に関わらず取得速度に差がありませんでした．<br>
+取得するデータが大きい場合などでは効果があるかもしれません．<br>
+（こうしたら早くなるなど，情報をお持ちの方がいらっしゃればご連絡いただけると嬉しいです．<a href="https://www.tecrab.com/pages/contact.html" rel="noopener noreferrer" target="_blank">問い合わせフォーム</a> or <a href="https://twitter.com/tecrab_blog" rel="noopener noreferrer" target="_blank">Twitter</a>）</p>
+<p>なお，以下「参考：BigQueryからのテーブル取得」で紹介しているpandasの<code>read_gbq</code>メソッドについては引数<code>use_bqstorage_api=True</code>とするとテーブルの取得を圧倒的に高速化できます．</p>
+</div>
+</details>
+<div class="admonition info-box">
+<p class="admonition-title">参考：BigQueryからのテーブル取得</p>
+<p>BigQueryからテーブルをDataFrameとして取得するにはpandasの<code>read_gbq</code>メソッドを使う方法もあります．<br>
+テーブルデータをDataFrameとして扱いたい場合はこちらの方がシンプルで便利です．</p>
+<ul>
+<li>公式 Reference: <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank">pandas.read_gbq</a></li>
+</ul>
+</div>
+<h2 id="_2">テーブルのスキーマに関する情報を取得する</h2>
+<p>スキーマの情報を取得する例を以下より確認していきます．</p>
+<p>QueryJobオブジェクトの<code>result()</code>メソッドでRowIteratorオブジェクトを取得します．</p>
+<pre><code class="language-python">
+cjr = cj.result()
+cjr
 </code></pre>
+<pre class="end">
+&lt;google.cloud.bigquery.table.RowIterator at ***&gt;
+</pre>
 
-<div class="nb-html-output"><table>
-    <tbody><tr>
-        <th>min</th>
-    </tr>
-    <tr>
-        <td>21.30</td>
-    </tr>
-</tbody></table></div>
-
-<h2 id="_2">条件をつけて集約関数を使用する</h2>
-<p>ここでは<code>WHERE</code>句や<code>GROUP BY</code>句,<code>HAVING</code>句で条件を絞って集計する例を見てみます．</p>
-<h5 id="_3">特定の条件のデータだけを足し算</h5>
-<p>age（年齢）が１歳の文鳥だけに絞って集計してみます．<br>
-年齢が１歳の２羽におけるbirdseedを足した結果が返ってきていますね．</p>
-<pre><code class="language-sql">
-SELECT
-    SUM(birdseed)
-FROM
-    buncho
-WHERE
-    age = 1;
+<h3 id="_3">スキーマ</h3>
+<p>テーブルのスキーマを確認するには<code>schema</code>属性を使用します．</p>
+<pre><code class="language-python">
+cjr.schema
 </code></pre>
+<pre class="middle">
+[SchemaField('County_of_Residence', 'STRING', 'NULLABLE', None, None, (), None),
+ SchemaField('Births', 'INTEGER', 'NULLABLE', None, None, (), None),
+ SchemaField('Ave_Age_of_Mother', 'FLOAT', 'NULLABLE', None, None, (), None)]
+</pre>
 
-<div class="nb-html-output"><table>
-    <tbody><tr>
-        <th>sum</th>
-    </tr>
-    <tr>
-        <td>10.00</td>
-    </tr>
-</tbody></table></div>
-
-<h5 id="_4">グループでまとめて足し算</h5>
-<p><code>GROUP BY</code>句でage（年齢）ごとにまとめて足し算してみましょう．</p>
-<pre><code class="language-sql">
-SELECT age,
-    SUM(birdseed)
-FROM
-    buncho
-GROUP BY
-    age
-ORDER BY
-    age;
+<p><code>schema</code>属性にはSchemaFieldというオブジェクトがリストで存在し，それぞれのSchemaFieldが各列（カラム）ごとの情報を保持しています．必要な情報にはSchemaFieldの属性を使用してアクセスします．</p>
+<h4 id="_4">列名（カラム名，フィールド名）</h4>
+<p>列名はSchemaFieldの<code>name</code>属性で取得します．<br>
+以下の例では全カラム名をfor文で取り出しています．</p>
+<pre><code class="language-python">
+[i.name for i in cjr.schema]
 </code></pre>
+<pre class="end">
+['County_of_Residence', 'Births', 'Ave_Age_of_Mother']
+</pre>
 
-<div class="nb-html-output"><table style="margin-bottom: 30px;">
-    <tbody><tr>
-        <th>age</th>
-        <th>sum</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>10.00</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>9.00</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>4.00</td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td>5.00</td>
-    </tr>
-</tbody></table></div>
+<h4 id="_5">列のデータ型（フィールドタイプ）</h4>
+<p>各列のデータ型は<code>field_type</code>属性で取得します．</p>
+<pre><code class="language-python">
+[i.field_type for i in cjr.schema]
+</code></pre>
+<pre class="end">
+['STRING', 'INTEGER', 'FLOAT']
+</pre>
 
-<p>今回はデータが少ないのであまりまとまっていませんが，それぞれの年齢ごとにbirdseedが集計されていることがわかりますね．</p>
+<h4 id="_6">列名，データ型，モードを辞書で取得</h4>
+<p>SchemaFieldの<code>to_api_repr()</code>メソッドを使用すればスキーマの情報を辞書で取得できます．</p>
+<pre><code class="language-python">
+[i.to_api_repr() for i in cjr.schema]
+</code></pre>
+<pre class="end">
+[{'name': 'County_of_Residence', 'type': 'STRING', 'mode': 'NULLABLE'},
+ {'name': 'Births', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+ {'name': 'Ave_Age_of_Mother', 'type': 'FLOAT', 'mode': 'NULLABLE'}]
+</pre>
+
+<h4 id="_7">行数</h4>
+<p>行数はRowIteratorオブジェクトの<code>total_rows</code>属性で確認できます．</p>
+<pre><code class="language-python">
+cjr.total_rows
+</code></pre>
+<pre class="end">
+10
+</pre>
+
+<h4 id="_8">その他の属性</h4>
+<p>他にもスキーマに関する主な情報は以下の属性で取得できます．</p>
+<table id="normal">
+    <thead><tr>
+        <th>属性</th>
+        <th>取得できる情報</th>
+    </tr>
+</thead><tr>
+<td>mode</td>
+<td>モード</td>
+</tr>
+<tr>
+    <td>is_nullable</td>
+    <td>モードがNULLABLEか否か</td>
+</tr>
+<tr>
+    <td>default_value_expression</td>
+    <td>デフォルト値</td>
+</tr>
+<tr>
+    <td>policy_tags</td>
+    <td>ポリシータグ</td>
+</tr>
+<tr>
+    <td>description</td>
+    <td>説明</td>
+</tr>
+</table>
+
 <div class="admonition info-box">
 <p class="admonition-title">参考</p>
-<p>クエリの最後にある<code>ORDER BY</code>句はage列を基準に並び替えるために入れています．</p>
+<p>その他の属性や詳細は以下の公式 Referenceを参照．</p>
+<ul>
+<li>公式 Reference: <a href="https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.schema.SchemaField#google_cloud_bigquery_schema_SchemaField_scale" rel="noopener noreferrer" target="_blank">SchemaField</a></li>
+</ul>
 </div>
-<h5 id="_5">一旦集計した結果をさらに絞る</h5>
-<p>上記のグループごとにまとめて足し算した結果のうち，birdseedが７以上のデータを抽出します．<br>
-このような場合には<code>HAVING</code>句に集約関数を記載します．</p>
-<pre><code class="language-sql">
-SELECT age,
-    SUM(birdseed) AS birdseed
-FROM
-    buncho
-GROUP BY
-    age
-HAVING
-    SUM(birdseed) >= 7
-ORDER BY
-    age;
-</code></pre>
+<div style="margin-bottom: 50px;"></div>
 
-<div class="nb-html-output"><table style="margin-bottom: 30px;">
-    <tbody><tr>
-        <th>age</th>
-        <th>birdseed</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>10.00</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>9.00</td>
-    </tr>
-</tbody></table></div>
-
-<p>集約した結果に対し，さらに絞り込んだ結果を得ることができました！</p>
-<h2 id="_6">ひとこと</h2>
-<p>SQLの集約関数について基本的な使い方を勉強しました．</p>
+<h2 id="_9">関連情報</h2>
+<p><a href="https://cloud.google.com/bigquery/docs/information-schema-intro" rel="noopener noreferrer" target="_blank">BigQuery INFORMATION_SCHEMA</a>を使用して情報を取得することも可能です．
+クエリでテーブル情報を取得できるのでとても便利です．</p>
+<h2 id="_10">ひとこと</h2>
+<p>BigQuery APIクライアントライブラリを使うとPythonで色々な情報を取得できますね．<br>
+テーブルを取得するだけならpandasの<code>read_gbq</code>をよく使います．</p>
 <div style="margin-bottom: 100px;"></div>
 
 <div class="footnote">
 <hr>
 <ol>
 <li id="fn:1">
-<p><code>ROUND(AVG(weight), 2)</code>としているのは，出力結果を小数点第二位までとするためです．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>上記のサンプルコード（クエリ）の処理量は約68KBと少ないのでそれほど気にする必要はありません．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
@@ -414,10 +387,13 @@ ORDER BY
 <!-- /.entry-content -->
       <!-- <footer class="post-info text-muted">
         <button type="button" class="btn btn-default">          
-          <a href="https://www.tecrab.com/category/sql.html"><div class="fa fa-lg fa-folder-open"></div> SQL</a>
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
         </button>
         <button type="button" class="btn btn-default">
-          <a href="https://www.tecrab.com/tag/postgresql.html"><div class="fa fa-lg fa-tag"></div> PostgreSQL</a>
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/bigquery.html"><div class="fa fa-lg fa-tag"></div> BigQuery</a>
         </button>
       </footer> -->
       <!-- /.post-info -->

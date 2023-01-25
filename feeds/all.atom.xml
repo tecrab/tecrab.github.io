@@ -1,5 +1,319 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/all.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-12-27T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【シェルスクリプト】文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法</title><link href="https://www.tecrab.com/articles/shell-if-test-str.html" rel="alternate"></link><published>2022-12-26T00:00:00+09:00</published><updated>2022-12-27T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-26:/articles/shell-if-test-str.html</id><summary type="html">&lt;p&gt;文字列判定「〜で始まる/終わる/〜が含まれる/存在有無」をまとめています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/all.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-01-24T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】BigQueryのテーブル/テーブルスキーマを取得する方法</title><link href="https://www.tecrab.com/articles/python-bqc-basic.html" rel="alternate"></link><published>2023-01-24T00:00:00+09:00</published><updated>2023-01-24T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-24:/articles/python-bqc-basic.html</id><summary type="html">&lt;p&gt;BigQueryのPythonクライアントライブラリでテーブル情報を取得する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではPythonを使用した以下の操作を解説しています．
+&lt;ul style="margin: -5px 0px 0px 15px;"&gt;
+    &lt;li&gt;BigQueryからテーブルをpandas DataFrameとして取得する&lt;/li&gt;
+    &lt;li&gt;テーブルのスキーマに関する情報を取得する&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;前提条件&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#bigquery"&gt;BigQueryからテーブルを取得する&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;テーブルのスキーマに関する情報を取得する&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;スキーマ&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;列名（カラム名，フィールド名）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;列のデータ型（フィールドタイプ）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;列名，データ型，モードを辞書で取得&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_7"&gt;行数&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_8"&gt;その他の属性&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_9"&gt;関連情報&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_10"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;前提条件&lt;/h2&gt;
+&lt;p&gt;本記事ではPythonの&lt;a href="https://cloud.google.com/bigquery/docs/reference/libraries#client-libraries-install-python" rel="noopener noreferrer" target="_blank"&gt;BigQuery APIクライアントライブラリ&lt;/a&gt;を使用します．&lt;br&gt;
+インストールをしていない場合は先にインストールが必要です．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;検証バージョン：&lt;code&gt;google-cloud-bigquery 3.4.0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="bigquery"&gt;BigQueryからテーブルを取得する&lt;/h3&gt;
+&lt;p&gt;BigQuery上にあるテーブルをSQLクエリで取得します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+from google.cloud import bigquery
+
+# BigQueryのパブリックデータ(67.58 KB)
+query = '''
+SELECT
+    County_of_Residence,
+    Births,
+    Ave_Age_of_Mother
+FROM
+    `bigquery-public-data.sdoh_cdc_wonder_natality.county_natality`
+LIMIT
+    10
+'''
+
+client = bigquery.Client()
+cj = client.query(query)
+print(cj, '\n', type(cj))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+QueryJob&amp;lt;project=***, location=US, id=***&amp;gt;
+ &amp;lt;class 'google.cloud.bigquery.job.query.QueryJob'&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;BigQueryからのテーブル取得は&lt;code&gt;Client()&lt;/code&gt;オブジェクトのメソッド&lt;code&gt;query()&lt;/code&gt;で可能です．&lt;br&gt;
+&lt;code&gt;query()&lt;/code&gt;を実行するとQueryJobオブジェクトが返ってきます．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;公式 Reference: &lt;a href="https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.job.QueryJob" rel="noopener noreferrer" target="_blank"&gt;QueryJob&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;div class="admonition danger-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;QueryJobオブジェクトには様々なメソッドがあり&lt;code&gt;to_dataframe()&lt;/code&gt;メソッドを使用すれば取得したテーブルをDataFrameとして取得できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df = cj.to_dataframe()
+df.head(3)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;County_of_Residence&lt;/th&gt;
+      &lt;th&gt;Births&lt;/th&gt;
+      &lt;th&gt;Ave_Age_of_Mother&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;Calhoun County, AL&lt;/td&gt;
+      &lt;td&gt;1265&lt;/td&gt;
+      &lt;td&gt;26.67&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;Tulsa County, OK&lt;/td&gt;
+      &lt;td&gt;8933&lt;/td&gt;
+      &lt;td&gt;28.13&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;Carroll County, GA&lt;/td&gt;
+      &lt;td&gt;1540&lt;/td&gt;
+      &lt;td&gt;27.20&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;to_dataframe()&lt;/code&gt;メソッドの主な引数は以下のとおりです．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;公式 Reference: &lt;a href="https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.job.QueryJob#google_cloud_bigquery_job_QueryJob_to_dataframe" rel="noopener noreferrer" target="_blank"&gt;to_dataframe&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table id="normal"&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th&gt;引数&lt;/th&gt;
+        &lt;th&gt;説明&lt;/th&gt;
+    &lt;/tr&gt;
+&lt;/thead&gt;&lt;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bqstorage_client&lt;/td&gt;
+&lt;td&gt;BigQuery Storage API client を使用して高速に結果を取得する&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;dtypes&lt;/td&gt;
+    &lt;td&gt;DataFrameの列におけるデータ型を指定&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;progress_bar_type&lt;/td&gt;
+    &lt;td&gt;tqdm packageのプログレスバーを表示できる&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;max_results&lt;/td&gt;
+    &lt;td&gt;取得する結果の最大行数を指定&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;以下は&lt;code&gt;dtypes&lt;/code&gt;と&lt;code&gt;progress_bar_type&lt;/code&gt;を指定して実行した例です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+dtypes={'Births': 'float16'}
+
+df = cj.to_dataframe(dtypes=dtypes, progress_bar_type='tqdm')
+df.dtypes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+Job ID *** successfully executed: 100%|&lt;span style="color:rgb(0, 187, 0)"&gt;██████████&lt;/span&gt;|
+Downloading: 100%|&lt;span style="color:rgb(0, 187, 0)"&gt;██████████&lt;/span&gt;|
+
+County_of_Residence     object
+Births                 float16
+Ave_Age_of_Mother      float64
+dtype: object
+&lt;/pre&gt;
+&lt;p&gt;DataFrameのデータ型を見ると指定した「Births」列が&lt;code&gt;float16&lt;/code&gt;になっていますね．&lt;br&gt;
+また&lt;code&gt;progress_bar_type&lt;/code&gt;を指定しているので，進捗具合も表示されています．&lt;/p&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;高速化に関して（クリックで展開します）&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;p&gt;&lt;code&gt;bqstorage_client&lt;/code&gt;にBigQuery Storage API clientを指定すると高速にテーブルを取得できると公式ドキュメントに記載がありますが，管理人の手元では指定の有無に関わらず取得速度に差がありませんでした．&lt;br&gt;
+取得するデータが大きい場合などでは効果があるかもしれません．&lt;br&gt;
+（こうしたら早くなるなど，情報をお持ちの方がいらっしゃればご連絡いただけると嬉しいです．&lt;a href="https://www.tecrab.com/pages/contact.html" rel="noopener noreferrer" target="_blank"&gt;問い合わせフォーム&lt;/a&gt; or &lt;a href="https://twitter.com/tecrab_blog" rel="noopener noreferrer" target="_blank"&gt;Twitter&lt;/a&gt;）&lt;/p&gt;
+&lt;p&gt;なお，以下「参考：BigQueryからのテーブル取得」で紹介しているpandasの&lt;code&gt;read_gbq&lt;/code&gt;メソッドについては引数&lt;code&gt;use_bqstorage_api=True&lt;/code&gt;とするとテーブルの取得を圧倒的に高速化できます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考：BigQueryからのテーブル取得&lt;/p&gt;
+&lt;p&gt;BigQueryからテーブルをDataFrameとして取得するにはpandasの&lt;code&gt;read_gbq&lt;/code&gt;メソッドを使う方法もあります．&lt;br&gt;
+テーブルデータをDataFrameとして扱いたい場合はこちらの方がシンプルで便利です．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank"&gt;pandas.read_gbq&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_2"&gt;テーブルのスキーマに関する情報を取得する&lt;/h2&gt;
+&lt;p&gt;スキーマの情報を取得する例を以下より確認していきます．&lt;/p&gt;
+&lt;p&gt;QueryJobオブジェクトの&lt;code&gt;result()&lt;/code&gt;メソッドでRowIteratorオブジェクトを取得します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+cjr = cj.result()
+cjr
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="end"&gt;
+&amp;lt;google.cloud.bigquery.table.RowIterator at ***&amp;gt;
+&lt;/pre&gt;
+
+&lt;h3 id="_3"&gt;スキーマ&lt;/h3&gt;
+&lt;p&gt;テーブルのスキーマを確認するには&lt;code&gt;schema&lt;/code&gt;属性を使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+cjr.schema
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+[SchemaField('County_of_Residence', 'STRING', 'NULLABLE', None, None, (), None),
+ SchemaField('Births', 'INTEGER', 'NULLABLE', None, None, (), None),
+ SchemaField('Ave_Age_of_Mother', 'FLOAT', 'NULLABLE', None, None, (), None)]
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;schema&lt;/code&gt;属性にはSchemaFieldというオブジェクトがリストで存在し，それぞれのSchemaFieldが各列（カラム）ごとの情報を保持しています．必要な情報にはSchemaFieldの属性を使用してアクセスします．&lt;/p&gt;
+&lt;h4 id="_4"&gt;列名（カラム名，フィールド名）&lt;/h4&gt;
+&lt;p&gt;列名はSchemaFieldの&lt;code&gt;name&lt;/code&gt;属性で取得します．&lt;br&gt;
+以下の例では全カラム名をfor文で取り出しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+[i.name for i in cjr.schema]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="end"&gt;
+['County_of_Residence', 'Births', 'Ave_Age_of_Mother']
+&lt;/pre&gt;
+
+&lt;h4 id="_5"&gt;列のデータ型（フィールドタイプ）&lt;/h4&gt;
+&lt;p&gt;各列のデータ型は&lt;code&gt;field_type&lt;/code&gt;属性で取得します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+[i.field_type for i in cjr.schema]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="end"&gt;
+['STRING', 'INTEGER', 'FLOAT']
+&lt;/pre&gt;
+
+&lt;h4 id="_6"&gt;列名，データ型，モードを辞書で取得&lt;/h4&gt;
+&lt;p&gt;SchemaFieldの&lt;code&gt;to_api_repr()&lt;/code&gt;メソッドを使用すればスキーマの情報を辞書で取得できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+[i.to_api_repr() for i in cjr.schema]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="end"&gt;
+[{'name': 'County_of_Residence', 'type': 'STRING', 'mode': 'NULLABLE'},
+ {'name': 'Births', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+ {'name': 'Ave_Age_of_Mother', 'type': 'FLOAT', 'mode': 'NULLABLE'}]
+&lt;/pre&gt;
+
+&lt;h4 id="_7"&gt;行数&lt;/h4&gt;
+&lt;p&gt;行数はRowIteratorオブジェクトの&lt;code&gt;total_rows&lt;/code&gt;属性で確認できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+cjr.total_rows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="end"&gt;
+10
+&lt;/pre&gt;
+
+&lt;h4 id="_8"&gt;その他の属性&lt;/h4&gt;
+&lt;p&gt;他にもスキーマに関する主な情報は以下の属性で取得できます．&lt;/p&gt;
+&lt;table id="normal"&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th&gt;属性&lt;/th&gt;
+        &lt;th&gt;取得できる情報&lt;/th&gt;
+    &lt;/tr&gt;
+&lt;/thead&gt;&lt;tr&gt;
+&lt;td&gt;mode&lt;/td&gt;
+&lt;td&gt;モード&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;is_nullable&lt;/td&gt;
+    &lt;td&gt;モードがNULLABLEか否か&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;default_value_expression&lt;/td&gt;
+    &lt;td&gt;デフォルト値&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;policy_tags&lt;/td&gt;
+    &lt;td&gt;ポリシータグ&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;description&lt;/td&gt;
+    &lt;td&gt;説明&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;その他の属性や詳細は以下の公式 Referenceを参照．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;公式 Reference: &lt;a href="https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.schema.SchemaField#google_cloud_bigquery_schema_SchemaField_scale" rel="noopener noreferrer" target="_blank"&gt;SchemaField&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;h2 id="_9"&gt;関連情報&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://cloud.google.com/bigquery/docs/information-schema-intro" rel="noopener noreferrer" target="_blank"&gt;BigQuery INFORMATION_SCHEMA&lt;/a&gt;を使用して情報を取得することも可能です．
+クエリでテーブル情報を取得できるのでとても便利です．&lt;/p&gt;
+&lt;h2 id="_10"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;BigQuery APIクライアントライブラリを使うとPythonで色々な情報を取得できますね．&lt;br&gt;
+テーブルを取得するだけならpandasの&lt;code&gt;read_gbq&lt;/code&gt;をよく使います．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;上記のサンプルコード（クエリ）の処理量は約68KBと少ないのでそれほど気にする必要はありません．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="BigQuery"></category></entry><entry><title>Pythonのfor文で家族絵文字をひとつずつ取り出す</title><link href="https://www.tecrab.com/articles/python-emoji-for-family.html" rel="alternate"></link><published>2023-01-14T00:00:00+09:00</published><updated>2023-01-14T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-14:/articles/python-emoji-for-family.html</id><summary type="html">&lt;p&gt;絵文字をPythonのfor文で取り出す豆知識です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;使えるか全くわからない豆知識です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;内容&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h3 id="_1"&gt;内容&lt;/h3&gt;
+&lt;p&gt;以下のコードを見てください.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+for i in '👨‍👩‍👧‍👦':
+    print(i, end=' ')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+👨 ‍ 👩 ‍ 👧 ‍ 👦 
+&lt;/pre&gt;
+
+&lt;p&gt;何と絵文字がそれぞれ取得できます・・・&lt;/p&gt;
+&lt;h2 id="_2"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;絵文字をfor文で取得できるのは面白いですね．&lt;br&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;絵文字「👨‍👩‍👧‍👦」は「ファミリー」と打って変換すれば出てきます．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="豆知識"></category><category term="Python"></category><category term="豆知識"></category></entry><entry><title>【シェルスクリプト】文字列を「〜で始まる/終わる/〜が含まれる/存在有無」で判定する方法</title><link href="https://www.tecrab.com/articles/shell-if-test-str.html" rel="alternate"></link><published>2022-12-26T00:00:00+09:00</published><updated>2022-12-27T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-26:/articles/shell-if-test-str.html</id><summary type="html">&lt;p&gt;文字列判定「〜で始まる/終わる/〜が含まれる/存在有無」をまとめています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;本記事ではシェルスクリプトの文字列判定に関する以下の内容をまとめています．&lt;br&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;「〜で始まる/終わる」文字を判定&lt;/li&gt;
