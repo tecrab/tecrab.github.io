@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>てっくらぶ - PostgreSQL</title>
-    <meta name="description" content="PythonやPC関連の情報をまとめているブログです">
+    <title>【Neovim】インサートモードから離れる際に自動で英字に切り替える方法 - てっくらぶ</title>
+    <meta name="description" content="Neovimでモード切り替え時に自動で英字に切り替える方法です．">
 
 
     <!-- defer-js -->
@@ -49,78 +49,136 @@
     
     <div id="page">
       <article id="main-content">
-    <section id="content" class="content">
-      <ol class="breadcrumb">
-        <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
-        <li><a href="https://www.tecrab.com/tags.html">Tags</a><span style="margin: 0px 10px">/</span></li>
-        <li class="active">PostgreSQL</li>
-      </ol>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2022-09-01</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/jupyter-sql-postgres.html" rel="bookmark" title="Permalink to JupyterでDockerのPostgreSQLに接続する方法" class="article-title">JupyterでDockerのPostgreSQLに接続する方法</a>
-            <br/>
-            JupyterでDockerに構築したPostgreSQLと接続して動かす方法です．
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2022-01-26</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/sql-concat-ws-functions.html" rel="bookmark" title="Permalink to PostgreSQLで文字列を結合（CONCAT, CONCAT_WS）" class="article-title">PostgreSQLで文字列を結合（CONCAT, CONCAT_WS）</a>
-            <br/>
-            PostgreSQLで文字列を結合する方法です．
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2022-01-22</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/sql-string-agg-functions.html" rel="bookmark" title="Permalink to PostgreSQLで文字列を結合，STRING_AGGによるコンマ区切り" class="article-title">PostgreSQLで文字列を結合，STRING_AGGによるコンマ区切り</a>
-            <br/>
-            PostgreSQLで文字列を結合/コンマ区切りで取得する方法です．
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2021-12-02</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/sql-round-trunc-functions.html" rel="bookmark" title="Permalink to PostgreSQLで四捨五入・切り捨て/上げ，小数点以下の桁数を確認する方法" class="article-title">PostgreSQLで四捨五入・切り捨て/上げ，小数点以下の桁数を確認する方法</a>
-            <br/>
-            PostgreSQLで四捨五入や切り捨てなどの方法をまとめています．
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2021-11-23</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/sql-aggregate-functions.html" rel="bookmark" title="Permalink to PostgreSQL集約関数：SQLで計算や最大・最小値を算出する方法" class="article-title">PostgreSQL集約関数：SQLで計算や最大・最小値を算出する方法</a>
-            <br/>
-            PostgreSQLでの集約関数を確認している記事です．
-          </p>
-        </div>
-      </div>
-      <div class="pager">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">VSCode</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Neovim】インサートモードから離れる際に自動で英字に切り替える方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/vscode.html">VSCode</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/vim.html">Vim</a> <a href="https://www.tecrab.com/tag/env.html">環境構築</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2023-01-29
+        </li>
+            <br>
+    </ul>
+</div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="2331400317"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+<!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>Neovimでインサートモードから離れる際に，自動で英字に切り替える設定を解説しています．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">環境</a><ul>
+<li><a href="#_2">設定の手順</a><ul>
+<li><a href="#im-select">im-select のインストールと確認</a></li>
+<li><a href="#neovim">NeoVimの設定ファイルに設定を追加</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_3">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">環境</h2>
+<ul>
+<li>macOS Ventura 13.1</li>
+<li>USキーボード</li>
+</ul>
+<h3 id="_2">設定の手順</h3>
+<h4 id="im-select">im-select のインストールと確認</h4>
+<p>入力モードをコマンドで切り替えることができる<a href="https://github.com/daipeihust/im-select" rel="noopener noreferrer" target="_blank">im-select</a>をHomebrewでインストールします．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+brew install im-select
+</code>
+</pre>
+
+<div style="margin-bottom: 50px;"></div>
+
+<p><code>which</code>コマンドで<code>im-select</code>のコマンドパスを確認します．</p>
+<pre class="command-line" data-prompt="%">
+<code class="language-bash">
+which im-select
+</code>
+</pre>
+<pre class="end">
+/opt/homebrew/bin/im-select
+</pre>
+
+<h4 id="neovim">NeoVimの設定ファイルに設定を追加</h4>
+<p>設定ファイルの<code>init.vim</code>に以下の内容を追記します．</p>
+<pre class="middle"><code class="language-vim">
+autocmd InsertLeave * :silent !/opt/homebrew/bin/im-select com.apple.keylayout.ABC
+</code></pre>
+
+<p><code>/opt/homebrew/bin/im-select</code>の部分は<code>im-select</code>のpathを指定<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>します．</p>
+<p>これでインサートモードを離れると自動で英字入力に切り替わるようになります．</p>
+<h2 id="_3">ひとこと</h2>
+<p>この設定でスムーズにモード切り替えができるので大変おすすめです．<br>
+インサート &gt; ノーマルへのモード切り替えを設定する記事も以下にありますので，興味のある方は併せてご覧ください．</p>
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
+<p><a href="https://www.tecrab.com/articles/vscode-nvim-ctrlk.html" rel="noopener noreferrer" target="_blank">【VSCode Neovim】モード切り替えのキーバインディングを設定する方法</a></p>
+</div>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p><code>which</code>コマンドの結果で出たpathを指定します．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
       </div>
 
-      <!-- オリジナル -->
-      <!--  -->    </section>
-    <!-- content -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-format="autorelaxed"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="6953171609"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/vscode.html"><div class="fa fa-lg fa-folder-open"></div> VSCode</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/vim.html"><div class="fa fa-lg fa-tag"></div> Vim</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/env.html"><div class="fa fa-lg fa-tag"></div> 環境構築</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
       
       </article>
 

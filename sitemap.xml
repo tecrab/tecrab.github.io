@@ -5,7 +5,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>https://www.tecrab.com/</loc>
-<lastmod>2023-01-25T09:28:00-00:00</lastmod>
+<lastmod>2023-01-30T19:24:28-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -27,6 +27,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://www.tecrab.com/pages/privacy-policy.html</loc>
 <lastmod>2022-07-05T00:00:00+09:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>https://www.tecrab.com/articles/vscode-nvim-jpen-chj.html</loc>
+<lastmod>2023-01-29T00:00:00+09:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -453,7 +460,21 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>https://www.tecrab.com/category/vscode.html</loc>
-<lastmod>2022-08-05T00:00:00+09:19</lastmod>
+<lastmod>2023-01-29T00:00:00+09:19</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>https://www.tecrab.com/tag/vim.html</loc>
+<lastmod>2023-01-29T00:00:00+09:19</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>https://www.tecrab.com/tag/env.html</loc>
+<lastmod>2023-01-29T00:00:00+09:19</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -529,13 +550,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
-<loc>https://www.tecrab.com/tag/env.html</loc>
-<lastmod>2022-10-30T00:00:00+09:19</lastmod>
-<changefreq>daily</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
 <loc>https://www.tecrab.com/tag/postgresql.html</loc>
 <lastmod>2022-09-12T00:00:00+09:19</lastmod>
 <changefreq>daily</changefreq>
@@ -545,13 +559,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://www.tecrab.com/tag/docker.html</loc>
 <lastmod>2022-09-02T00:00:00+09:19</lastmod>
-<changefreq>daily</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>https://www.tecrab.com/tag/vim.html</loc>
-<lastmod>2022-08-05T00:00:00+09:19</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>

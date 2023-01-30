@@ -1,5 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - VSCode</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/vscode.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-08-05T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【VSCode Neovim】モード切り替えのキーバインディングを設定する方法</title><link href="https://www.tecrab.com/articles/vscode-nvim-ctrlk.html" rel="alternate"></link><published>2022-08-04T00:00:00+09:00</published><updated>2022-08-05T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-08-04:/articles/vscode-nvim-ctrlk.html</id><summary type="html">&lt;p&gt;VSCode Neovimでインサート &amp;gt; ノーマルのキーバインディングを設定する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - VSCode</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/vscode.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-01-29T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Neovim】インサートモードから離れる際に自動で英字に切り替える方法</title><link href="https://www.tecrab.com/articles/vscode-nvim-jpen-chj.html" rel="alternate"></link><published>2023-01-29T00:00:00+09:00</published><updated>2023-01-29T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-29:/articles/vscode-nvim-jpen-chj.html</id><summary type="html">&lt;p&gt;Neovimでモード切り替え時に自動で英字に切り替える方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;Neovimでインサートモードから離れる際に，自動で英字に切り替える設定を解説しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;環境&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;設定の手順&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#im-select"&gt;im-select のインストールと確認&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#neovim"&gt;NeoVimの設定ファイルに設定を追加&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;環境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;macOS Ventura 13.1&lt;/li&gt;
+&lt;li&gt;USキーボード&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="_2"&gt;設定の手順&lt;/h3&gt;
+&lt;h4 id="im-select"&gt;im-select のインストールと確認&lt;/h4&gt;
+&lt;p&gt;入力モードをコマンドで切り替えることができる&lt;a href="https://github.com/daipeihust/im-select" rel="noopener noreferrer" target="_blank"&gt;im-select&lt;/a&gt;をHomebrewでインストールします．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+brew install im-select
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;which&lt;/code&gt;コマンドで&lt;code&gt;im-select&lt;/code&gt;のコマンドパスを確認します．&lt;/p&gt;
+&lt;pre class="command-line" data-prompt="%"&gt;
+&lt;code class="language-bash"&gt;
+which im-select
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre class="end"&gt;
+/opt/homebrew/bin/im-select
+&lt;/pre&gt;
+
+&lt;h4 id="neovim"&gt;NeoVimの設定ファイルに設定を追加&lt;/h4&gt;
+&lt;p&gt;設定ファイルの&lt;code&gt;init.vim&lt;/code&gt;に以下の内容を追記します．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-vim"&gt;
+autocmd InsertLeave * :silent !/opt/homebrew/bin/im-select com.apple.keylayout.ABC
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;/opt/homebrew/bin/im-select&lt;/code&gt;の部分は&lt;code&gt;im-select&lt;/code&gt;のpathを指定&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;します．&lt;/p&gt;
+&lt;p&gt;これでインサートモードを離れると自動で英字入力に切り替わるようになります．&lt;/p&gt;
+&lt;h2 id="_3"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;この設定でスムーズにモード切り替えができるので大変おすすめです．&lt;br&gt;
+インサート &amp;gt; ノーマルへのモード切り替えを設定する記事も以下にありますので，興味のある方は併せてご覧ください．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.tecrab.com/articles/vscode-nvim-ctrlk.html" rel="noopener noreferrer" target="_blank"&gt;【VSCode Neovim】モード切り替えのキーバインディングを設定する方法&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;which&lt;/code&gt;コマンドの結果で出たpathを指定します．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="VSCode"></category><category term="Vim"></category><category term="環境構築"></category></entry><entry><title>【VSCode Neovim】モード切り替えのキーバインディングを設定する方法</title><link href="https://www.tecrab.com/articles/vscode-nvim-ctrlk.html" rel="alternate"></link><published>2022-08-04T00:00:00+09:00</published><updated>2022-08-05T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-08-04:/articles/vscode-nvim-ctrlk.html</id><summary type="html">&lt;p&gt;VSCode Neovimでインサート &amp;gt; ノーマルのキーバインディングを設定する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;VSCode Neovimでインサートモードからノーマルモードへ戻る際のキーバインディングを設定する方法です．&lt;br&gt;
 &lt;kbd&gt;&lt;kbd&gt;jj&lt;/kbd&gt;&lt;/kbd&gt;以外の設定に関しても解説しています．&lt;/p&gt;
 &lt;/div&gt;
@@ -112,9 +177,10 @@
 &lt;p&gt;インサートモードからノーマルモードへ戻る際のキーバインディングは&lt;kbd&gt;&lt;kbd&gt;jj&lt;/kbd&gt;&lt;/kbd&gt;が多いようですが，個人的には&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt;が楽でいい感じです．&lt;/p&gt;
 &lt;p&gt;また&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;K&lt;/kbd&gt;&lt;/kbd&gt;にしておくとインサート &amp;gt; ノーマルの際に文字入力を自動で英字に切り替える設定もスムーズなのでおすすめです．&lt;/p&gt;
 &lt;p&gt;英字への切り替え設定は以下の記事で解説しているので興味のある方はぜひご覧ください．&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;作成中&lt;/li&gt;
-&lt;/ul&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.tecrab.com/articles/vscode-nvim-jpen-chj.html" rel="noopener noreferrer" target="_blank"&gt;【Neovim】インサートモードから離れる際に自動で英字に切り替える方法&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
 
 &lt;div class="footnote"&gt;
