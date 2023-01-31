@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>【Mac/Linux】openコマンドの活用例 - てっくらぶ</title>
-    <meta name="description" content="Mac/Linuxのopenコマンドについてまとめています．">
+    <title>【pandas】BigQueryのデータをDataFrameで取得する方法 - てっくらぶ</title>
+    <meta name="description" content="BigQueryに存在するテーブルをpandas DataFrameとして取得する方法を解説しています．">
 
 
     <!-- defer-js -->
@@ -52,27 +52,24 @@
     <ol class="breadcrumb">
       <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
       <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
-      <li class="active">Mac-Linux</li>
+      <li class="active">Python</li>
     </ol>
     <section id="content" class="article content">
       <header>
         <h2 class="entry-title">
-          【Mac/Linux】openコマンドの活用例
+          【pandas】BigQueryのデータをDataFrameで取得する方法
         </h2>
         
       </header>
 <div class="part1">
     <ul class="i-list">
-        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/mac-linux.html">Mac-Linux</a></li>
-        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/zsh.html">zsh</a> </li>
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/pandas.html">pandas</a> <a href="https://www.tecrab.com/tag/bigquery.html">BigQuery</a> </li>
         <br>
         <li class="i-item">
-            <span>Posted on: </span>2021-09-08
+            <span>Posted on: </span>2023-01-30
         </li>
             <br>
-            <li class="i-item">
-                <span>Updated on: </span>2022-08-03
-            </li>
     </ul>
 </div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
       crossorigin="anonymous"></script>
@@ -89,189 +86,241 @@
       <div class="entry-content">
         <main>
         <div class="admonition abstract">
-<p>Mac/Linuxのopenコマンドについてまとめています．</p>
+<p>BigQueryに存在するテーブルをDataFrameとして取得する方法を解説しています．</p>
+<p>公式 Reference: <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank">pandas.read_gbq</a></p>
 </div>
 <div class="toc"><span class="toctitle">目次</span><ul>
-<li><a href="#_1">動作環境</a></li>
-<li><a href="#macopen">Macにおけるopenコマンド</a></li>
-<li><a href="#_2">よく使うオプション</a><ul>
-<li><a href="#-a">-a （開くアプリを選択）</a></li>
-<li><a href="#-n">-n （新しいインスタンスでアプリを開く）</a></li>
-<li><a href="#-r-finder">-R （指定したファイルを Finder で表示）</a></li>
+<li><a href="#_1">前提条件</a></li>
+<li><a href="#bigquerydataframe">BigQueryからDataFrameを取得する</a><ul>
+<li><a href="#_2">メソッドの主な引数</a><ul>
+<li><a href="#_3">使用例：インデックス指定とカラム順序の指定</a></li>
+<li><a href="#_4">使用例：高速化とプログレスバー表示</a></li>
 </ul>
 </li>
-<li><a href="#linuxopen">Linuxにおけるopenコマンド</a></li>
-<li><a href="#_3">ひとこと</a></li>
+</ul>
+</li>
+<li><a href="#_5">ひとこと</a></li>
 </ul>
 </div>
-<h2 id="_1">動作環境</h2>
-<ul>
-<li>macOS Monterey 12.5: <code>zsh</code></li>
-<li>Linux(Ubuntu 20.04 LTS): <code>bash</code></li>
-</ul>
-<h2 id="macopen">Macにおけるopenコマンド</h2>
-<p>Macではターミナル等で<code>open</code>コマンドを使用するとアプリやURL，ファイルを開いたりすることができます．<br>
-基本的には以下のように入力します．</p>
-<ul>
-<li><code>open [path or URL]</code></li>
-</ul>
-<p>例えば，カレントディレクトリをFinderで開く場合は以下のようなコマンドです.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
-<pre class="command-line" data-prompt="%" style="margin-bottom: 30px;">
-<code class="language-bash">
-open .
-</code>
+<h2 id="_1">前提条件</h2>
+<p>本記事で記載しているコードを実行するには<code>pandas</code>や<code>read_gbq</code>などのライブラリがインストールされている必要があります．</p>
+<h2 id="bigquerydataframe">BigQueryからDataFrameを取得する</h2>
+<p>pandasの<code>read_gbq</code>メソッドを使用して以下のように取得できます．</p>
+<pre><code class="language-python">
+import pandas as pd
+
+# BigQueryのパブリックデータ(67.58 KB)
+query = '''
+SELECT
+    County_of_Residence,
+    Births,
+    Ave_Age_of_Mother
+FROM
+    `bigquery-public-data.sdoh_cdc_wonder_natality.county_natality`
+LIMIT
+    10
+'''
+
+df = pd.read_gbq(query)
+</code></pre>
+<pre><code class="language-python">
+display(df.head(3))
+print(df.shape)
+</code></pre>
+<table class="dataframe middle" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>County_of_Residence</th>
+      <th>Births</th>
+      <th>Ave_Age_of_Mother</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Calhoun County, AL</td>
+      <td>1265</td>
+      <td>26.67</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Tulsa County, OK</td>
+      <td>8933</td>
+      <td>28.13</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Carroll County, GA</td>
+      <td>1540</td>
+      <td>27.20</td>
+    </tr>
+  </tbody>
+</table>
+<pre class="middle" style="margin-top: -30px;">
+(10, 3)
 </pre>
 
-<p>カレントディレクトリに<code>hoge.txt</code>がある場合，以下のコマンドで開くことができます.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
-<pre class="command-line" data-prompt="%" style="margin-bottom: 70px;">
-<code class="language-bash">
-open hoge.txt
-</code>
-</pre>
-
-<div class="admonition warning-box">
-<p class="admonition-title">ちなみに・・・</p>
-<p>アプリの起動やファイル展開などはSpotlightの方が基本的に早いです．<br>
-ただし，自動化コマンドなどを作成する場合には<code>open</code>コマンドを上手く使う必要があります．</p>
+<p>テーブルからデータを取得するためのクエリを用意し，それをメソッドに渡せばOKです．<br></p>
+<div class="admonition danger-box">
+<p class="admonition-title">注意</p>
+<p>BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
 </div>
-<details class="accordion-block" style="margin-top: -50px">
-<summary>Spotlightの詳細が知りたい方はこちらをクリック</summary>
-<div class="accordion-summary">
-<p>SpotlightはMac内のアプリ起動やファイル検索，展開を素早く行うことができるMacの標準機能です．基本的には以下のような流れで使用します．
-  </p>
-<ol style="margin-top: 20px;">
-      <li><kbd><kbd>Command</kbd>+<kbd>space</kbd></kbd>でSpotlightを呼び出す</li>
-      <li>検索窓にアプリ名やファイル名を打ち込んで<kbd><kbd>Return</kbd></kbd></li>
-      <li>検索結果に合致するアプリやファイル等が開かれる</li>
-  </ol>
-<p>管理人がよく使うのはアプリの起動です．<br>
-  Chromeを起動する際はSpotlightで<code>chr</code>くらいまで入力して<code>return</code>を押すとChromeを開いてくれます．</p>
-</div>
-</details>
-<h2 id="_2">よく使うオプション</h2>
-<h3 id="-a">-a （開くアプリを選択）</h3>
-<p><code>open -a [アプリ名]</code>のようにして実行します．</p>
-<p>下表にコマンドの実行例を記載しています．</p>
-<table id="normal">
+<h3 id="_2">メソッドの主な引数</h3>
+<p><code>read_gbq</code>メソッドには主に以下の引数があります．<br></p>
+<table id="large">
     <tr>
-        <td>コマンド</td>
-        <td>起動するアプリ</td>
+        <td><b>引数</b></td>
+        <td><b>データ型</b></td>
+        <td><b>説明</b></td>
     </tr>
     <tr>
-        <td><code>open -a calendar</code></td>
-        <td>カレンダー</td>
+        <td><code>project_id</code></td>
+        <td>str</td>
+        <td>アカウントのプロジェクトIDを指定．<br>
+        省略時はデフォルトのプロジェクトIDが指定される．</td>
     </tr>
     <tr>
-        <td><code>open -a notes</code></td>
-        <td>メモ</td>
+        <td><code>index_col</code></td>
+        <td>str</td>
+        <td>DataFrameのindexに指定するカラムを指定．</td>
     </tr>
     <tr>
-        <td><code>open -a mail</code></td>
-        <td>メール</td>
+        <td><code>col_order</code></td>
+        <td>list or str</td>
+        <td>DataFrameのカラム順序を指定．</td>
     </tr>
     <tr>
-        <td><code>open -a reminders</code></td>
-        <td>リマインダー</td>
+        <td><code>dialect</code></td>
+        <td>str</td>
+        <td>
+        以下のいずれかを指定可能．<br>
+        <ul style="margin: 0px 0px 3px 2px;">
+          <li>レガシーSQL: <code>dialect='legacy'</code></li>
+          <li>標準SQL: <code>dialect='standard'</code></li>
+        </ul>
+        デフォルトは<code>dialect='legacy'</code>
+    </td>
     </tr>
     <tr>
-        <td><code>open -a ‘google chrome’</code></td>
-        <td>Chrome</td>
+        <td><code>use_bqstorage_api</code></td>
+        <td>bool</td>
+        <td>BigQuery Storage API client を使用して結果を高速に取得できる．</td>
     </tr>
     <tr>
-        <td><code>open -a slack</code></td>
-        <td>Slack</td>
+        <td><code>progress_bar_type</code></td>
+        <td>str</td>
+        <td>tqdm package のプログレスバーを表示できる．</td>
     </tr>
 </table>
 
-<details class="accordion-block">
-<summary>アプリの名前を調べる方法についてはこちらをクリック</summary>
-<div class="accordion-summary">
-<p>コマンドに渡すアプリ名を調べる方法は以下のとおりです．
- </p>
-<ol style="margin-top: 20px;">
-     <li style="margin: 5px 0px 5px 0px;">Finderを起動して<kbd><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>a</kbd></kbd>を押す．</li>
-     <li style="margin: 5px 0px 5px 0px;">開いたアプリケーションディレクトリ内でアプリを探して右クリック．</li>
-     メニューの「パッケージの内容を表示」をクリック．<br>
-     <img src="/images/cli-c-open/cli-c-open_01.png" width="500" height="137">
-     <li style="margin: 5px 0px 5px 0px;"><code>Contents</code>ディレクトリに飛ぶので<code>Contents</code> &gt; <code>MacOS</code>と進む．</li>
-     <code>MacOS</code>ディレクトリ内にある実行ファイルの名前がアプリ名です．<br>
-     下図だと「App Store」です．なお，コマンドに渡す際は小文字でもOKです．<br>
-     <img src="/images/cli-c-open/cli-c-open_02.png" width="500" height="118">
- </ol>
-<div class="admonition warning-box">
-<p class="admonition-title">注意</p>
-<p>アプリ名に半角スペースが入っている場合はアプリ名を<code>'</code>（シングルクォテーション）で囲むことが必要です．<br>
-そのため「App Store」を開くコマンドは<code>open -a 'app store'</code>となります．</p>
-</div>
-<div style="margin: -70px 0px 0px 0px"></div>
-</div>
-</details>
-<p>以下のコマンドを実行するとSafariで<code>hoge.pdf</code>が開きます.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
-<pre class="command-line" data-prompt="%" style="margin-bottom: 30px;">
-<code class="language-bash">
-open -a Safari hoge.pdf
-</code>
-</pre>
-
-<p>ブラウザを指定してURLを開く場合は以下のように使います．</p>
-<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
-<code class="language-bash">
-open -a 'google chrome' https://www.google.com
-</code>
-</pre>
-
-<h3 id="-n">-n （新しいインスタンスでアプリを開く）</h3>
-<p>すでに起動しているアプリについて，別のウィンドウで開きたい場合に使えます．<br>
-以下のコマンドではChromeが別ウィンドウで起動します．</p>
-<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
-<code class="language-bash">
-open -n -a 'google chrome'
-</code>
-</pre>
-
-<h3 id="-r-finder">-R （指定したファイルを Finder で表示）</h3>
-<p>ファイルの場所をFinderで表示したい時に使えます．<br>
-以下の例では<code>hoge.txt</code>が存在する場所をFinderで表示してくれます．</p>
-<pre class="command-line" data-prompt="%" style="margin-bottom: 90px;">
-<code class="language-bash">
-open -R hoge.txt
-</code>
-</pre>
-
-<h2 id="linuxopen">Linuxにおけるopenコマンド</h2>
-<p>Linuxでは<code>xdg-open</code>コマンドがMacの<code>open</code>コマンドに相当します．</p>
+<div class="admonition info-box">
+<p class="admonition-title">公式ドキュメント</p>
+<p>その他の引数などは以下の公式ドキュメントを参照</p>
 <ul>
-<li><code>xdg-open [path or URL]</code></li>
+<li>公式 Reference: <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank">pandas.read_gbq</a></li>
 </ul>
-<p>基本の使い方は同様ですが，オプションがないので上記だけです．<br>
-コマンドが長いので<code>xdg-open</code>コマンドはやや使い勝手が悪い印象・・・</p>
-<p>ちなみに，Linuxのデフォルトブラウザ（Firefox）を開く場合は以下のコマンドでOKです．</p>
-<pre class="command-line" data-prompt="$" style="margin-bottom: 90px;">
-<code class="language-bash">
-firefox
-</code>
-</pre>
+</div>
+<h4 id="_3">使用例：インデックス指定とカラム順序の指定</h4>
+<p>以下は<code>index_col</code>と<code>col_order</code>を指定した例です．</p>
+<pre><code class="language-python">
+df = pd.read_gbq(query, index_col='County_of_Residence', col_order=['Ave_Age_of_Mother', 'Births'])
+df.head(3)
+</code></pre>
+<table class="dataframe middle" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Ave_Age_of_Mother</th>
+      <th>Births</th>
+    </tr>
+    <tr>
+      <th>County_of_Residence</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Calhoun County, AL</th>
+      <td>26.67</td>
+      <td>1265</td>
+    </tr>
+    <tr>
+      <th>Tulsa County, OK</th>
+      <td>28.13</td>
+      <td>8933</td>
+    </tr>
+    <tr>
+      <th>Carroll County, GA</th>
+      <td>27.20</td>
+      <td>1540</td>
+    </tr>
+  </tbody>
+</table>
 
-<h2 id="_3">ひとこと</h2>
-<p>本記事ではMac/Linuxにおける<code>open</code>コマンドの活用例について紹介しました．<br>
-<code>open</code>コマンドはその場で使うよりも自動化処理で使う方が便利です．</p>
-<p>自動化についてはコマンドを自作する記事があるので，興味のある方はぜひ見てくださいね．</p>
-<ul>
-<li><a href="https://revalab.net/auto-command">【Mac】自動化（自作）コマンドを３ステップで作成する</a></li>
-</ul>
+<p><code>index_col</code>で指定したカラムがDataFrameのindexになり<code>col_order</code>で指定した順序でカラムが表示されています．</p>
+<div class="admonition explanation">
+<p class="admonition-title">参考</p>
+<p><code>col_order</code>は取得するカラムをすべて指定しないとエラーになります．<br>
+また，可能ならクエリ側でカラム順序を指定した方がシンプルです．</p>
+</div>
+<h4 id="_4">使用例：高速化とプログレスバー表示</h4>
+<p>テーブルを高速に取得するには<code>use_bqstorage_api</code>を使用します．<br>
+また，以下ではテーブル取得の進捗状況を表示できる<code>progress_bar_type</code>も併せて指定しています．</p>
+<pre><code class="language-python">
+df = pd.read_gbq(query, use_bqstorage_api=True, progress_bar_type='tqdm')
+df.head(3)
+</code></pre>
+<pre>
+Downloading: 100%|<span style="color:rgb(0, 187, 0)">██████████</span>|
+</pre>
+<table class="dataframe middle" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>County_of_Residence</th>
+      <th>Births</th>
+      <th>Ave_Age_of_Mother</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Calhoun County, AL</td>
+      <td>1265</td>
+      <td>26.67</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Tulsa County, OK</td>
+      <td>8933</td>
+      <td>28.13</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Carroll County, GA</td>
+      <td>1540</td>
+      <td>27.20</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>上記で取得しているテーブルは非常に小さいので<code>use_bqstorage_api</code>を指定しなくてもストレスなくデータを取得できますが，大きいテーブルを取得する際は指定をおすすめします.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<h2 id="_5">ひとこと</h2>
+<p>BigQueryからテーブルをDataFrameとして取得してあれこれする場合には<code>read_gbq</code>が便利に使えますね．<br>
+テーブルのスキーマなどの情報を得たい場合は以下の記事もご覧ください．</p>
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
+<p><a href="https://www.tecrab.com/articles/python-bqc-basic.html" rel="noopener noreferrer" target="_blank">【Python】BigQueryのテーブル/テーブルスキーマを取得する方法</a></p>
+</div>
 <div style="margin-bottom: 100px;"></div>
 
 <div class="footnote">
 <hr>
 <ol>
 <li id="fn:1">
-<p>Finderが起動してGUIで確認できます．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p>Mac標準アプリのテキストエディットで<code>cli-c-open.txt</code>が開きます．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-<li id="fn:3">
-<p><code>open hoge.pdf</code>とすると通常プレビューでPDFが展開されます．&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>指定した方が圧倒的に高速化されるので，<code>use_bqstorage_api</code>が使える状況であれば積極的に使うとストレスがなくなります．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
@@ -292,10 +341,16 @@ firefox
 <!-- /.entry-content -->
       <!-- <footer class="post-info text-muted">
         <button type="button" class="btn btn-default">          
-          <a href="https://www.tecrab.com/category/mac-linux.html"><div class="fa fa-lg fa-folder-open"></div> Mac-Linux</a>
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
         </button>
         <button type="button" class="btn btn-default">
-          <a href="https://www.tecrab.com/tag/zsh.html"><div class="fa fa-lg fa-tag"></div> zsh</a>
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/pandas.html"><div class="fa fa-lg fa-tag"></div> pandas</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/bigquery.html"><div class="fa fa-lg fa-tag"></div> BigQuery</a>
         </button>
       </footer> -->
       <!-- /.post-info -->

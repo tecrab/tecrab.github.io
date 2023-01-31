@@ -203,7 +203,7 @@ df.head(3)
 </thead><tr>
 <tr>
 <td>bqstorage_client</td>
-<td>BigQuery Storage API client を使用して高速に結果を取得する</td>
+<td>BigQuery Storage API client を使用して結果を高速に取得できる</td>
 </tr>
 <tr>
     <td>dtypes</td>
@@ -243,15 +243,15 @@ dtype: object
 <p><code>bqstorage_client</code>にBigQuery Storage API clientを指定すると高速にテーブルを取得できると公式ドキュメントに記載がありますが，管理人の手元では指定の有無に関わらず取得速度に差がありませんでした．<br>
 取得するデータが大きい場合などでは効果があるかもしれません．<br>
 （こうしたら早くなるなど，情報をお持ちの方がいらっしゃればご連絡いただけると嬉しいです．<a href="https://www.tecrab.com/pages/contact.html" rel="noopener noreferrer" target="_blank">問い合わせフォーム</a> or <a href="https://twitter.com/tecrab_blog" rel="noopener noreferrer" target="_blank">Twitter</a>）</p>
-<p>なお，以下「参考：BigQueryからのテーブル取得」で紹介しているpandasの<code>read_gbq</code>メソッドについては引数<code>use_bqstorage_api=True</code>とするとテーブルの取得を圧倒的に高速化できます．</p>
+<p>なお，以下「関連記事」で紹介しているpandasの<code>read_gbq</code>メソッドについては引数<code>use_bqstorage_api=True</code>とするとテーブルの取得を圧倒的に高速化できます．</p>
 </div>
 </details>
-<div class="admonition info-box">
-<p class="admonition-title">参考：BigQueryからのテーブル取得</p>
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
 <p>BigQueryからテーブルをDataFrameとして取得するにはpandasの<code>read_gbq</code>メソッドを使う方法もあります．<br>
 テーブルデータをDataFrameとして扱いたい場合はこちらの方がシンプルで便利です．</p>
 <ul>
-<li>公式 Reference: <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank">pandas.read_gbq</a></li>
+<li><a href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="noopener noreferrer" target="_blank">【pandas】BigQueryのデータをDataFrameで取得する方法</a></li>
 </ul>
 </div>
 <h2 id="_2">テーブルのスキーマに関する情報を取得する</h2>
@@ -360,6 +360,10 @@ cjr.total_rows
 <h2 id="_10">ひとこと</h2>
 <p>BigQuery APIクライアントライブラリを使うとPythonで色々な情報を取得できますね．<br>
 テーブルを取得するだけならpandasの<code>read_gbq</code>をよく使います．</p>
+<div class="admonition explanation">
+<p class="admonition-title">関連記事</p>
+<p><a href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="noopener noreferrer" target="_blank">【pandas】BigQueryのデータをDataFrameで取得する方法</a></p>
+</div>
 <div style="margin-bottom: 100px;"></div>
 
 <div class="footnote">
@@ -468,7 +472,7 @@ cjr.total_rows
                 <a class="category-design" href="https://www.tecrab.com/tag/automation.html"> 自動化  <span class="category-design">(1)</span></a>
             </li>
             <li class="category-design">
-                <a class="category-design" href="https://www.tecrab.com/tag/bigquery.html"> BigQuery  <span class="category-design">(1)</span></a>
+                <a class="category-design" href="https://www.tecrab.com/tag/bigquery.html"> BigQuery  <span class="category-design">(2)</span></a>
             </li>
             <li class="category-design">
                 <a class="category-design" href="https://www.tecrab.com/tag/docker.html"> Docker  <span class="category-design">(1)</span></a>
@@ -495,7 +499,7 @@ cjr.total_rows
                 <a class="category-design" href="https://www.tecrab.com/tag/numbers.html"> Numbers  <span class="category-design">(2)</span></a>
             </li>
             <li class="category-design">
-                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(10)</span></a>
+                <a class="category-design" href="https://www.tecrab.com/tag/pandas.html"> pandas  <span class="category-design">(11)</span></a>
             </li>
             <li class="category-design">
                 <a class="category-design" href="https://www.tecrab.com/tag/pelican.html"> pelican  <span class="category-design">(1)</span></a>
@@ -504,7 +508,7 @@ cjr.total_rows
                 <a class="category-design" href="https://www.tecrab.com/tag/postgresql.html"> PostgreSQL  <span class="category-design">(5)</span></a>
             </li>
             <li class="category-design">
-                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(27)</span></a>
+                <a class="category-design" href="https://www.tecrab.com/tag/python.html"> Python  <span class="category-design">(28)</span></a>
             </li>
             <li class="category-design">
                 <a class="category-design" href="https://www.tecrab.com/tag/pytorch.html"> PyTorch  <span class="category-design">(1)</span></a>

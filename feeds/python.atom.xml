@@ -1,5 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Python</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/python.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-01-24T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】BigQueryのテーブル/テーブルスキーマを取得する方法</title><link href="https://www.tecrab.com/articles/python-bqc-basic.html" rel="alternate"></link><published>2023-01-24T00:00:00+09:00</published><updated>2023-01-24T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-24:/articles/python-bqc-basic.html</id><summary type="html">&lt;p&gt;BigQueryのPythonクライアントライブラリでテーブル情報を取得する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Python</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/python.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-01-30T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【pandas】BigQueryのデータをDataFrameで取得する方法</title><link href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="alternate"></link><published>2023-01-30T00:00:00+09:00</published><updated>2023-01-30T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-30:/articles/pandas-read-gbq-basic.html</id><summary type="html">&lt;p&gt;BigQueryに存在するテーブルをpandas DataFrameとして取得する方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;BigQueryに存在するテーブルをDataFrameとして取得する方法を解説しています．&lt;/p&gt;
+&lt;p&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank"&gt;pandas.read_gbq&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;前提条件&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#bigquerydataframe"&gt;BigQueryからDataFrameを取得する&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;メソッドの主な引数&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;使用例：インデックス指定とカラム順序の指定&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;使用例：高速化とプログレスバー表示&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;前提条件&lt;/h2&gt;
+&lt;p&gt;本記事で記載しているコードを実行するには&lt;code&gt;pandas&lt;/code&gt;や&lt;code&gt;read_gbq&lt;/code&gt;などのライブラリがインストールされている必要があります．&lt;/p&gt;
+&lt;h2 id="bigquerydataframe"&gt;BigQueryからDataFrameを取得する&lt;/h2&gt;
+&lt;p&gt;pandasの&lt;code&gt;read_gbq&lt;/code&gt;メソッドを使用して以下のように取得できます．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+# BigQueryのパブリックデータ(67.58 KB)
+query = '''
+SELECT
+    County_of_Residence,
+    Births,
+    Ave_Age_of_Mother
+FROM
+    `bigquery-public-data.sdoh_cdc_wonder_natality.county_natality`
+LIMIT
+    10
+'''
+
+df = pd.read_gbq(query)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+display(df.head(3))
+print(df.shape)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;County_of_Residence&lt;/th&gt;
+      &lt;th&gt;Births&lt;/th&gt;
+      &lt;th&gt;Ave_Age_of_Mother&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;Calhoun County, AL&lt;/td&gt;
+      &lt;td&gt;1265&lt;/td&gt;
+      &lt;td&gt;26.67&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;Tulsa County, OK&lt;/td&gt;
+      &lt;td&gt;8933&lt;/td&gt;
+      &lt;td&gt;28.13&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;Carroll County, GA&lt;/td&gt;
+      &lt;td&gt;1540&lt;/td&gt;
+      &lt;td&gt;27.20&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class="middle" style="margin-top: -30px;"&gt;
+(10, 3)
+&lt;/pre&gt;
+
+&lt;p&gt;テーブルからデータを取得するためのクエリを用意し，それをメソッドに渡せばOKです．&lt;br&gt;&lt;/p&gt;
+&lt;div class="admonition danger-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.&lt;sup id="fnref2:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id="_2"&gt;メソッドの主な引数&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;read_gbq&lt;/code&gt;メソッドには主に以下の引数があります．&lt;br&gt;&lt;/p&gt;
+&lt;table id="large"&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;b&gt;引数&lt;/b&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;データ型&lt;/b&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;説明&lt;/b&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;project_id&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;str&lt;/td&gt;
+        &lt;td&gt;アカウントのプロジェクトIDを指定．&lt;br&gt;
+        省略時はデフォルトのプロジェクトIDが指定される．&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;index_col&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;str&lt;/td&gt;
+        &lt;td&gt;DataFrameのindexに指定するカラムを指定．&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;col_order&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;list or str&lt;/td&gt;
+        &lt;td&gt;DataFrameのカラム順序を指定．&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;dialect&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;str&lt;/td&gt;
+        &lt;td&gt;
+        以下のいずれかを指定可能．&lt;br&gt;
+        &lt;ul style="margin: 0px 0px 3px 2px;"&gt;
+          &lt;li&gt;レガシーSQL: &lt;code&gt;dialect='legacy'&lt;/code&gt;&lt;/li&gt;
+          &lt;li&gt;標準SQL: &lt;code&gt;dialect='standard'&lt;/code&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+        デフォルトは&lt;code&gt;dialect='legacy'&lt;/code&gt;
+    &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;use_bqstorage_api&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;bool&lt;/td&gt;
+        &lt;td&gt;BigQuery Storage API client を使用して結果を高速に取得できる．&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;code&gt;progress_bar_type&lt;/code&gt;&lt;/td&gt;
+        &lt;td&gt;str&lt;/td&gt;
+        &lt;td&gt;tqdm package のプログレスバーを表示できる．&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;公式ドキュメント&lt;/p&gt;
+&lt;p&gt;その他の引数などは以下の公式ドキュメントを参照&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank"&gt;pandas.read_gbq&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h4 id="_3"&gt;使用例：インデックス指定とカラム順序の指定&lt;/h4&gt;
+&lt;p&gt;以下は&lt;code&gt;index_col&lt;/code&gt;と&lt;code&gt;col_order&lt;/code&gt;を指定した例です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df = pd.read_gbq(query, index_col='County_of_Residence', col_order=['Ave_Age_of_Mother', 'Births'])
+df.head(3)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Ave_Age_of_Mother&lt;/th&gt;
+      &lt;th&gt;Births&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;County_of_Residence&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Calhoun County, AL&lt;/th&gt;
+      &lt;td&gt;26.67&lt;/td&gt;
+      &lt;td&gt;1265&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Tulsa County, OK&lt;/th&gt;
+      &lt;td&gt;28.13&lt;/td&gt;
+      &lt;td&gt;8933&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Carroll County, GA&lt;/th&gt;
+      &lt;td&gt;27.20&lt;/td&gt;
+      &lt;td&gt;1540&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code&gt;index_col&lt;/code&gt;で指定したカラムがDataFrameのindexになり&lt;code&gt;col_order&lt;/code&gt;で指定した順序でカラムが表示されています．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;col_order&lt;/code&gt;は取得するカラムをすべて指定しないとエラーになります．&lt;br&gt;
+また，可能ならクエリ側でカラム順序を指定した方がシンプルです．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h4 id="_4"&gt;使用例：高速化とプログレスバー表示&lt;/h4&gt;
+&lt;p&gt;テーブルを高速に取得するには&lt;code&gt;use_bqstorage_api&lt;/code&gt;を使用します．&lt;br&gt;
+また，以下ではテーブル取得の進捗状況を表示できる&lt;code&gt;progress_bar_type&lt;/code&gt;も併せて指定しています．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df = pd.read_gbq(query, use_bqstorage_api=True, progress_bar_type='tqdm')
+df.head(3)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;
+Downloading: 100%|&lt;span style="color:rgb(0, 187, 0)"&gt;██████████&lt;/span&gt;|
+&lt;/pre&gt;
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;County_of_Residence&lt;/th&gt;
+      &lt;th&gt;Births&lt;/th&gt;
+      &lt;th&gt;Ave_Age_of_Mother&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;Calhoun County, AL&lt;/td&gt;
+      &lt;td&gt;1265&lt;/td&gt;
+      &lt;td&gt;26.67&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;Tulsa County, OK&lt;/td&gt;
+      &lt;td&gt;8933&lt;/td&gt;
+      &lt;td&gt;28.13&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;Carroll County, GA&lt;/td&gt;
+      &lt;td&gt;1540&lt;/td&gt;
+      &lt;td&gt;27.20&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;上記で取得しているテーブルは非常に小さいので&lt;code&gt;use_bqstorage_api&lt;/code&gt;を指定しなくてもストレスなくデータを取得できますが，大きいテーブルを取得する際は指定をおすすめします.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;BigQueryからテーブルをDataFrameとして取得してあれこれする場合には&lt;code&gt;read_gbq&lt;/code&gt;が便利に使えますね．&lt;br&gt;
+テーブルのスキーマなどの情報を得たい場合は以下の記事もご覧ください．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.tecrab.com/articles/python-bqc-basic.html" rel="noopener noreferrer" target="_blank"&gt;【Python】BigQueryのテーブル/テーブルスキーマを取得する方法&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;指定した方が圧倒的に高速化されるので，&lt;code&gt;use_bqstorage_api&lt;/code&gt;が使える状況であれば積極的に使うとストレスがなくなります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category><category term="BigQuery"></category></entry><entry><title>【Python】BigQueryのテーブル/テーブルスキーマを取得する方法</title><link href="https://www.tecrab.com/articles/python-bqc-basic.html" rel="alternate"></link><published>2023-01-24T00:00:00+09:00</published><updated>2023-01-24T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-24:/articles/python-bqc-basic.html</id><summary type="html">&lt;p&gt;BigQueryのPythonクライアントライブラリでテーブル情報を取得する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;本記事ではPythonを使用した以下の操作を解説しています．
 &lt;ul style="margin: -5px 0px 0px 15px;"&gt;
     &lt;li&gt;BigQueryからテーブルをpandas DataFrameとして取得する&lt;/li&gt;
@@ -117,7 +355,7 @@ df.head(3)
 &lt;/thead&gt;&lt;tr&gt;
 &lt;tr&gt;
 &lt;td&gt;bqstorage_client&lt;/td&gt;
-&lt;td&gt;BigQuery Storage API client を使用して高速に結果を取得する&lt;/td&gt;
+&lt;td&gt;BigQuery Storage API client を使用して結果を高速に取得できる&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
     &lt;td&gt;dtypes&lt;/td&gt;
@@ -157,15 +395,15 @@ dtype: object
 &lt;p&gt;&lt;code&gt;bqstorage_client&lt;/code&gt;にBigQuery Storage API clientを指定すると高速にテーブルを取得できると公式ドキュメントに記載がありますが，管理人の手元では指定の有無に関わらず取得速度に差がありませんでした．&lt;br&gt;
 取得するデータが大きい場合などでは効果があるかもしれません．&lt;br&gt;
 （こうしたら早くなるなど，情報をお持ちの方がいらっしゃればご連絡いただけると嬉しいです．&lt;a href="https://www.tecrab.com/pages/contact.html" rel="noopener noreferrer" target="_blank"&gt;問い合わせフォーム&lt;/a&gt; or &lt;a href="https://twitter.com/tecrab_blog" rel="noopener noreferrer" target="_blank"&gt;Twitter&lt;/a&gt;）&lt;/p&gt;
-&lt;p&gt;なお，以下「参考：BigQueryからのテーブル取得」で紹介しているpandasの&lt;code&gt;read_gbq&lt;/code&gt;メソッドについては引数&lt;code&gt;use_bqstorage_api=True&lt;/code&gt;とするとテーブルの取得を圧倒的に高速化できます．&lt;/p&gt;
+&lt;p&gt;なお，以下「関連記事」で紹介しているpandasの&lt;code&gt;read_gbq&lt;/code&gt;メソッドについては引数&lt;code&gt;use_bqstorage_api=True&lt;/code&gt;とするとテーブルの取得を圧倒的に高速化できます．&lt;/p&gt;
 &lt;/div&gt;
 &lt;/details&gt;
-&lt;div class="admonition info-box"&gt;
-&lt;p class="admonition-title"&gt;参考：BigQueryからのテーブル取得&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
 &lt;p&gt;BigQueryからテーブルをDataFrameとして取得するにはpandasの&lt;code&gt;read_gbq&lt;/code&gt;メソッドを使う方法もあります．&lt;br&gt;
 テーブルデータをDataFrameとして扱いたい場合はこちらの方がシンプルで便利です．&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank"&gt;pandas.read_gbq&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="noopener noreferrer" target="_blank"&gt;【pandas】BigQueryのデータをDataFrameで取得する方法&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 &lt;h2 id="_2"&gt;テーブルのスキーマに関する情報を取得する&lt;/h2&gt;
@@ -274,6 +512,10 @@ cjr.total_rows
 &lt;h2 id="_10"&gt;ひとこと&lt;/h2&gt;
 &lt;p&gt;BigQuery APIクライアントライブラリを使うとPythonで色々な情報を取得できますね．&lt;br&gt;
 テーブルを取得するだけならpandasの&lt;code&gt;read_gbq&lt;/code&gt;をよく使います．&lt;/p&gt;
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;関連記事&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="noopener noreferrer" target="_blank"&gt;【pandas】BigQueryのデータをDataFrameで取得する方法&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
 
 &lt;div class="footnote"&gt;

@@ -710,6 +710,36 @@ table#normal td {
   border: solid 1px #303030;
 }
 
+/* 大きい表のデザイン */
+table#large {
+  width: 95% !important;
+  border-collapse: collapse;
+  margin-bottom: 50px;
+}
+
+table#large tr:nth-child(1) {
+  background: #caeae7;
+}
+
+table#large td:nth-last-child(1) {
+  width: 60% !important;
+}
+
+table#large th {
+  font-size: 14px !important;
+  text-align: left;
+  padding: 5px 10px 5px 10px;
+  border: solid 1px #303030;
+}
+
+table#large td {
+  font-size: 15px !important;
+  text-align: left;
+  padding: 8px 8px 8px 8px;
+  border: solid 1px #303030;
+}
+
+
 /* dataframeの出力表 */
 div.nb-output {
   margin-bottom: 90px;
