@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>てっくらぶ - 正規表現</title>
-    <meta name="description" content="PythonやPC関連の情報をまとめているブログです">
+    <title>【Python】リスト内のDataFrameを並び替える（ソートする）方法 - てっくらぶ</title>
+    <meta name="description" content="リスト内のDataFrameを並び替える方法を解説しています．">
 
 
     <!-- defer-js -->
@@ -49,42 +49,257 @@
     
     <div id="page">
       <article id="main-content">
-    <section id="content" class="content">
-      <ol class="breadcrumb">
-        <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
-        <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
-        <li class="active">正規表現</li>
-      </ol>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2023-02-08</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/python-reg-comma-x-numbers.html" rel="bookmark" title="Permalink to 【Python】カンマのある数値・X桁の数値だけを取得する正規表現" class="article-title">【Python】カンマのある数値・X桁の数値だけを取得する正規表現</a>
-            <br/>
-            カンマのある数値・X桁の数値だけを取得する方法について解説しています．
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2022-12-14</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/python-reg-replace-end.html" rel="bookmark" title="Permalink to 【Python】一番最後に出現する文字のみを置換する方法" class="article-title">【Python】一番最後に出現する文字のみを置換する方法</a>
-            <br/>
-            最後にマッチする文字列を正規表現で置換する方法です．
-          </p>
-        </div>
-      </div>
-      <div class="pager">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">Python</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Python】リスト内のDataFrameを並び替える（ソートする）方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/python.html">Python</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/pandas.html">pandas</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2023-02-10
+        </li>
+            <br>
+    </ul>
+</div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="2331400317"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+<!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事ではリストに入ったDataFrameの順序を並び替える方法について紹介しています．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">事前準備</a><ul>
+<li><a href="#dataframe">リストに入ったDataFrameを並び替える</a></li>
+</ul>
+</li>
+<li><a href="#_2">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">事前準備</h2>
+<p>まずはサンプルのDataFrameを３つ作成し，順不同でリストに格納します．</p>
+<pre><code class="language-python">
+import pandas as pd
+
+c = ['get_date', 'col_1']
+df1 = pd.DataFrame([['2023-02-01', 'アジ'], ['2023-02-01', 'サバ']], columns=c)
+df2 = pd.DataFrame([['2023-02-02', 'ホタテ'], ['2023-02-02', 'アサリ']], columns=c)
+df3 = pd.DataFrame([['2023-02-03', 'エビ'], ['2023-02-03', 'カニ']], columns=c)
+
+# 各DataFrameを順不同でリストに格納
+df_l = [df3, df1, df2]
+</code></pre>
+
+<h3 id="dataframe">リストに入ったDataFrameを並び替える</h3>
+<p>リストに格納したDataFrameを順番に表示してみると以下のようになります．</p>
+<pre><code class="language-python">
+for df in df_l:
+    display(df)
+</code></pre>
+<table class="dataframe" border="1" style="margin-bottom: 20px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>get_date</th>
+      <th>col_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-02-03</td>
+      <td>エビ</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-02-03</td>
+      <td>カニ</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="dataframe" border="1" style="margin-bottom: 20px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>get_date</th>
+      <th>col_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-02-01</td>
+      <td>アジ</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-02-01</td>
+      <td>サバ</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>get_date</th>
+      <th>col_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-02-02</td>
+      <td>ホタテ</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-02-02</td>
+      <td>アサリ</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>次にリスト内のDataFrameを並び替えて順に表示してみましょう．</p>
+<pre><code class="language-python">
+df_ls = sorted(df_l, key=lambda x: x['get_date'][0])
+
+for df in df_ls:
+    display(df)
+</code></pre>
+
+<table class="dataframe" border="1" style="margin-bottom: 20px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>get_date</th>
+      <th>col_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-02-01</td>
+      <td>アジ</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-02-01</td>
+      <td>サバ</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="dataframe" border="1" style="margin-bottom: 20px;">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>get_date</th>
+      <th>col_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-02-02</td>
+      <td>ホタテ</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-02-02</td>
+      <td>アサリ</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="dataframe middle" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>get_date</th>
+      <th>col_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-02-03</td>
+      <td>エビ</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-02-03</td>
+      <td>カニ</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="admonition explanation">
+<p class="admonition-title">解説</p>
+<p>上記のコードでは，Pythonの組み込み関数<code>sorted</code>を使用して並び替えをした上で，DataFrameを順番に表示しています．<br>
+<code>sorted</code>の引数<code>key</code>にlambda関数を使うことで，リストの各DataFrameにおけるget_dateの最初の値を基準に並び替えを行うように指定しています．</p>
+</div>
+<div style="margin-bottom: -50px;"></div>
+
+<div class="admonition danger-box">
+<p class="admonition-title">注意</p>
+<p>（当然ですが）この方法は各DataFrameのget_date列が同じ値でないと使えません．<br>
+日付や何らかの種類でまとまったデータの列を基準にすることが必要です．</p>
+</div>
+<h2 id="_2">ひとこと</h2>
+<p>日付ごとにまとまったデータを扱う際に使用しました．<br>
+あまり使い所はないですが，何かの役に立てば幸いです．</p>
+<div style="margin-bottom: 100px;"></div>
+        </main>
       </div>
 
-      <!-- オリジナル -->
-      <!--  -->    </section>
-    <!-- content -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-format="autorelaxed"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="6953171609"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/python.html"><div class="fa fa-lg fa-folder-open"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/pandas.html"><div class="fa fa-lg fa-tag"></div> pandas</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
       
       </article>
 

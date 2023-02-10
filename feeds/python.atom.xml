@@ -1,5 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Python</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/python.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-01-30T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【pandas】BigQueryのデータをDataFrameで取得する方法</title><link href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="alternate"></link><published>2023-01-30T00:00:00+09:00</published><updated>2023-01-30T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-30:/articles/pandas-read-gbq-basic.html</id><summary type="html">&lt;p&gt;BigQueryに存在するテーブルをpandas DataFrameとして取得する方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - Python</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/python.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-02-10T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】リスト内のDataFrameを並び替える（ソートする）方法</title><link href="https://www.tecrab.com/articles/dataframe-list-sort.html" rel="alternate"></link><published>2023-02-10T00:00:00+09:00</published><updated>2023-02-10T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-02-10:/articles/dataframe-list-sort.html</id><summary type="html">&lt;p&gt;リスト内のDataFrameを並び替える方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではリストに入ったDataFrameの順序を並び替える方法について紹介しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#dataframe"&gt;リストに入ったDataFrameを並び替える&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;まずはサンプルのDataFrameを３つ作成し，順不同でリストに格納します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+import pandas as pd
+
+c = ['get_date', 'col_1']
+df1 = pd.DataFrame([['2023-02-01', 'アジ'], ['2023-02-01', 'サバ']], columns=c)
+df2 = pd.DataFrame([['2023-02-02', 'ホタテ'], ['2023-02-02', 'アサリ']], columns=c)
+df3 = pd.DataFrame([['2023-02-03', 'エビ'], ['2023-02-03', 'カニ']], columns=c)
+
+# 各DataFrameを順不同でリストに格納
+df_l = [df3, df1, df2]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="dataframe"&gt;リストに入ったDataFrameを並び替える&lt;/h3&gt;
+&lt;p&gt;リストに格納したDataFrameを順番に表示してみると以下のようになります．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+for df in df_l:
+    display(df)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;table class="dataframe" border="1" style="margin-bottom: 20px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;get_date&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2023-02-03&lt;/td&gt;
+      &lt;td&gt;エビ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2023-02-03&lt;/td&gt;
+      &lt;td&gt;カニ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 20px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;get_date&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2023-02-01&lt;/td&gt;
+      &lt;td&gt;アジ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2023-02-01&lt;/td&gt;
+      &lt;td&gt;サバ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="dataframe" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;get_date&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2023-02-02&lt;/td&gt;
+      &lt;td&gt;ホタテ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2023-02-02&lt;/td&gt;
+      &lt;td&gt;アサリ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;次にリスト内のDataFrameを並び替えて順に表示してみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+df_ls = sorted(df_l, key=lambda x: x['get_date'][0])
+
+for df in df_ls:
+    display(df)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 20px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;get_date&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2023-02-01&lt;/td&gt;
+      &lt;td&gt;アジ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2023-02-01&lt;/td&gt;
+      &lt;td&gt;サバ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="dataframe" border="1" style="margin-bottom: 20px;"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;get_date&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2023-02-02&lt;/td&gt;
+      &lt;td&gt;ホタテ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2023-02-02&lt;/td&gt;
+      &lt;td&gt;アサリ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="dataframe middle" border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;get_date&lt;/th&gt;
+      &lt;th&gt;col_1&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2023-02-03&lt;/td&gt;
+      &lt;td&gt;エビ&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2023-02-03&lt;/td&gt;
+      &lt;td&gt;カニ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class="admonition explanation"&gt;
+&lt;p class="admonition-title"&gt;解説&lt;/p&gt;
+&lt;p&gt;上記のコードでは，Pythonの組み込み関数&lt;code&gt;sorted&lt;/code&gt;を使用して並び替えをした上で，DataFrameを順番に表示しています．&lt;br&gt;
+&lt;code&gt;sorted&lt;/code&gt;の引数&lt;code&gt;key&lt;/code&gt;にlambda関数を使うことで，リストの各DataFrameにおけるget_dateの最初の値を基準に並び替えを行うように指定しています．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: -50px;"&gt;&lt;/div&gt;
+
+&lt;div class="admonition danger-box"&gt;
+&lt;p class="admonition-title"&gt;注意&lt;/p&gt;
+&lt;p&gt;（当然ですが）この方法は各DataFrameのget_date列が同じ値でないと使えません．&lt;br&gt;
+日付や何らかの種類でまとまったデータの列を基準にすることが必要です．&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_2"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;日付ごとにまとまったデータを扱う際に使用しました．&lt;br&gt;
+あまり使い所はないですが，何かの役に立てば幸いです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category></entry><entry><title>【pandas】BigQueryのデータをDataFrameで取得する方法</title><link href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html" rel="alternate"></link><published>2023-01-30T00:00:00+09:00</published><updated>2023-01-30T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-30:/articles/pandas-read-gbq-basic.html</id><summary type="html">&lt;p&gt;BigQueryに存在するテーブルをpandas DataFrameとして取得する方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;BigQueryに存在するテーブルをDataFrameとして取得する方法を解説しています．&lt;/p&gt;
 &lt;p&gt;公式 Reference: &lt;a href="https://pandas.pydata.org/docs/reference/api/pandas.read_gbq.html" rel="noopener noreferrer" target="_blank"&gt;pandas.read_gbq&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
