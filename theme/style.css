@@ -240,12 +240,12 @@ div.admonition div.code-r-toolbar {
 }
 
 div.admonition pre.in-box {
-  margin: 15px 15px 10px 18px;
+  margin: 0px 15px 10px 18px;
   padding: 9.5px;
 }
 
 div.admonition pre.in-box-end {
-  margin: 15px 15px 30px 18px;
+  margin: 0px 15px 30px 18px;
   padding: 9.5px;
 }
 

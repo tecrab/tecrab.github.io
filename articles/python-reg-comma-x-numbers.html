@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>てっくらぶ - Keynote</title>
-    <meta name="description" content="PythonやPC関連の情報をまとめているブログです">
+    <title>【Python】カンマのある数値・X桁の数値だけを取得する正規表現 - てっくらぶ</title>
+    <meta name="description" content="価格などの数値だけを取得する方法について解説しています．">
 
 
     <!-- defer-js -->
@@ -49,42 +49,241 @@
     
     <div id="page">
       <article id="main-content">
-    <section id="content" class="content">
-      <ol class="breadcrumb">
-        <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
-        <li><a href="https://www.tecrab.com/tags.html">Tags</a><span style="margin: 0px 10px">/</span></li>
-        <li class="active">Keynote</li>
-      </ol>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2021-11-04</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/mac-keynote-slidesize.html" rel="bookmark" title="Permalink to 【Mac Keynote】スライドのサイズ（比率）を変更する方法" class="article-title">【Mac Keynote】スライドのサイズ（比率）を変更する方法</a>
-            <br/>
-            Appleのプレゼンソフト「Keynote」でスライドのサイズ（比率）を変更する方法です．
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <span class="locale_date">2021-07-20</span>
-        </div>
-        <div class="col-sm-9">
-          <p>
-            <a href="https://www.tecrab.com/articles/mac-keynote-cellsize.html" rel="bookmark" title="Permalink to 【Mac Keynote】表のセルのサイズ（高さ）を揃える方法" class="article-title">【Mac Keynote】表のセルのサイズ（高さ）を揃える方法</a>
-            <br/>
-            Appleのプレゼンソフト「Keynote」で挿入した表のサイズ（高さ）を揃える方法です．
-          </p>
-        </div>
-      </div>
-      <div class="pager">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">正規表現</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Python】カンマのある数値・X桁の数値だけを取得する正規表現
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/regex.html">正規表現</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/python.html">Python</a> <a href="https://www.tecrab.com/tag/regex.html">正規表現</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2023-02-08
+        </li>
+            <br>
+    </ul>
+</div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="2331400317"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+<!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事では文字列から数値/数値だけを取得する正規表現をご紹介します．</p>
+<ul>
+<li>カンマのある数値（価格など）から数値をカンマ付きで取得</li>
+<li>カンマを除いた数値だけを取得</li>
+<li>X桁の数値だけを取得</li>
+</ul>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">事前準備</a><ul>
+<li><a href="#_2">正規表現を使用して数値部分を抽出</a></li>
+<li><a href="#_3">カンマを除く場合</a></li>
+<li><a href="#_4">数値部分が複数ある場合の取得方法</a></li>
+<li><a href="#_5">特定の桁数の数値を取得する方法</a></li>
+</ul>
+</li>
+<li><a href="#_6">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">事前準備</h2>
+<p>今回は正規表現を使用するのでPythonの標準ライブラリの<code>re</code>を<code>import</code>します．<br></p>
+<pre class="end"><code class="language-python">
+import re
+</code></pre>
+
+<h3 id="_2">正規表現を使用して数値部分を抽出</h3>
+<p>まずはコンマのある数値部分を抽出する方法です．<br>
+「1,000,000円」のような文字列からコンマ＋数値部分を抽出します．</p>
+<pre><code class="language-python">
+s1 = '1,000,000円'
+s1_r1 = re.search(r'[\d,]+', s1).group()
+print(s1_r1)
+</code></pre>
+<pre class="middle">
+1,000,000
+</pre>
+
+<p>上記は正規表現を使って<code>,</code>を含めて数値を取得しています．<br></p>
+<h3 id="_3">カンマを除く場合</h3>
+<p>前項で取得した文字から<code>,</code>を除きたい場合は以下のようにします．</p>
+<pre><code class="language-python">
+s1_r2 = s1_r1.replace(',', '')
+print(s1_r2)
+</code></pre>
+<pre class="middle">
+1000000
+</pre>
+<p>Pythonの組み込みメソッドの<code>replace</code>を使用してコンマを置換しています．<br>
+<code>,</code>を取り除くと組み込みの<code>int()</code>などを使用して数値に変換することができます.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<div style="margin-bottom: 50px;"></div>
+
+<p>なお，文字列の形式が統一されている場合は以下のような方法でも可能です．</p>
+<pre><code class="language-python">
+s1 = '1,000,000円'
+
+s1_r3 = s1[:-1].replace(',', '')
+print(s1_r3)
+</code></pre>
+<pre class="middle">
+1000000
+</pre>
+
+<p>上記の方法は変換対象の文字列の最後が必ず「円」で終わるという前提で成り立ちます．<br>
+桁数の増減や<code>,</code>がない場合は許容されますが「円」がないと適切に数値が取れません．<br>
+以下の例を見てみましょう．</p>
+<pre><code class="language-python">
+# 数値を取得したい文字列のリスト
+sl = ['100円', '10,000円', '5,000', '2000円']
+
+
+# 正規表現なし
+sl_r1 = [s[:-1].replace(',', '') for s in sl]
+# 正規表現あり
+sl_r2 = [re.search(r'[\d,]+', s).group().replace(',', '') for s in sl]
+
+print(sl_r1)
+print(sl_r2)
+</code></pre>
+<pre class="middle">
+['100', '10000', '500', '2000']
+['100', '10000', '5000', '2000']
+</pre>
+<p>リスト内の「5,000」には「円」が付いていないので正規表現を使っていない方の結果では「500」になっています．一方で正規表現の場合はこうした表記揺れがあっても正しく数値を取得できています．</p>
+<h3 id="_4">数値部分が複数ある場合の取得方法</h3>
+<p>「500円〜1,000円」のように文字列中に取得したい数値が複数ある場合の取得方法です．<br>
+<code>re</code>ライブラリの<code>findall</code>メソッドを使用します．</p>
+<pre><code class="language-python">
+s2 = '500円〜1,000円'
+s2_r = re.findall(r'[\d,]+', s2)
+print(s2_r)
+</code></pre>
+<pre  class="middle">
+['500', '1,000']
+</pre>
+
+<p><code>findall</code>メソッドでは指定した正規表現に合致する文字列をリストで取得します．<br>
+今回は２つの数値が含まれているため，２つの数値が取得できています．</p>
+<div style="margin-bottom: 50px;"></div>
+
+<p>なお<code>,</code>を除きたい場合は以下のようにします．</p>
+<pre><code class="language-python">
+s2_r2 = [s.replace(',', '') for s in s2_r]
+print(s2_r2)
+</code></pre>
+<pre>
+['500', '1000']
+</pre>
+
+<h3 id="_5">特定の桁数の数値を取得する方法</h3>
+<p>商品コードなど，特定の桁数を取得する際には以下のようにします．</p>
+<pre><code class="language-python">
+s3 = '商品コード: 12345, 商品コード: 6789'
+print(re.findall(r'(?&lt;!\d)\d{4}(?!\d)', s3))
+</code></pre>
+<pre>
+['6789']
+</pre>
+<p>４桁の数値に限定するためには上記のような正規表現になります.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><br></p>
+<div class="admonition info-box">
+<p class="admonition-title">任意の桁数を取得する場合</p>
+<p><code>\d{4}</code>の<code>4</code>が取得する数値の桁数になっているので，この数値を変更すれば任意の桁数を取得できます．</p>
+</div>
+<div style="margin-bottom: 50px;"></div>
+
+<p>もし，文字列に出てくる数値が固定されている場合は以下でも可能です．</p>
+<pre><code class="language-python">
+s4 = '商品コード: 1234, 商品コード: 5678'
+print(re.findall(r'\d{4}', s4))
+</code></pre>
+<pre class="middle">
+['1234', '5678']
+</pre>
+
+<p><code>\d{4}</code>は１〜９の数値が４個続いた場合にマッチするので，４桁の数値を取得できます．</p>
+<p>ただし，この正規表現の場合は４桁以上の数値にもマッチするので注意が必要です．<br>
+以下で見てみましょう．</p>
+<pre><code class="language-python">
+s3 = '商品コード: 12345, 商品コード: 6789'
+print(re.findall(r'\d{4}', s3))
+</code></pre>
+<pre class="middle">
+['1234', '6789']
+</pre>
+<p>最初の商品コードは<code>12345</code>と５桁ですが，数値が４個続いている最初の４桁が正規表現にマッチするので，最初の４桁を取得してしまいます．</p>
+<div class="admonition info-box">
+<p class="admonition-title">参考</p>
+<p>「文字列に含まれる数値は４桁以下」かつ「取得したい数値が４桁」である場合も<code>\d{4}</code>が使えます．<br>
+（３桁以下の数値はマッチしないからです）
+<pre><code class="language-python">
+s5 = 'コード1, コード22, コード345, コード6789, コード1111'
+print(re.findall(r'\d{4}', s5))
+</code></pre>
+<pre class="in-box">
+['6789', '1111']
+</pre></p>
+</div>
+<h2 id="_6">ひとこと</h2>
+<p>色々な数値を取得する内容を見てきましたが，もっとよい方法をご存知の方がいればぜひお知らせください！</p>
+<div style="margin-bottom: 100px;"></div>
+
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p><code>,</code>があると<code>int()</code>で数値に変換することができません．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>否定的後読み/先読みを使って４桁の数値だけが取れるようにしていますが，他によい方法あればご連絡ください．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </main>
       </div>
 
-      <!-- オリジナル -->
-      <!--  -->    </section>
-    <!-- content -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-format="autorelaxed"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="6953171609"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/regex.html"><div class="fa fa-lg fa-folder-open"></div> 正規表現</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/regex.html"><div class="fa fa-lg fa-tag"></div> 正規表現</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
       
       </article>
 

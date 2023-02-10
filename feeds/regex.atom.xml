@@ -1,5 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - 正規表現</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/regex.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2022-12-14T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】一番最後に出現する文字のみを置換する方法</title><link href="https://www.tecrab.com/articles/python-reg-replace-end.html" rel="alternate"></link><published>2022-12-14T00:00:00+09:00</published><updated>2022-12-14T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-14:/articles/python-reg-replace-end.html</id><summary type="html">&lt;p&gt;最後にマッチする文字列を正規表現で置換する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ - 正規表現</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/regex.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-02-08T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】カンマのある数値・X桁の数値だけを取得する正規表現</title><link href="https://www.tecrab.com/articles/python-reg-comma-x-numbers.html" rel="alternate"></link><published>2023-02-08T00:00:00+09:00</published><updated>2023-02-08T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-02-08:/articles/python-reg-comma-x-numbers.html</id><summary type="html">&lt;p&gt;価格などの数値だけを取得する方法について解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事では文字列から数値/数値だけを取得する正規表現をご紹介します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;カンマのある数値（価格など）から数値をカンマ付きで取得&lt;/li&gt;
+&lt;li&gt;カンマを除いた数値だけを取得&lt;/li&gt;
+&lt;li&gt;X桁の数値だけを取得&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;事前準備&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;正規表現を使用して数値部分を抽出&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;カンマを除く場合&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;数値部分が複数ある場合の取得方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_5"&gt;特定の桁数の数値を取得する方法&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_6"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;事前準備&lt;/h2&gt;
+&lt;p&gt;今回は正規表現を使用するのでPythonの標準ライブラリの&lt;code&gt;re&lt;/code&gt;を&lt;code&gt;import&lt;/code&gt;します．&lt;br&gt;&lt;/p&gt;
+&lt;pre class="end"&gt;&lt;code class="language-python"&gt;
+import re
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="_2"&gt;正規表現を使用して数値部分を抽出&lt;/h3&gt;
+&lt;p&gt;まずはコンマのある数値部分を抽出する方法です．&lt;br&gt;
+「1,000,000円」のような文字列からコンマ＋数値部分を抽出します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s1 = '1,000,000円'
+s1_r1 = re.search(r'[\d,]+', s1).group()
+print(s1_r1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+1,000,000
+&lt;/pre&gt;
+
+&lt;p&gt;上記は正規表現を使って&lt;code&gt;,&lt;/code&gt;を含めて数値を取得しています．&lt;br&gt;&lt;/p&gt;
+&lt;h3 id="_3"&gt;カンマを除く場合&lt;/h3&gt;
+&lt;p&gt;前項で取得した文字から&lt;code&gt;,&lt;/code&gt;を除きたい場合は以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s1_r2 = s1_r1.replace(',', '')
+print(s1_r2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+1000000
+&lt;/pre&gt;
+&lt;p&gt;Pythonの組み込みメソッドの&lt;code&gt;replace&lt;/code&gt;を使用してコンマを置換しています．&lt;br&gt;
+&lt;code&gt;,&lt;/code&gt;を取り除くと組み込みの&lt;code&gt;int()&lt;/code&gt;などを使用して数値に変換することができます.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;なお，文字列の形式が統一されている場合は以下のような方法でも可能です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s1 = '1,000,000円'
+
+s1_r3 = s1[:-1].replace(',', '')
+print(s1_r3)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+1000000
+&lt;/pre&gt;
+
+&lt;p&gt;上記の方法は変換対象の文字列の最後が必ず「円」で終わるという前提で成り立ちます．&lt;br&gt;
+桁数の増減や&lt;code&gt;,&lt;/code&gt;がない場合は許容されますが「円」がないと適切に数値が取れません．&lt;br&gt;
+以下の例を見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+# 数値を取得したい文字列のリスト
+sl = ['100円', '10,000円', '5,000', '2000円']
+
+
+# 正規表現なし
+sl_r1 = [s[:-1].replace(',', '') for s in sl]
+# 正規表現あり
+sl_r2 = [re.search(r'[\d,]+', s).group().replace(',', '') for s in sl]
+
+print(sl_r1)
+print(sl_r2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+['100', '10000', '500', '2000']
+['100', '10000', '5000', '2000']
+&lt;/pre&gt;
+&lt;p&gt;リスト内の「5,000」には「円」が付いていないので正規表現を使っていない方の結果では「500」になっています．一方で正規表現の場合はこうした表記揺れがあっても正しく数値を取得できています．&lt;/p&gt;
+&lt;h3 id="_4"&gt;数値部分が複数ある場合の取得方法&lt;/h3&gt;
+&lt;p&gt;「500円〜1,000円」のように文字列中に取得したい数値が複数ある場合の取得方法です．&lt;br&gt;
+&lt;code&gt;re&lt;/code&gt;ライブラリの&lt;code&gt;findall&lt;/code&gt;メソッドを使用します．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s2 = '500円〜1,000円'
+s2_r = re.findall(r'[\d,]+', s2)
+print(s2_r)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre  class="middle"&gt;
+['500', '1,000']
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;findall&lt;/code&gt;メソッドでは指定した正規表現に合致する文字列をリストで取得します．&lt;br&gt;
+今回は２つの数値が含まれているため，２つの数値が取得できています．&lt;/p&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;なお&lt;code&gt;,&lt;/code&gt;を除きたい場合は以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s2_r2 = [s.replace(',', '') for s in s2_r]
+print(s2_r2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;
+['500', '1000']
+&lt;/pre&gt;
+
+&lt;h3 id="_5"&gt;特定の桁数の数値を取得する方法&lt;/h3&gt;
+&lt;p&gt;商品コードなど，特定の桁数を取得する際には以下のようにします．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s3 = '商品コード: 12345, 商品コード: 6789'
+print(re.findall(r'(?&amp;lt;!\d)\d{4}(?!\d)', s3))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;
+['6789']
+&lt;/pre&gt;
+&lt;p&gt;４桁の数値に限定するためには上記のような正規表現になります.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;br&gt;&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;任意の桁数を取得する場合&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;\d{4}&lt;/code&gt;の&lt;code&gt;4&lt;/code&gt;が取得する数値の桁数になっているので，この数値を変更すれば任意の桁数を取得できます．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;もし，文字列に出てくる数値が固定されている場合は以下でも可能です．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s4 = '商品コード: 1234, 商品コード: 5678'
+print(re.findall(r'\d{4}', s4))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+['1234', '5678']
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;\d{4}&lt;/code&gt;は１〜９の数値が４個続いた場合にマッチするので，４桁の数値を取得できます．&lt;/p&gt;
+&lt;p&gt;ただし，この正規表現の場合は４桁以上の数値にもマッチするので注意が必要です．&lt;br&gt;
+以下で見てみましょう．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s3 = '商品コード: 12345, 商品コード: 6789'
+print(re.findall(r'\d{4}', s3))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+['1234', '6789']
+&lt;/pre&gt;
+&lt;p&gt;最初の商品コードは&lt;code&gt;12345&lt;/code&gt;と５桁ですが，数値が４個続いている最初の４桁が正規表現にマッチするので，最初の４桁を取得してしまいます．&lt;/p&gt;
+&lt;div class="admonition info-box"&gt;
+&lt;p class="admonition-title"&gt;参考&lt;/p&gt;
+&lt;p&gt;「文字列に含まれる数値は４桁以下」かつ「取得したい数値が４桁」である場合も&lt;code&gt;\d{4}&lt;/code&gt;が使えます．&lt;br&gt;
+（３桁以下の数値はマッチしないからです）
+&lt;pre&gt;&lt;code class="language-python"&gt;
+s5 = 'コード1, コード22, コード345, コード6789, コード1111'
+print(re.findall(r'\d{4}', s5))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="in-box"&gt;
+['6789', '1111']
+&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="_6"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;色々な数値を取得する内容を見てきましたが，もっとよい方法をご存知の方がいればぜひお知らせください！&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;
+
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;&lt;code&gt;,&lt;/code&gt;があると&lt;code&gt;int()&lt;/code&gt;で数値に変換することができません．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;否定的後読み/先読みを使って４桁の数値だけが取れるようにしていますが，他によい方法あればご連絡ください．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="正規表現"></category><category term="Python"></category><category term="正規表現"></category></entry><entry><title>【Python】一番最後に出現する文字のみを置換する方法</title><link href="https://www.tecrab.com/articles/python-reg-replace-end.html" rel="alternate"></link><published>2022-12-14T00:00:00+09:00</published><updated>2022-12-14T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2022-12-14:/articles/python-reg-replace-end.html</id><summary type="html">&lt;p&gt;最後にマッチする文字列を正規表現で置換する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;本記事では特定の文字を検索し，一番最後にヒットした文字列を置換する方法をご紹介します．&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
