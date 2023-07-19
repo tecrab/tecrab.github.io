@@ -16,8 +16,8 @@
     crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>てっくらぶ</title>
-    <meta name="description" content="PythonやPC関連の情報をまとめているブログです">
+    <title>【Raspberry Pi 4】にRustをインストールする方法 - てっくらぶ</title>
+    <meta name="description" content="Raspberry PiにRustをインストールする方法について解説しています．">
 
 
     <!-- defer-js -->
@@ -49,20 +49,295 @@
     
     <div id="page">
       <article id="main-content">
+    <ol class="breadcrumb">
+      <li><a href="https://www.tecrab.com"><span>Home</span></a><span style="margin: 0px 10px">/</span></li>
+      <li><a href="https://www.tecrab.com/categories.html">Categories</a><span style="margin: 0px 10px">/</span></li>
+      <li class="active">ラズパイ</li>
+    </ol>
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          【Raspberry Pi 4】にRustをインストールする方法
+        </h2>
+        
+      </header>
+<div class="part1">
+    <ul class="i-list">
+        <li class="i-item"><span>Category: </span><a href="https://www.tecrab.com/category/rpi.html">ラズパイ</a></li>
+        <li class="i-item"><span>Tags: </span><a href="https://www.tecrab.com/tag/raspberrypi.html">RaspberryPi</a> <a href="https://www.tecrab.com/tag/python.html">Python</a> </li>
+        <br>
+        <li class="i-item">
+            <span>Posted on: </span>2023-07-18
+        </li>
+            <br>
+    </ul>
+</div>      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="2331400317"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+<!-- .entry-content -->
+      <div class="entry-content">
+        <main>
+        <div class="admonition abstract">
+<p>本記事ではRaspberry Pi 4にRustをインストールする方法を解説しています．<br>
+通常の手順でインストールを実施するとうまくいかなかったケースも記載しているので，参考にしてください．</p>
+</div>
+<div class="toc"><span class="toctitle">目次</span><ul>
+<li><a href="#_1">環境</a></li>
+<li><a href="#_2">インストール手順</a></li>
+<li><a href="#_3">参考：インストールできなかった例</a></li>
+<li><a href="#_4">ひとこと</a></li>
+</ul>
+</div>
+<h2 id="_1">環境</h2>
+<ul>
+<li>ラズパイのモデル: Raspberry Pi 4 Model B Rev 1.5</li>
+<li>Macからsshで接続して操作</li>
+</ul>
+<details class="accordion-block">
+<summary>確認コマンド</summary>
+<div class="accordion-summary">
+<pre><code class="language-bash">
+cat /proc/cpuinfo | grep Model
+</code></pre>
+</div>
+</details>
+<h2 id="_2">インストール手順</h2>
+<p><a href="https://www.rust-lang.org/ja/tools/install" rel="noopener noreferrer" target="_blank">Rustの公式サイト</a>にある以下のコマンドをターミナルで実行．</p>
+<pre class="middle"><code class="language-bash">
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+</code></pre>
 
-<dl>
-  
-            <h3><a href="https://www.tecrab.com/2023"  class="text">Archive for 2023</a></h3>
-            <ul class="archive-list">
-                <li><span class="text-muted">2023-07-18 &raquo; </span><a href="https://www.tecrab.com/articles/rpi-rust-installation.html">【Raspberry Pi 4】にRustをインストールする方法</a></li>   
-                <li><span class="text-muted">2023-02-10 &raquo; </span><a href="https://www.tecrab.com/articles/dataframe-list-sort.html">【Python】リスト内のDataFrameを並び替える（ソートする）方法</a></li>   
-                <li><span class="text-muted">2023-02-08 &raquo; </span><a href="https://www.tecrab.com/articles/python-reg-comma-x-numbers.html">【Python】カンマのある数値・X桁の数値だけを取得する正規表現</a></li>   
-                <li><span class="text-muted">2023-01-30 &raquo; </span><a href="https://www.tecrab.com/articles/pandas-read-gbq-basic.html">【pandas】BigQueryのデータをDataFrameで取得する方法</a></li>   
-                <li><span class="text-muted">2023-01-29 &raquo; </span><a href="https://www.tecrab.com/articles/vscode-nvim-jpen-chj.html">【Neovim】インサートモードから離れる際に自動で英字に切り替える方法</a></li>   
-                <li><span class="text-muted">2023-01-24 &raquo; </span><a href="https://www.tecrab.com/articles/python-bqc-basic.html">【Python】BigQueryのテーブル/テーブルスキーマを取得する方法</a></li>   
-                <li><span class="text-muted">2023-01-14 &raquo; </span><a href="https://www.tecrab.com/articles/python-emoji-for-family.html">Pythonのfor文で家族絵文字をひとつずつ取り出す</a></li>   
-     </ul>
-</dl>
+<p>上記を実行すると以下のような出力が出てくるので，<code>2</code>を入力して<kbd><kbd>return</kbd></kbd>を押す．</p>
+<pre class="middle">
+1) Proceed with installation (default)
+2) Customize installation
+3) Cancel installation
+>2
+</pre>
+
+<p>カスタマイズ項目について複数確認されるため，以下のように対応</p>
+<ul>
+<li>Default host triple? [aarch64-unknown-linux-gnu]<ul>
+<li><code>armv7-unknown-linux-gnueabihf</code> を入力して<kbd><kbd>return</kbd></kbd></li>
+</ul>
+</li>
+<li>Default toolchain? (stable/beta/nightly/none) [stable]<ul>
+<li>何も入力せず<kbd><kbd>return</kbd></kbd></li>
+</ul>
+</li>
+<li>Profile (which tools and data to install)? (minimal/default/complete) [default]<ul>
+<li>何も入力せず<kbd><kbd>return</kbd></kbd></li>
+</ul>
+</li>
+<li>Modify PATH variable? (Y/n)<ul>
+<li><code>n</code> を入力して<kbd><kbd>return</kbd></kbd></li>
+</ul>
+</li>
+</ul>
+<div style="margin-bottom: 50px;"></div>
+
+<p>オプションが以下のように切り替わるので<code>1</code>を押して<kbd><kbd>return</kbd></kbd><br>
+（前の手順で変更した内容でインストールが実行される）</p>
+<pre class="middle">
+Current installation options:
+
+   default host triple: armv7-unknown-linux-gnueabihf
+     default toolchain: stable
+               profile: default
+  modify PATH variable: no
+
+1) Proceed with installation (default)
+2) Customize installation
+3) Cancel installation
+>1
+</pre>
+
+<pre class="middle">
+Rust is installed now. Great!
+
+To get started you need Cargo's bin directory ($HOME/.cargo/bin) in your PATH
+environment variable. This has not been done automatically.
+
+To configure your current shell, run:
+source "$HOME/.cargo/env"
+</pre>
+
+<p>インストールが完了したら以下のコマンドでPATHを通す．</p>
+<pre class="middle"><code class="language-bash">
+# viで.bash_profileを開く
+sudo vi ~/.bash_profile
+
+# 以下をファイルの最後に追記
+export PATH="$HOME/.cargo/bin:$PATH"
+</code></pre>
+
+<p>以下のコマンドで変更を反映</p>
+<pre class="middle"><code class="language-bash">
+source ~/.bash_profile
+</code></pre>
+
+<p>インストールの確認として以下のコマンドで結果が出力されることを確認します．</p>
+<ul>
+<li><code>rustup -V</code></li>
+<li><code>cargo -V</code></li>
+<li><code>rustc -V</code></li>
+</ul>
+<pre><code class="language-bash">
+rustup -V
+</code></pre>
+<pre class="middle">
+rustup 1.26.0 (5af9b9484 2023-04-05)
+info: This is the version for the rustup toolchain manager, not the rustc compiler.
+info: The currently active `rustc` version is `rustc 1.71.0 (8ede3aae2 2023-07-12)`
+</pre>
+
+<pre><code class="language-bash">
+cargo -V
+</code></pre>
+<pre class="middle">
+cargo 1.71.0 (cfd3bbd8f 2023-06-08)
+</pre>
+
+<pre><code class="language-bash">
+rustc -V
+</code></pre>
+<pre class="middle">
+rustc 1.71.0 (8ede3aae2 2023-07-12)
+</pre>
+
+<p>無事にインストールできました！</p>
+<h2 id="_3">参考：インストールできなかった例</h2>
+<p>※ こちらでは参考までにインストールに苦戦した状況を書いています．</p>
+<hr>
+<p><a href="https://www.rust-lang.org/ja/tools/install" rel="noopener noreferrer" target="_blank">Rustの公式サイト</a>にある以下のコマンドをターミナルで実行．</p>
+<pre class="middle"><code class="language-bash">
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+</code></pre>
+
+<p>上記を実行すると以下のような出力が出てくるので<code>1</code>を入力して<kbd><kbd>return</kbd></kbd>を押す．</p>
+<pre class="middle">
+1) Proceed with installation (default)
+2) Customize installation
+3) Cancel installation
+>1
+</pre>
+
+<p>すると，以下のような権限エラーが出た．<br></p>
+<pre class="middle">
+error: could not amend shell profile: '/home/XXX/.bash_profile': could not write rcfile file: '/home/XXX/.bash_profile': Permission denied (os error 13)
+</pre>
+
+<p>上記のような権限エラーが出たため後続のコマンドに<code>sudo</code>をつけて再度実行し，前述と同様にデフォルトでインストールを進める．</p>
+<pre class="middle"><code class="language-bash">
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sudo sh
+</code></pre>
+
+<pre class="middle">
+Rust is installed now. Great!
+
+To get started you may need to restart your current shell.
+This would reload your PATH environment variable to include
+Cargo's bin directory ($HOME/.cargo/bin).
+
+To configure your current shell, run:
+source "$HOME/.cargo/env"
+</pre>
+
+<p>成功した様子なので出力の指示に従い以下のコマンドでPATHを通す．</p>
+<pre class="middle"><code class="language-bash">
+source "$HOME/.cargo/env"
+</code></pre>
+
+<p>インストールの確認として，以下のコマンドが実行できるか確認．</p>
+<ul>
+<li><code>rustup -V</code></li>
+<li><code>cargo -V</code></li>
+<li><code>rustc -V</code></li>
+</ul>
+<p>まずは<code>rustup</code>コマンドを確認．</p>
+<pre><code class="language-bash">
+rustup -V
+</code></pre>
+<pre class="middle">
+rustup 1.26.0 (5af9b9484 2023-04-05)
+info: This is the version for the rustup toolchain manager, not the rustc compiler.
+</pre>
+
+<p><code>rustup</code>は問題なさそうなので，他のコマンドも確認する．</p>
+<pre><code class="language-bash">
+cargo -V
+</code></pre>
+<pre class="middle">
+error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.
+help: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.
+</pre>
+
+<p>エラーが出ており，ヘルプとして安定版を勧められているので以下のコマンドを実行して様子を確認．<br>
+（実行するとインストールが始まって，色々と更新されている様子）</p>
+<pre class="middle"><code class="language-bash">
+rustup default stable
+</code></pre>
+
+<p>インストールが終わったので，再度<code>cargo</code>コマンドを実行して確認．</p>
+<pre><code class="language-bash">
+cargo -V
+</code></pre>
+<pre class="middle">
+error: command failed: 'cargo': No such file or directory (os error 2)
+</pre>
+
+<p>あれ？<br>
+PATHは通っているし，PATHで指定している<code>~/.cargo/bin</code>配下にも<code>cargo</code>があるのに，何故か認識されない・・・</p>
+<p><code>rustc</code>も同様・・・</p>
+<pre><code class="language-bash">
+rustc -V
+</code></pre>
+<pre class="middle">
+error: command failed: 'rustc': No such file or directory (os error 2)
+</pre>
+
+<p>本来であれば問題なくインストールできるはずでしたが，上記のような流れでうまくいかず・・・<br>
+試行錯誤してインストールできたのが本記事の最初に記載した手順です．</p>
+<h2 id="_4">ひとこと</h2>
+<p>PythonのPoetryをインストールするためにRustが必要だったのですが大きく時間を使ってしまいました．<br>
+この記事が同じ現象に悩まれている方の参考になれば幸いです．</p>
+<div style="margin-bottom: 100px;"></div>
+        </main>
+      </div>
+
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4085279763090083"
+      crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-format="autorelaxed"
+            data-ad-client="ca-pub-4085279763090083"
+            data-ad-slot="6953171609"></ins>
+      <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+
+<!-- /.entry-content -->
+      <!-- <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="https://www.tecrab.com/category/rpi.html"><div class="fa fa-lg fa-folder-open"></div> ラズパイ</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/raspberrypi.html"><div class="fa fa-lg fa-tag"></div> RaspberryPi</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="https://www.tecrab.com/tag/python.html"><div class="fa fa-lg fa-tag"></div> Python</a>
+        </button>
+      </footer> -->
+      <!-- /.post-info -->
+    </section>
       
       </article>
 

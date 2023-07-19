@@ -1,5 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/all.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-02-10T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Python】リスト内のDataFrameを並び替える（ソートする）方法</title><link href="https://www.tecrab.com/articles/dataframe-list-sort.html" rel="alternate"></link><published>2023-02-10T00:00:00+09:00</published><updated>2023-02-10T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-02-10:/articles/dataframe-list-sort.html</id><summary type="html">&lt;p&gt;リスト内のDataFrameを並び替える方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>てっくらぶ</title><link href="https://www.tecrab.com/" rel="alternate"></link><link href="https://www.tecrab.com/feeds/all.atom.xml" rel="self"></link><id>https://www.tecrab.com/</id><updated>2023-07-18T00:00:00+09:00</updated><subtitle>PythonやPC関連の情報をまとめているブログです</subtitle><entry><title>【Raspberry Pi 4】にRustをインストールする方法</title><link href="https://www.tecrab.com/articles/rpi-rust-installation.html" rel="alternate"></link><published>2023-07-18T00:00:00+09:00</published><updated>2023-07-18T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-07-18:/articles/rpi-rust-installation.html</id><summary type="html">&lt;p&gt;Raspberry PiにRustをインストールする方法について解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
+&lt;p&gt;本記事ではRaspberry Pi 4にRustをインストールする方法を解説しています．&lt;br&gt;
+通常の手順でインストールを実施するとうまくいかなかったケースも記載しているので，参考にしてください．&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#_1"&gt;環境&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_2"&gt;インストール手順&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_3"&gt;参考：インストールできなかった例&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#_4"&gt;ひとこと&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 id="_1"&gt;環境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;ラズパイのモデル: Raspberry Pi 4 Model B Rev 1.5&lt;/li&gt;
+&lt;li&gt;Macからsshで接続して操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;details class="accordion-block"&gt;
+&lt;summary&gt;確認コマンド&lt;/summary&gt;
+&lt;div class="accordion-summary"&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+cat /proc/cpuinfo | grep Model
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;h2 id="_2"&gt;インストール手順&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://www.rust-lang.org/ja/tools/install" rel="noopener noreferrer" target="_blank"&gt;Rustの公式サイト&lt;/a&gt;にある以下のコマンドをターミナルで実行．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上記を実行すると以下のような出力が出てくるので，&lt;code&gt;2&lt;/code&gt;を入力して&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;を押す．&lt;/p&gt;
+&lt;pre class="middle"&gt;
+1) Proceed with installation (default)
+2) Customize installation
+3) Cancel installation
+&gt;2
+&lt;/pre&gt;
+
+&lt;p&gt;カスタマイズ項目について複数確認されるため，以下のように対応&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Default host triple? [aarch64-unknown-linux-gnu]&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;armv7-unknown-linux-gnueabihf&lt;/code&gt; を入力して&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Default toolchain? (stable/beta/nightly/none) [stable]&lt;ul&gt;
+&lt;li&gt;何も入力せず&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Profile (which tools and data to install)? (minimal/default/complete) [default]&lt;ul&gt;
+&lt;li&gt;何も入力せず&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Modify PATH variable? (Y/n)&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;n&lt;/code&gt; を入力して&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="margin-bottom: 50px;"&gt;&lt;/div&gt;
+
+&lt;p&gt;オプションが以下のように切り替わるので&lt;code&gt;1&lt;/code&gt;を押して&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;&lt;br&gt;
+（前の手順で変更した内容でインストールが実行される）&lt;/p&gt;
+&lt;pre class="middle"&gt;
+Current installation options:
+
+   default host triple: armv7-unknown-linux-gnueabihf
+     default toolchain: stable
+               profile: default
+  modify PATH variable: no
+
+1) Proceed with installation (default)
+2) Customize installation
+3) Cancel installation
+&gt;1
+&lt;/pre&gt;
+
+&lt;pre class="middle"&gt;
+Rust is installed now. Great!
+
+To get started you need Cargo's bin directory ($HOME/.cargo/bin) in your PATH
+environment variable. This has not been done automatically.
+
+To configure your current shell, run:
+source "$HOME/.cargo/env"
+&lt;/pre&gt;
+
+&lt;p&gt;インストールが完了したら以下のコマンドでPATHを通す．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+# viで.bash_profileを開く
+sudo vi ~/.bash_profile
+
+# 以下をファイルの最後に追記
+export PATH="$HOME/.cargo/bin:$PATH"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以下のコマンドで変更を反映&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+source ~/.bash_profile
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;インストールの確認として以下のコマンドで結果が出力されることを確認します．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rustup -V&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cargo -V&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rustc -V&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+rustup -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+rustup 1.26.0 (5af9b9484 2023-04-05)
+info: This is the version for the rustup toolchain manager, not the rustc compiler.
+info: The currently active `rustc` version is `rustc 1.71.0 (8ede3aae2 2023-07-12)`
+&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+cargo -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+cargo 1.71.0 (cfd3bbd8f 2023-06-08)
+&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+rustc -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+rustc 1.71.0 (8ede3aae2 2023-07-12)
+&lt;/pre&gt;
+
+&lt;p&gt;無事にインストールできました！&lt;/p&gt;
+&lt;h2 id="_3"&gt;参考：インストールできなかった例&lt;/h2&gt;
+&lt;p&gt;※ こちらでは参考までにインストールに苦戦した状況を書いています．&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;a href="https://www.rust-lang.org/ja/tools/install" rel="noopener noreferrer" target="_blank"&gt;Rustの公式サイト&lt;/a&gt;にある以下のコマンドをターミナルで実行．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上記を実行すると以下のような出力が出てくるので&lt;code&gt;1&lt;/code&gt;を入力して&lt;kbd&gt;&lt;kbd&gt;return&lt;/kbd&gt;&lt;/kbd&gt;を押す．&lt;/p&gt;
+&lt;pre class="middle"&gt;
+1) Proceed with installation (default)
+2) Customize installation
+3) Cancel installation
+&gt;1
+&lt;/pre&gt;
+
+&lt;p&gt;すると，以下のような権限エラーが出た．&lt;br&gt;&lt;/p&gt;
+&lt;pre class="middle"&gt;
+error: could not amend shell profile: '/home/XXX/.bash_profile': could not write rcfile file: '/home/XXX/.bash_profile': Permission denied (os error 13)
+&lt;/pre&gt;
+
+&lt;p&gt;上記のような権限エラーが出たため後続のコマンドに&lt;code&gt;sudo&lt;/code&gt;をつけて再度実行し，前述と同様にデフォルトでインストールを進める．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sudo sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre class="middle"&gt;
+Rust is installed now. Great!
+
+To get started you may need to restart your current shell.
+This would reload your PATH environment variable to include
+Cargo's bin directory ($HOME/.cargo/bin).
+
+To configure your current shell, run:
+source "$HOME/.cargo/env"
+&lt;/pre&gt;
+
+&lt;p&gt;成功した様子なので出力の指示に従い以下のコマンドでPATHを通す．&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+source "$HOME/.cargo/env"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;インストールの確認として，以下のコマンドが実行できるか確認．&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rustup -V&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cargo -V&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rustc -V&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;まずは&lt;code&gt;rustup&lt;/code&gt;コマンドを確認．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+rustup -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+rustup 1.26.0 (5af9b9484 2023-04-05)
+info: This is the version for the rustup toolchain manager, not the rustc compiler.
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;rustup&lt;/code&gt;は問題なさそうなので，他のコマンドも確認する．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+cargo -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.
+help: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.
+&lt;/pre&gt;
+
+&lt;p&gt;エラーが出ており，ヘルプとして安定版を勧められているので以下のコマンドを実行して様子を確認．&lt;br&gt;
+（実行するとインストールが始まって，色々と更新されている様子）&lt;/p&gt;
+&lt;pre class="middle"&gt;&lt;code class="language-bash"&gt;
+rustup default stable
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;インストールが終わったので，再度&lt;code&gt;cargo&lt;/code&gt;コマンドを実行して確認．&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+cargo -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+error: command failed: 'cargo': No such file or directory (os error 2)
+&lt;/pre&gt;
+
+&lt;p&gt;あれ？&lt;br&gt;
+PATHは通っているし，PATHで指定している&lt;code&gt;~/.cargo/bin&lt;/code&gt;配下にも&lt;code&gt;cargo&lt;/code&gt;があるのに，何故か認識されない・・・&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;rustc&lt;/code&gt;も同様・・・&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;
+rustc -V
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="middle"&gt;
+error: command failed: 'rustc': No such file or directory (os error 2)
+&lt;/pre&gt;
+
+&lt;p&gt;本来であれば問題なくインストールできるはずでしたが，上記のような流れでうまくいかず・・・&lt;br&gt;
+試行錯誤してインストールできたのが本記事の最初に記載した手順です．&lt;/p&gt;
+&lt;h2 id="_4"&gt;ひとこと&lt;/h2&gt;
+&lt;p&gt;PythonのPoetryをインストールするためにRustが必要だったのですが大きく時間を使ってしまいました．&lt;br&gt;
+この記事が同じ現象に悩まれている方の参考になれば幸いです．&lt;/p&gt;
+&lt;div style="margin-bottom: 100px;"&gt;&lt;/div&gt;</content><category term="ラズパイ"></category><category term="RaspberryPi"></category><category term="Python"></category></entry><entry><title>【Python】リスト内のDataFrameを並び替える（ソートする）方法</title><link href="https://www.tecrab.com/articles/dataframe-list-sort.html" rel="alternate"></link><published>2023-02-10T00:00:00+09:00</published><updated>2023-02-10T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-02-10:/articles/dataframe-list-sort.html</id><summary type="html">&lt;p&gt;リスト内のDataFrameを並び替える方法を解説しています．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;
 &lt;p&gt;本記事ではリストに入ったDataFrameの順序を並び替える方法について紹介しています．&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class="toc"&gt;&lt;span class="toctitle"&gt;目次&lt;/span&gt;&lt;ul&gt;
