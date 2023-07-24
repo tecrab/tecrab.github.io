@@ -264,7 +264,7 @@ print(df.shape)
 &lt;p&gt;テーブルからデータを取得するためのクエリを用意し，それをメソッドに渡せばOKです．&lt;br&gt;&lt;/p&gt;
 &lt;div class="admonition danger-box"&gt;
 &lt;p class="admonition-title"&gt;注意&lt;/p&gt;
-&lt;p&gt;BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.&lt;sup id="fnref2:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;h3 id="_2"&gt;メソッドの主な引数&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;read_gbq&lt;/code&gt;メソッドには主に以下の引数があります．&lt;br&gt;&lt;/p&gt;
@@ -406,7 +406,7 @@ Downloading: 100%|&lt;span style="color:rgb(0, 187, 0)"&gt;███████
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;上記で取得しているテーブルは非常に小さいので&lt;code&gt;use_bqstorage_api&lt;/code&gt;を指定しなくてもストレスなくデータを取得できますが，大きいテーブルを取得する際は指定をおすすめします.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;上記で取得しているテーブルは非常に小さいので&lt;code&gt;use_bqstorage_api&lt;/code&gt;を指定しなくてもストレスなくデータを取得できますが，大きいテーブルを取得する際は指定をおすすめします.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;h2 id="_5"&gt;ひとこと&lt;/h2&gt;
 &lt;p&gt;BigQueryからテーブルをDataFrameとして取得してあれこれする場合には&lt;code&gt;read_gbq&lt;/code&gt;が便利に使えますね．&lt;br&gt;
 テーブルのスキーマなどの情報を得たい場合は以下の記事もご覧ください．&lt;/p&gt;
@@ -420,7 +420,10 @@ Downloading: 100%|&lt;span style="color:rgb(0, 187, 0)"&gt;███████
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:1"&gt;
-&lt;p&gt;指定した方が圧倒的に高速化されるので，&lt;code&gt;use_bqstorage_api&lt;/code&gt;が使える状況であれば積極的に使うとストレスがなくなります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;上記のサンプルコード（クエリ）の処理量は約68KBと少ないのでそれほど気にする必要はありません．&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;指定した方が圧倒的に高速化されるので，&lt;code&gt;use_bqstorage_api&lt;/code&gt;が使える状況であれば積極的に使うとストレスがなくなります．&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</content><category term="Python"></category><category term="Python"></category><category term="pandas"></category><category term="BigQuery"></category></entry><entry><title>【Python】BigQueryのテーブル/テーブルスキーマを取得する方法</title><link href="https://www.tecrab.com/articles/python-bqc-basic.html" rel="alternate"></link><published>2023-01-24T00:00:00+09:00</published><updated>2023-01-24T00:00:00+09:00</updated><author><name>かに</name></author><id>tag:www.tecrab.com,2023-01-24:/articles/python-bqc-basic.html</id><summary type="html">&lt;p&gt;BigQueryのPythonクライアントライブラリでテーブル情報を取得する方法です．&lt;/p&gt;</summary><content type="html">&lt;div class="admonition abstract"&gt;

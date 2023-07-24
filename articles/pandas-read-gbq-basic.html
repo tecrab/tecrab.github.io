@@ -164,7 +164,7 @@ print(df.shape)
 <p>テーブルからデータを取得するためのクエリを用意し，それをメソッドに渡せばOKです．<br></p>
 <div class="admonition danger-box">
 <p class="admonition-title">注意</p>
-<p>BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>BigQueryは実行した操作に応じて料金がかかるため，クエリを変更する際などは注意してください.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
 </div>
 <h3 id="_2">メソッドの主な引数</h3>
 <p><code>read_gbq</code>メソッドには主に以下の引数があります．<br></p>
@@ -306,7 +306,7 @@ Downloading: 100%|<span style="color:rgb(0, 187, 0)">█████████
   </tbody>
 </table>
 
-<p>上記で取得しているテーブルは非常に小さいので<code>use_bqstorage_api</code>を指定しなくてもストレスなくデータを取得できますが，大きいテーブルを取得する際は指定をおすすめします.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>上記で取得しているテーブルは非常に小さいので<code>use_bqstorage_api</code>を指定しなくてもストレスなくデータを取得できますが，大きいテーブルを取得する際は指定をおすすめします.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
 <h2 id="_5">ひとこと</h2>
 <p>BigQueryからテーブルをDataFrameとして取得してあれこれする場合には<code>read_gbq</code>が便利に使えますね．<br>
 テーブルのスキーマなどの情報を得たい場合は以下の記事もご覧ください．</p>
@@ -320,7 +320,10 @@ Downloading: 100%|<span style="color:rgb(0, 187, 0)">█████████
 <hr>
 <ol>
 <li id="fn:1">
-<p>指定した方が圧倒的に高速化されるので，<code>use_bqstorage_api</code>が使える状況であれば積極的に使うとストレスがなくなります．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>上記のサンプルコード（クエリ）の処理量は約68KBと少ないのでそれほど気にする必要はありません．&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>指定した方が圧倒的に高速化されるので，<code>use_bqstorage_api</code>が使える状況であれば積極的に使うとストレスがなくなります．&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
